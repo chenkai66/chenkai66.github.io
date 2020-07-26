@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Python爬虫初级（七）—— 丁香园评论留言板爬取 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Python爬虫初级（七）—— 丁香园评论留言板爬取"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Python爬虫初级（七）—— 丁香园评论留言板爬取
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/4905f1d8.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.376Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spider/">Spider</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.5k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">6 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="观察待爬取页面，判断爬取可行性"><a href="#观察待爬取页面，判断爬取可行性" class="headerlink" title="观察待爬取页面，判断爬取可行性"></a>观察待爬取页面，判断爬取可行性</h1><p>我们首先查看待爬取页面：<a href="http://www.dxy.cn/bbs/thread/626626#626626" target="_blank" rel="noopener">http://www.dxy.cn/bbs/thread/626626#626626</a> ，具体形式为下图：<br><img src="https://img-blog.csdnimg.cn/20200425085817786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70" alt="丁香园待爬取页面">我们查看源代码信息：<br><img src="https://img-blog.csdnimg.cn/20200425085925913.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="页面源代码">可以发现留言板块的内容在页面源代码全部直接显示了出来，那么我们可以尝试直接进行爬取，我们采取的思路首先是 <a href="https://blog.csdn.net/ChenKai_164/article/details/105610353" target="_blank" rel="noopener">requests 库</a> + <a href="https://blog.csdn.net/ChenKai_164/article/details/105625042" target="_blank" rel="noopener">bs4 库</a>，这两者的具体用法在前面的文章均已涉及。</p>
+<h1 id="检测爬取链接，初步尝试爬取"><a href="#检测爬取链接，初步尝试爬取" class="headerlink" title="检测爬取链接，初步尝试爬取"></a>检测爬取链接，初步尝试爬取</h1><p>首先我们可以在IDLE上检查爬取链接是否正常，直接展示代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> requests</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>url = <span class="string">"http://www.dxy.cn/bbs/thread/626626#626626"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>headers = &#123;<span class="string">"user-agent"</span>:<span class="string">"Mozilla/5.0"</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res = requests.get(url, headers=headers, stream=<span class="literal">True</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res.status_code</span><br><span class="line"><span class="number">200</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>text = res.text</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup = BeautifulSoup(text)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>text[<span class="number">1000</span>:<span class="number">1300</span>]</span><br><span class="line"><span class="string">'og:description" content="我遇到一个“怪”病人，向大家请教。她，42岁。反复惊吓后晕厥30余年。每次受响声惊吓后发生跌倒，短暂意识丧失。无逆行性遗忘，无抽搐，无口吐白沫，无大小便失禁。多次跌倒致外伤。婴儿时有惊厥史。入院查体无殊。ECG、24小时动态心电图无殊；头颅MRI示小软化灶；脑电图无殊。入院后有数次类似发作。请问该患者该做何诊断，还需做什么检查，治疗方案怎样？"/&gt;\n        &lt;meta property="og:author" content="楼医生"/&gt;\n        &lt;meta property="og:release_date" content'</span></span><br></pre></td></tr></table></figure>
+
+<p>我们想要抓取链接，先在上面的源代码中对标题层级结构进行分析:<br><img src="https://img-blog.csdnimg.cn/20200425091636816.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="标题代码"></p>
+<p>然后直接写出相关代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>title = soup(<span class="string">"div"</span>, id=<span class="string">"postview"</span>)[<span class="number">0</span>].tr.th.h1.contents[<span class="number">0</span>]</span><br><span class="line">[<span class="string">'\n                    晕厥待查——请教各位同仁                 '</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>title = title.replace(<span class="string">" "</span>, <span class="string">""</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>title = title.replace(<span class="string">"\n"</span>, <span class="string">""</span>)</span><br><span class="line">&gt;&gt;&gt;&gt; title</span><br><span class="line"><span class="string">'晕厥待查——请教各位同仁'</span></span><br></pre></td></tr></table></figure>
+
+<p>下面同理可以查看其他信息，下面我们为了便于操作直接采用 CSS 类名查找：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>context = soup.select(<span class="string">"[class~=postbody]"</span>)</span><br><span class="line"><span class="comment"># 返回所有内容信息</span></span><br></pre></td></tr></table></figure>
+
+<p>返回的信息内容如下：<br><img src="https://img-blog.csdnimg.cn/20200425093131992.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="爬取返回内容">对内容进行清理：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>cont = context[<span class="number">1</span>].contents[<span class="number">0</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>cont = cont.replace(<span class="string">" "</span>, <span class="string">""</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>cont = cont.replace(<span class="string">"\n"</span>, <span class="string">""</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>cont</span><br><span class="line"><span class="string">'从发作的症状上比较符合血管迷走神经性晕厥，直立倾斜试验能协助诊断。在行直立倾斜实验前应该做常规的体格检查、ECG、UCG、holter和X-ray胸片除外器质性心脏病。'</span></span><br></pre></td></tr></table></figure>
+
+<p>测试代码写完后，我们写出完整代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getHTML</span><span class="params">(url)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        headers = &#123;<span class="string">"user-agent"</span>:<span class="string">"Mozilla/5.0"</span>&#125;</span><br><span class="line">        res = requests.get(url, headers=headers, stream=<span class="literal">True</span>)</span><br><span class="line">        res.raise_for_status</span><br><span class="line">        res.encoding = res.apparent_encoding</span><br><span class="line">        <span class="keyword">return</span> res.text</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ParseFromPage</span><span class="params">(html)</span>:</span></span><br><span class="line">    commentList = []</span><br><span class="line">    soup = BeautifulSoup(html)</span><br><span class="line">    title = soup(<span class="string">"div"</span>, id=<span class="string">"postview"</span>)[<span class="number">0</span>].tr.th.h1.contents[<span class="number">0</span>]</span><br><span class="line">    title = title.replace(<span class="string">" "</span>, <span class="string">""</span>)</span><br><span class="line">    title = title.replace(<span class="string">"\n"</span>, <span class="string">""</span>)</span><br><span class="line">    context = soup.select(<span class="string">"[class~=postbody]"</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(context)):</span><br><span class="line">        cont = context[i].contents[<span class="number">0</span>]</span><br><span class="line">        cont = cont.replace(<span class="string">" "</span>, <span class="string">""</span>)</span><br><span class="line">        commentList.append(cont)</span><br><span class="line">    <span class="keyword">return</span> title, commentList</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    base_url = <span class="string">"http://www.dxy.cn/bbs/thread/626626#626626"</span></span><br><span class="line">    html = getHTML(base_url)</span><br><span class="line">    title, cList = ParseFromPage(html)</span><br><span class="line">    print(title, cList)</span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+
+<h1 id="拓展一"><a href="#拓展一" class="headerlink" title="拓展一"></a>拓展一</h1><p>我们爬取完单一页面后，我们可以考虑，是否可以爬取更多的页面。我们的思考出发点是丁香园每个页面的链接下面都会存在一个引向其他同类型页面的链接，比如：<br><img src="https://img-blog.csdnimg.cn/2020042510254560.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="链接抓取">我们可以看到，下面的 “骨折手术后一周突发心跳骤停，抢救无效死亡，什么原因？”这段话不就是我们要找的链接，点开后也确实如我们所料，页面结构的解析和本页面的解析一样，我们完全可以复用这段代码，只需要改变一下 url 即可。下面我们尝试通过 re 库获取此 url 链接：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>href = re.findall(<span class="string">r'&amp;#149; &lt;a href="(.*?)" target'</span>, text)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>href</span><br><span class="line">[<span class="string">'http://job.dxy.cn/bbs/topic/43200651'</span>, <span class="string">'http://www.dxy.cn/bbs/topic/43177945'</span>, <span class="string">'http://Radiology.dxy.cn/bbs/topic/43179123'</span>, <span class="string">'http://www.dxy.cn/bbs/topic/43172871'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>这里我们看到有四个链接，但并不是每个链接都是我们需要的，通过观察后我们发现，只有以 “<a href="http://www.dxy.cn/bbs/topic&quot;" target="_blank" rel="noopener">http://www.dxy.cn/bbs/topic&quot;</a> 开头的链接才是我们需要的，我们可以将查找链接的方式改为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>re.findall(<span class="string">r'&lt;a href="(http://www.dxy.cn/bbs/topic/.*?) target="_blank"'</span>,text)</span><br><span class="line">[<span class="string">'http://www.dxy.cn/bbs/topic/43177945"'</span>, <span class="string">'http://www.dxy.cn/bbs/topic/43172871"'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>我们看到返回了两个正确结果，为了不增大网站压力，我们修改主函数，仅仅爬取十条链接的内容，并存储到 dxy.txt 文件中，主函数代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    base_url = <span class="string">"http://www.dxy.cn/bbs/thread/626626#626626"</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</span><br><span class="line">        html = getHTML(base_url)</span><br><span class="line">        title, cList = ParseFromPage(html)</span><br><span class="line">        <span class="keyword">with</span> open(<span class="string">"dxy.txt"</span>, <span class="string">"a"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(title)</span><br><span class="line">            f.write(<span class="string">"\n"</span>)</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(len(cList)):</span><br><span class="line">                f.write(cList[i])</span><br><span class="line">                f.write(<span class="string">"\n"</span>)</span><br><span class="line">            f.write(<span class="string">"\n"</span>)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            url_list = re.findall(<span class="string">r'&lt;a href="(http://www.dxy.cn/bbs/topic/.*?) target="_blank"'</span>,html)</span><br><span class="line">            base_url = url_list[<span class="number">0</span>]</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br></pre></td></tr></table></figure>
+
+<p>此代码应能正确爬取链接，代码规范有待网友指正。</p>
+<h1 id="拓展二"><a href="#拓展二" class="headerlink" title="拓展二"></a>拓展二</h1><p>我们还可以使用 lxml 爬取内容，事实上此代码会更加简洁, lxml 的具体用法将在下期内容展开，以下直接简单使用之：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> html, etree</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>tree1 = html.tostring(tree.xpath(<span class="string">'//td[@class="postbody"]'</span>)[<span class="number">1</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>txt = HTMLParser().unescape(tree1.decode(<span class="string">'utf-8'</span>))</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>txt.replace(<span class="string">" "</span>,<span class="string">""</span>)</span><br><span class="line"><span class="string">'&lt;tdclass="postbody"&gt;\n\n从发作的症状上比较符合血管迷走神经性晕厥，直立倾斜试验能协助诊断。在行直立倾斜实验前应该做常规的体格检查、ECG、UCG、holter和X-ray胸片除外器质性心脏病。&lt;br&gt;&lt;br&gt;贴一篇“口服氨酰心安和依那普利治疗血管迷走性晕厥的疗效观察”&lt;br&gt;作者：林文华任自文丁燕生&lt;br&gt;&lt;br&gt;&lt;ahref="http://www.ccheart.com.cn/ccheart_site/Templates/jieru/200011/1-1.htm"target="_blank"class="ilink"rel="nofollow"&gt;http://www.ccheart.com.cn/ccheart_site/Templates/jieru/200011/1-1.htm&lt;/a&gt;\n\t&lt;/td&gt;\n'</span>                           <span class="string">'</span></span><br></pre></td></tr></table></figure>
+
+<p>其他信息的抽取以及代码的结构化同上即可。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/4905f1d8.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/caae3505.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Python爬虫初级（三）—— Beautiful Soup 库入门
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/a8332004.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Python爬虫初级（一）—— Requests 库入门</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

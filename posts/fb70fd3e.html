@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    CS224n 01_Introduction and Word Vectors |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-CS224n 01_Introduction and Word Vectors"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  CS224n 01_Introduction and Word Vectors
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/fb70fd3e.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.172Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NLP/">NLP</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">7.4k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">33 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h2><p>理解意义的最普遍的语言方式(linguistic way) : 语言符号与语言符号的意义的转化<br>$$\boxed{\text{signifier(symbol)}\Leftrightarrow \text{signified(idea or thing)}} \ = \textbf{denotational semantics}$$<br>在所有的NLP任务中，第一个也是可以说是最重要的共同点是我们如何将单词表示为任何模型的输入（编码）。</p>
+<h2 id="编码方式"><a href="#编码方式" class="headerlink" title="编码方式"></a>编码方式</h2><p>我们思考一下：我们如何让计算机学习到语言的意义？</p>
+<h3 id="1、WordNet"><a href="#1、WordNet" class="headerlink" title="1、WordNet"></a>1、WordNet</h3><p>Wordnet指的是一个包含同义词集和上位词列表的辞典，我们很容易通过nltk获取到这种词典：</p>
+<p><img src="./Pic/NLP/1.png" alt=""></p>
+<p>这种方式的缺点：</p>
+<ul>
+<li>需要人工操作，主观性强</li>
+<li>忽略了细微差别</li>
+<li>无法计算相似度</li>
+</ul>
+<h3 id="2、One-hot编码"><a href="#2、One-hot编码" class="headerlink" title="2、One-hot编码"></a>2、One-hot编码</h3><blockquote>
+<p>motel = [0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 1 \ 0 \ 0 \ 0 \ 0] \ hotel = [0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 1 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0 \ 0]</p>
+</blockquote>
+<p>这种方式的缺点：</p>
+<ul>
+<li>无法衡量词语相似性</li>
+<li>向量维度过大，训练难</li>
+</ul>
+<p>解决方式：</p>
+<ul>
+<li>使用类似 WordNet 的工具中的列表，获得相似度，但会因不够完整而失败</li>
+<li>学习在向量本身中编码相似性</li>
+</ul>
+<h3 id="3、Representing-words-by-their-context"><a href="#3、Representing-words-by-their-context" class="headerlink" title="3、Representing words by their context"></a>3、Representing words by their context</h3><p>这种方式的思想在于：一个单词的意思是由经常出现在它附近的单词给出的，我们可以在单词$A$出现的上下文（固定大小的窗口）附近找到一组单词$a_k$来表示$A$：</p>
+<p><img src="./Pic/NLP/2.png" alt=""></p>
+<h1 id="Word2vec-introduction"><a href="#Word2vec-introduction" class="headerlink" title="Word2vec introduction"></a>Word2vec introduction</h1><p><strong>思想</strong>：我们为每个单词构建一个密集的向量，使其与出现在相似上下文中的单词向量相似</p>
+<p><img src="./Pic/NLP/3.png" alt=""></p>
+<p><strong>主要思路</strong>：给定大量的文本，给定一个初始词向量（低维度），对于文本中的每个位置$t$，其中有一个中心词$c$和上下文(“外部”)单词$o$。使用$c$和$o$的词向量的相似性，来计算给定$c$的$o$的概率(反之亦然)，然后我们不断调整词向量来最大化这个概率。</p>
+<p>下图为窗口大小$j=2$时的$P\left(w_{t+j} | w_{t}\right)$计算过程，center word分别为into和banking：</p>
+<p><img src="./Pic/NLP/4.png" alt=""></p>
+<p><img src="./Pic/NLP/5.png" alt=""></p>
+<h2 id="目标函数"><a href="#目标函数" class="headerlink" title="目标函数"></a>目标函数</h2><p>对于每个位置$t=1, \ldots, T$，在大小为$m$的固定窗口内预测上下文单词，给定中心词$w_j$<br>$$Likelihoood = L(\theta) = \prod^{T}<em>{t=1} \prod</em>{-m \leq j \leq m \atop j \neq 0} P(w_{t+j} | w_{t} ; \theta)$$</p>
+<p>其中，$\theta$为所有需要优化的变量。<br>目标函数$J(\theta)$(有时被称为代价函数或损失函数) 是(平均)负对数似然<br>$$J(\theta)=-\frac{1}{T} \log L(\theta)=-\frac{1}{T} \sum_{t=1}^{T} \sum_{-m \leq j \leq m \atop j \neq 0} \log P\left(w_{t+j} | w_{t} ; \theta\right)$$</p>
+<p>其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
+<h2 id="最小化目标函数-Leftrightarrow-最大化预测精度"><a href="#最小化目标函数-Leftrightarrow-最大化预测精度" class="headerlink" title="最小化目标函数$\Leftrightarrow$最大化预测精度"></a>最小化目标函数$\Leftrightarrow$最大化预测精度</h2><p><strong>问题：如何计算$P(w_{t+j} | w_{t} ; \theta)$？</strong></p>
+<p>对于每个单词$w$都是用两个向量表示：</p>
+<p>*$v_w$当$w$是中心词时<br>*$u_w$当$w$是上下文词时</p>
+<p>于是对于一个中心词$c$和一个上下文词$o$，就得到了Word2vec prediction function：<br>$$P(o | c)=\frac{\exp \left(u_{o}^{T} v_{c}\right)}{\sum_{w \in V} \exp \left(u_{w}^{T} v_{c}\right)}$$</p>
+<blockquote>
+<p>公式中，向量$u_o$和向量$v_c$进行点乘。向量之间越相似，点乘结果越大，从而归一化后得到的概率值也越大。模型的训练正是为了使得具有相似上下文的单词，具有相似的向量。</p>
+</blockquote>
+<p>在公式中分母对整个词汇表进行标准化，从而给出概率分布。</p>
+<p>附注：$softmax function：\mathbb{R}^{n} \rightarrow \mathbb{R}^{1}$<br>$$\operatorname{softmax}\left(x_{i}\right)=\frac{\exp \left(x_{i}\right)}{\sum_{j=1}^{n} \exp \left(x_{j}\right)}=p_{i}$$<br>将任意值$x_i$映射到概率分布$p_i$</p>
+<h2 id="梯度下降法求解"><a href="#梯度下降法求解" class="headerlink" title="梯度下降法求解"></a>梯度下降法求解</h2><p>首先我们随机初始化$u_{w}\in\mathbb{R}^d$和$v_{w}\in\mathbb{R}^d$，而后使用梯度下降法进行更新：<br>$$\begin{align} \frac{\partial}{\partial v_c}\log P(o|c) &amp;=\frac{\partial}{\partial v_c}\log \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\ &amp;=\frac{\partial}{\partial v_c}\left(\log \exp(u_o^Tv_c)-\log{\sum_{w\in V}\exp(u_w^Tv_c)}\right)\ &amp;=\frac{\partial}{\partial v_c}\left(u_o^Tv_c-\log{\sum_{w\in V}\exp(u_w^Tv_c)}\right)\ &amp;=u_o-\frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)} \end{align}$$</p>
+<p>我们可以对上述结果重新排列如下，第一项是真正的上下文单词，第二项是预测的上下文单词。使用梯度下降法，模型的预测上下文将逐步接近真正的上下文。</p>
+<p>$$\begin{align} \frac{\partial}{\partial v_c}\log P(o|c) &amp;=u_o-\frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\ &amp;=u_o-\sum_{w\in V}\frac{\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}u_w\ &amp;=u_o-\sum_{w\in V}P(w|c)u_w \end{align}$$</p>
+<p>再对$u_o$进行偏微分计算，注意这里的$u_o$是$u_{w=o}$的简写，故可知<br>$$\frac{\partial}{\partial u_o}\sum_{w \in V } u_w^T v_c = \frac{\partial}{\partial u_o} u_o^T v_c = \frac{\partial u_o}{\partial u_o}v_c + \frac{\partial v_c}{\partial u_o}u_o= v_c$$</p>
+<p>因此有：<br>$$\begin{align} \frac{\partial}{\partial u_o}\log P(o|c) &amp;=\frac{\partial}{\partial u_o}\log \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\ &amp;=\frac{\partial}{\partial u_o}\left(\log \exp(u_o^Tv_c)-\log{\sum_{w\in V}\exp(u_w^Tv_c)}\right)\ &amp;=\frac{\partial}{\partial u_o}\left(u_o^Tv_c-\log{\sum_{w\in V}\exp(u_w^Tv_c)}\right)\ &amp;=v_c-\frac{\sum\frac{\partial}{\partial u_o}\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\ &amp;=v_c - \frac{\exp(u_o^Tv_c)v_c}{\sum_{w\in V}\exp(u_w^Tv_c)}\ &amp;=v_c - \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}v_c\ &amp;=v_c - P(o|c)v_c\ &amp;=(1-P(o|c))v_c \end{align}$$</p>
+<p>可以理解，当$P(o|c) \to 1$，即通过中心词$c$我们可以正确预测上下文词$o$，此时我们不需要调整$u_o$，反之，则相应调整$u_o$。</p>
+<h1 id="SVD-Based-Methods"><a href="#SVD-Based-Methods" class="headerlink" title="SVD Based Methods"></a>SVD Based Methods</h1><p>与WordVector为词向量编码不同，SVD Based Methods为词嵌入的方法，首先遍历一个很大的数据集和统计词的共现计数矩阵$X$，然后对矩阵$X$进行SVD分解得到$USV^{T}$。然后我们使用$U$的行来作为字典中所有词的词向量。我们来讨论一下矩阵$X$的几种选择。</p>
+<h2 id="矩阵-X-的选择"><a href="#矩阵-X-的选择" class="headerlink" title="矩阵$X$的选择"></a>矩阵$X$的选择</h2><h3 id="Word-Document-Matrix"><a href="#Word-Document-Matrix" class="headerlink" title="Word-Document Matrix"></a>Word-Document Matrix</h3><p>我们最初的尝试，我们猜想相关连的单词在同一个文档中会经常出现。例如，“banks” “bonds” “stocks” “moneys”等等，出现在一起的概率会比较高。但是“banks” “octopus” “banana” “hockey”不大可能会连续地出现。我们根据这个情况来建立一个Word-Document矩阵，$X$是按照以下方式构建：遍历数亿的文档和当词$i$出现在文档$j$，我们对$X_{ij}$加一。这显然是一个很大的矩阵$\mathbb{R}^{|V|\times M}$，它的规模是和文档数量$M$成正比关系。因此我们可以尝试更好的方法。</p>
+<h3 id="Window-based-Co-occurrence-Matrix"><a href="#Window-based-Co-occurrence-Matrix" class="headerlink" title="Window based Co-occurrence Matrix"></a>Window based Co-occurrence Matrix</h3><p>与上一个不同的是，矩阵$X$存储单词的共现，从而成为一个关联矩阵。在此方法中，我们计算每个单词在特定大小的窗口中出现的次数。我们按照这个方法对语料库中的所有单词进行统计。</p>
+<ul>
+<li>生成维度为$|V| \times|V|$的共现矩阵$X$</li>
+<li>在$X$上应用 SVD 从而得到$X = {USV}^T$</li>
+<li>选择$U$前$k$行得到$k$维的词向量</li>
+<li>$\frac{\sum_{i=1}^{k} \sigma_{i}}{\sum_{i=1}^{|V|} \sigma_{i}}$表示第一个k维捕获的方差量</li>
+</ul>
+<h2 id="将SVD应用于共现矩阵"><a href="#将SVD应用于共现矩阵" class="headerlink" title="将SVD应用于共现矩阵"></a>将SVD应用于共现矩阵</h2><p>我们对矩阵$X$使用SVD，观察奇异值（矩阵 S 上对角线上元素），根据期望的捕获方差百分比截断，留下前$k$个元素：</p>
+<p>然后取子矩阵$U_{1:|V|, 1:k}$作为词嵌入矩阵。这就给出了词汇表中每个词的$k$维表示，如下图所示：</p>
+<p><img src="./Pic/NLP/6.png" alt=""></p>
+<p>通过选择前$k$个奇异向量来降低维度：</p>
+<p><img src="./Pic/NLP/7.png" alt=""></p>
+<p>这两种方法都给我们提供了足够的词向量来编码语义和句法(part of speech)信息，但也有许多其他问题：</p>
+<ul>
+<li>矩阵的维度会经常发生改变（经常增加新的单词和语料库的大小会改变）。</li>
+<li>矩阵会非常的稀疏，因为很多词不会共现。</li>
+<li>矩阵维度一般会非常高$\approx 10^{6}\times 10^{6}$</li>
+<li>基于 SVD 的方法的计算复杂度很高$(m×n$矩阵的计算成本是$O({mn}^2))$，并且很难合并新单词或文档</li>
+<li>需要在$X$上加入一些技巧处理来解决词频的极剧的不平衡</li>
+</ul>
+<p>对上述讨论中存在的问题存在以下的解决方法：</p>
+<ul>
+<li>忽略功能词，例如 “the”，“he”，“has” 等等，构建停用词库。</li>
+<li>使用ramp window，即根据文档中单词之间的距离对共现计数进行加权</li>
+<li>使用皮尔逊相关系数并将负计数设置为0，而不是只使用原始计数</li>
+</ul>
+<h1 id="Iteration-Based-Methods-Word2vec"><a href="#Iteration-Based-Methods-Word2vec" class="headerlink" title="Iteration Based Methods - Word2vec"></a>Iteration Based Methods - Word2vec</h1><p>为了避免上述弊端（数据集过于庞大等），我们考虑设计一个模型，该模型的参数就是词向量。然后根据一个目标函数训练模型，在每次模型的迭代计算误差，并遵循一些更新规则，该规则具有惩罚造成错误的模型参数的作用，从而可以学习到词向量，我们称这个方法为“反向传播”，模型和任务越简单，反向传播训练速度就越快。</p>
+<p>Word2vec作为一个概率模型，定义了两个算法和两个训练方法：</p>
+<ul>
+<li>两个算法：continuous bag-of-words（CBOW）和 skip-gram。CBOW 是根据中心词周围的上下文单词来预测该词的词向量。skip-gram 则相反，是根据中心词预测周围上下文的词的概率分布。</li>
+<li>两个训练方法：negative sampling 和 hierarchical softmax。Negative sampling 通过抽取负样本来定义目标，hierarchical softmax 通过使用一个有效的树结构来计算所有词的概率来定义目标。</li>
+</ul>
+<p>Language Models (Unigrams, Bigrams, etc.)</p>
+<p>首先，我们需要创建一个模型来为一系列的单词分配概率。我们从一个例子开始：</p>
+<blockquote>
+<p>“The cat jumped over the puddle”</p>
+</blockquote>
+<p>一个好的语言模型会给这个句子很高的概率，因为在句法和语义上这是一个完全有效的句子。相似地，句子“stock boil fish is toy”会得到一个很低的概率，因为这是一个无意义的句子。在数学上，我们可以称为对给定 n 个词的序列的概率是：<br>$$P(w_{1}, w_{2}, \ldots, w_{n})$$<br>我们可以采用一元语言模型方法(Unigram model)，假设单词的出现是完全独立的，从而分解概率<br>$$P\left(w_{1}, w_{2}, \cdots, w_{n}\right)=\prod_{i=1}^{n} P\left(w_{i}\right)$$<br>但是我们知道这是不大合理的，因为下一个单词是高度依赖于前面的单词序列的。如果使用上述的语言模型，可能会让一个无意义的句子具有很高的概率。所以我们让序列的概率取决于序列中的单词和其旁边的单词的成对概率。我们称之为 bigram 模型：<br>$$P\left(w_{1}, w_{2}, \cdots, w_{n}\right)=\prod_{i=2}^{n} P\left(w_{i} | w_{i-1}\right)$$<br>但是这个方法还是有点简单，因为我们只考虑了一对邻近的单词而不是整个句子，但是这个方法已经能获得不错的效果了。现在我们根据概率模型讨论两个常用模型 —— CBOW和SkipGram模型。</p>
+<h2 id="两个模型"><a href="#两个模型" class="headerlink" title="两个模型"></a>两个模型</h2><h3 id="1、CBOW"><a href="#1、CBOW" class="headerlink" title="1、CBOW"></a>1、CBOW</h3><p>CBOW的原句是Continuous Bag of Words Model，目标是通过给定中心词周围的其他词来预测中心词，首先我们设定已知参数。令我们模型的已知参数是 one-hot形式的词向量表示。输入的one-hot向量或者上下文我们用$x^{(c)}$表示，输出用$y^{(c)}$表示。在CBOW模型中，因为我们只有一个输出，因此我们把$y$称为是中心词的的one-hot向量。现在让我们定义模型的未知参数。</p>
+<p>$w_{i}$：词汇表$V$中的单词$i$<br>$\mathcal{V}\in \mathbb{R}^{n\times |V|}$：输入词矩阵<br>$v_{i} ： \mathcal{V}$的第$i$列，单词$w_{i}$的输入向量表示<br>$\mathcal{U}\in \mathbb{R}^{|V|\times n}$：输出词矩阵<br>$u_{i}： \mathcal{U}$的第$i$行，单词$w_{i}$的输出向量表示</p>
+<p>我们创建两个矩阵，$\mathcal{V}\in \mathbb{R}^{n\times |V|}$和$\mathcal{U}\in \mathbb{R}^{|V|\times n}$。其中$n$是嵌入空间的任意维度大小。$\mathcal{V}$是输入词矩阵，使得当其为模型的输入时，$\mathcal{V}$的第$i$列是词$w_{i}$的$n$维嵌入向量。我们定义这个$n \times 1$的向量为$v_{i}$。相似地，$\mathcal{U}$是输出词矩阵。当其为模型的输入时，$\mathcal{U}$的第$j$行是词$w_{j}$的$n$维嵌入向量。我们定义$\mathcal{U}$的这行为$u_{j}$。注意实际上对每个词$w_{i}$我们需要学习两个词向量（即输入词向量$v_{i}$和输出词向量$u_{i} ）。</p>
+<p>我们将这个模型的训练分解为以下步骤</p>
+<ol>
+<li>为大小为$m$的输入上下文生成 one-hot 词向量<br>$$(x^{(c-m)},…,x^{(c-1)},x^{(c+1)},…,x^{(c+m)}\in \mathbb{R}^{|V|})$$</li>
+<li>从上下文得到嵌入词向量<br>$$(v_{c-m}=\mathcal{V}x^{(c-m)},v_{c-m+1}=\mathcal{V}x^{(c-m+1)},…,v_{c+m}=\mathcal{V}x^{(c+m)}\in \mathbb{R}^{n})$$</li>
+<li>对上述向量求平均值<br>$$\widehat{v}=\frac{v_{c-m}+v_{c-m+1+…+v_{c+m}}}{2m}\in \mathbb{R}^{n}$$</li>
+<li>生成一个分数向量$z = \mathcal{U}\widehat{v}\in \mathbb{R}^{|V|}$。相似向量的点积越高两个词越相似，从而获得更高的分数。将分数转换为概率：<br>$$\widehat{y}=softmax(z)\in \mathbb{R}^{|V|}$$<ul>
+<li>这里 softmax 是一个常用的函数。它将一个向量转换为另外一个向量，其中转换后的向量的第$i$个元素是<br>$$\frac{e^{\widehat{y}<em>i}}{\sum</em>{k=1}^{|V|}e^{\widehat{y}<em>k}}$$<br>因为该函数是一个指数函数，所以值一定为正数；通过除以$\sum</em>{k=1}^{|V|}e^{\widehat{y}_k}$来归一化向量得到概率。</li>
+</ul>
+</li>
+<li>我们希望生成的概率$\widehat{y} \in \mathbb{R}^{|V|}$与实际的概率$y \in \mathbb{R}^{|V|}$匹配。使得其刚好是实际的词，也就是这个     one-hot 向量。</li>
+</ol>
+<p><img src="./Pic/NLP/8.png" alt=""></p>
+<p>为了计算损失函数，我们首先给出度量两个概率分布的距离的方法 —— <strong>交叉熵$H(\widehat{y}, y)$</strong></p>
+<p>$$H(\hat{y}, y)=-\sum_{j=1}^{|V|} y_{j} \log \left(\hat{y}<em>{j}\right)$$<br>上面的公式中，$y$是 one-hot 向量。因此上面的损失函数可以简化为：<br>$$H(\widehat{y}, y)= - y</em>{j},log(\widehat{y}<em>{j})$$<br>c 是正确词的 one-hot 向量的索引。我们现在可以考虑我们的预测正确并且$\widehat{y}</em>{c}=1$的情况，可以计算得$H(\widehat{y}, y)=- log(1)=0$；若预测非常差并且$\widehat{y}<em>{c}=0.01$。和前面类似，我们可以计算损失$H(\widehat{y}, y)=-log(0.01)=4.605$。下面定义优化目标函数：<br>$$\begin{aligned} \text { minimize } J &amp;=-\log P\left(w</em>{c} | w_{c-m}, \ldots, w_{c-1}, w_{c+1}, \ldots, w_{c+m}\right)\ &amp;=-\log P\left(u_{c} | \hat{v}\right) \ &amp;=-\log \frac{\exp \left(u_{c}^{T} \hat{v}\right)}{\sum_{j=1}^{|V|} \exp \left(u_{j}^{T} \hat{v}\right)} \ &amp;=-u_{c}^{T} \hat{v}+\log \sum_{j=1}^{|V|} \exp \left(u_{j}^{T} \hat{v}\right) \end{aligned}$$</p>
+<p>我们使用 SGD 来更新所有相关的词向量$u_{c} 和 v_{j}$。SGD对一个窗口计算梯度和更新参数：</p>
+<p>$$\begin{array}{l}{\mathcal{U}<em>{\text {new}} \leftarrow \mathcal{U}</em>{\text {old}}-\alpha \nabla_{\mathcal{U}} J} \ {\mathcal{V}<em>{\text {old}} \leftarrow \mathcal{V}</em>{\text {old}}-\alpha \nabla_{\mathcal{V}} J}\end{array}$$</p>
+<h3 id="2、Skip-Gram-Model"><a href="#2、Skip-Gram-Model" class="headerlink" title="2、Skip-Gram Model"></a>2、Skip-Gram Model</h3><p>在这里的预测任务和CBOW的正好相反，在CBOW中我们已知附近词预测中心词，在这里我们已知中心词预测附近词。</p>
+<ul>
+<li>生成中心词的one-hot向量$x\in \mathbb{R}^{|V|}$</li>
+<li>我们对中心词$v_{c}=\mathcal{V}x\in \mathbb{R}^{|V|}$得到词嵌入向量</li>
+<li>生成分数向量$z = \mathcal{U}v_{c}$</li>
+<li>将分数向量转化为概率，$\widehat{y}=softmax(z)$，注意$\widehat{y}<em>{c-m},…,\widehat{y}</em>{c-1},\widehat{y}<em>{c+1},…,\widehat{y}</em>{c+m}$是每个上下文词观察到的概率</li>
+<li>我们希望我们生成的概率向量匹配真实概率$y^{(c-m)},…,y^{(c-1)},y^{(c+1)},…,y^{(c+m)}$，实际的输出的是one-hot向量。</li>
+</ul>
+<p>大致如下：</p>
+<p><img src="./Pic/NLP/9.png" alt=""></p>
+<p>我们要定义目标函数，首先假设给定中心词，所有输出的词是完全独立的（不甚严谨），于是可以写出目标函数：<br>$$\begin{aligned} \text { minimize } J &amp;=-\log P\left(w_{c-m}, \ldots, w_{c-1}, w_{c+1}, \ldots, w_{c+m} | w_{c}\right) \ &amp;=-\log \prod_{j=0, j \neq m}^{2 m} P\left(w_{c-m+j} | w_{c}\right) \ &amp;=-\log \prod_{j=0, j \neq m}^{2 m} P\left(u_{c-m+j} | v_{c}\right) \ &amp;=-\log \prod_{j=0, j \neq m}^{2 m} \frac{\exp \left(u_{c-m+j}^{T} v_{c}\right)}{\sum_{k=1}^{|V|} \exp \left(u_{k}^{T} v_{c}\right)} \ &amp;=-\sum_{j=0, j \neq m}^{2 m} u_{c-m+j}^{T} v_{c}+2 m \log \sum_{k=1}^{|V|} \exp \left(u_{k}^{T} v_{c}\right) \end{aligned}$$</p>
+<p>通过这个目标函数，我们可以计算出与未知参数相关的梯度，并且在每次迭代中通过 SGD 来更新它们。另外需要注意到</p>
+<p>$$\begin{aligned} J &amp;=-\sum_{j=0, j \neq m}^{2 m} \log P\left(u_{c-m+j} | v_{c}\right) \ &amp;=\sum_{j=0, j \neq m}^{2 m} H\left(\hat{y}, y_{c-m+j}\right) \end{aligned}$$</p>
+<p>是向量$\widehat{y}$的概率和 one-hot 向量$y_{c-m+j}$之间的交叉熵。</p>
+<p>以下为Skip-Gram的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"><span class="keyword">from</span> pprint <span class="keyword">import</span>  pprint</span><br><span class="line">obj_path = <span class="string">r'E:\back_up\NLP\process_train.txt'</span></span><br><span class="line">stop_word_file = <span class="string">r"E:\back_up\NLP\pro1\data\stop_word.txt"</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_stop_word</span><span class="params">(stop_word_file)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    加载停用词</span></span><br><span class="line"><span class="string">    :param stop_word_file: </span></span><br><span class="line"><span class="string">    :return: </span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    stopwords = [x.strip() <span class="keyword">for</span> x <span class="keyword">in</span> open(stop_word_file, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>).readlines()]</span><br><span class="line">    <span class="keyword">return</span> stopwords + list(<span class="string">"0123456789"</span>) + [<span class="string">r'\n'</span>, <span class="string">'\n'</span>]</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_data</span><span class="params">(file_path, windows_len, lines_number)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    :param file_path:   数据的路径</span></span><br><span class="line"><span class="string">    :param windows_len:   窗口长度</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    words = set()     <span class="comment"># 保存词</span></span><br><span class="line">    sentences = []    <span class="comment"># 保存句子</span></span><br><span class="line">    stopwords = get_stop_word(stop_word_file)</span><br><span class="line">    stopwords = set(stopwords)</span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">with</span> open(file_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> fp:</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            line = fp.readline()</span><br><span class="line">            count = count + <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> line <span class="keyword">or</span> count &gt; lines_number:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="comment"># print(line)</span></span><br><span class="line">            out_str = []</span><br><span class="line">            result = jieba.cut(line, cut_all=<span class="literal">False</span>)    <span class="comment"># 精确模式</span></span><br><span class="line">            <span class="keyword">for</span> c <span class="keyword">in</span> result:</span><br><span class="line">                <span class="keyword">if</span> c <span class="keyword">not</span> <span class="keyword">in</span> stopwords <span class="keyword">and</span> len(c) &gt; <span class="number">1</span>:</span><br><span class="line">                    out_str.append(c)</span><br><span class="line">                    words.add(c)     <span class="comment"># 保存所有的词</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">            out_str.append(<span class="string">"EOS"</span>)</span><br><span class="line">            sentences.append(out_str)</span><br><span class="line">    word2id = &#123;&#125;</span><br><span class="line">    words = list(words)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(words)):</span><br><span class="line">        word2id[words[i]] = i + <span class="number">1</span></span><br><span class="line">    word2id[<span class="string">"EOS"</span>] = len(words) + <span class="number">1</span></span><br><span class="line">    <span class="comment"># 构造输入input和输出labels</span></span><br><span class="line">    input = []</span><br><span class="line">    labels = []</span><br><span class="line">    <span class="comment"># 构造训练数据和标签</span></span><br><span class="line">    <span class="keyword">for</span> sentence <span class="keyword">in</span> sentences:</span><br><span class="line">        <span class="keyword">for</span> word_index <span class="keyword">in</span> range(len(sentence)):</span><br><span class="line">            start = max(<span class="number">0</span>, word_index - windows_len)</span><br><span class="line">            end = min(word_index + windows_len + <span class="number">1</span>, len(sentence))</span><br><span class="line">            <span class="keyword">for</span> index <span class="keyword">in</span> range(start, end):</span><br><span class="line">                <span class="keyword">if</span> index == word_index:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    input_word_id = word2id.get(sentence[word_index], <span class="literal">None</span>)</span><br><span class="line">                    label_word_id = word2id.get(sentence[index], <span class="literal">None</span>)</span><br><span class="line">                    <span class="keyword">if</span> input_word_id <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> label_word_id <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line">                    input.append(int(input_word_id))</span><br><span class="line">                    labels.append(int(label_word_id))</span><br><span class="line">    <span class="keyword">return</span> words, word2id, sentences, input, labels, len(words)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrainData</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, inputs, labels, words, vocab_size, batch_size)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :param inputs:   输入</span></span><br><span class="line"><span class="string">        :param labels:   输出</span></span><br><span class="line"><span class="string">        :param words:    所有单词</span></span><br><span class="line"><span class="string">        :param vocab_size:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        self.inputs = inputs</span><br><span class="line">        self.labels = labels</span><br><span class="line">        self.words = words</span><br><span class="line">        self.vocab_size = vocab_size</span><br><span class="line">        self.batch_size = batch_size</span><br><span class="line">        self.input_length = len(inputs)</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_batch_data</span><span class="params">(self, batch_count)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :param batch_count:  batch计数</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment"># 确定选取的batch大小</span></span><br><span class="line">        start_position = batch_count * self.batch_size</span><br><span class="line">        end_position = min((batch_count + <span class="number">1</span>) * self.batch_size, self.input_length)</span><br><span class="line">        batch_input = self.inputs[start_position: end_position]</span><br><span class="line">        batch_labels = self.labels[start_position: end_position]</span><br><span class="line">        batch_input = np.array(batch_input, dtype=np.int32)</span><br><span class="line">        batch_labels = np.array(batch_labels, dtype=np.int32)</span><br><span class="line">        batch_labels = np.reshape(batch_labels, [len(batch_labels), <span class="number">1</span>])   <span class="comment"># 转置</span></span><br><span class="line">        <span class="keyword">return</span> batch_input, batch_labels</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_batch_nums</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        获取数据的batch数</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> self.input_length // self.batch_size + <span class="number">1</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vocab_size, embedding_size, batch_nums, num_sampled, learning_rate)</span>:</span></span><br><span class="line">        self.vocab_size = vocab_size</span><br><span class="line">        self.embedding_size = embedding_size</span><br><span class="line">        self.batch_nums = batch_nums</span><br><span class="line">        self.num_sampled = num_sampled</span><br><span class="line">        self.lr = learning_rate</span><br><span class="line">        self.batch_size = <span class="literal">None</span></span><br><span class="line">        <span class="comment"># self.graph = tf.Graph()</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment"># 创建placeholder</span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">"placeholders"</span>):</span><br><span class="line">            self.inputs = tf.placeholder(dtype=tf.int32, shape=[self.batch_size], name=<span class="string">"train_inputs"</span>)   <span class="comment"># 输入</span></span><br><span class="line">            self.labels = tf.placeholder(dtype=tf.int32, shape=[self.batch_size, <span class="number">1</span>], name=<span class="string">"train_labels"</span>)</span><br><span class="line">            self.test_word_id = tf.placeholder(dtype=tf.int32, shape=[<span class="literal">None</span>], name=<span class="string">"test_word_id"</span>)</span><br><span class="line"> </span><br><span class="line">        <span class="comment"># 创建词向量</span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">"word_embedding"</span>):</span><br><span class="line">            self.embedding_dict = tf.get_variable(name=<span class="string">"embedding_dict"</span>, shape=[self.vocab_size, self.embedding_size],</span><br><span class="line">                                                  initializer=tf.random_uniform_initializer(<span class="number">-1</span>, <span class="number">1</span>, seed=<span class="number">1</span>)</span><br><span class="line">                                                  )</span><br><span class="line">            self.nce_weight = tf.get_variable(name=<span class="string">"nce_weight"</span>, shape=[self.vocab_size, self.embedding_size],</span><br><span class="line">                                              initializer=tf.random_uniform_initializer(<span class="number">-1</span>, <span class="number">1</span>, seed=<span class="number">1</span>)</span><br><span class="line">                                              )</span><br><span class="line">            self.nce_bias = tf.get_variable(name=<span class="string">"nce_bias"</span>, initializer=tf.zeros([self.vocab_size]))</span><br><span class="line"> </span><br><span class="line">        <span class="comment"># 定义误差</span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">"creating_embedding"</span>):</span><br><span class="line">            embeded = tf.nn.embedding_lookup(self.embedding_dict, self.inputs)</span><br><span class="line">            self.embeded = tf.layers.dense(inputs=embeded, units=self.embedding_size, activation=tf.nn.relu)  <span class="comment"># 激活函数</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment"># 定义误差</span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">"creating_loss"</span>):</span><br><span class="line">            self.loss = tf.reduce_mean(</span><br><span class="line">                tf.nn.nce_loss(weights=self.nce_weight,</span><br><span class="line">                               biases=self.nce_bias,</span><br><span class="line">                               labels=self.labels,</span><br><span class="line">                               inputs=self.embeded,</span><br><span class="line">                               num_sampled=self.num_sampled,</span><br><span class="line">                               num_classes=self.vocab_size,</span><br><span class="line">                               <span class="comment"># remove_accidental_hits=True</span></span><br><span class="line">                               )</span><br><span class="line">             )</span><br><span class="line"> </span><br><span class="line">        <span class="comment"># 定义测试函数</span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">"evaluation"</span>):</span><br><span class="line">            norm = tf.sqrt(tf.reduce_sum(tf.square(self.embedding_dict), <span class="number">1</span>, keepdims=<span class="literal">True</span>))</span><br><span class="line">            self.normed_embedding_dict = self.embedding_dict / norm</span><br><span class="line">            test_embed = tf.nn.embedding_lookup(self.normed_embedding_dict, self.test_word_id)</span><br><span class="line">            self.similarity = tf.matmul(test_embed, tf.transpose(self.normed_embedding_dict), name=<span class="string">'similarity'</span>)</span><br><span class="line"> </span><br><span class="line">        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.lr).minimize(self.loss)</span><br><span class="line"> </span><br><span class="line">        <span class="comment">#  tensorboard 显示数据</span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">"summaries"</span>):</span><br><span class="line">            tf.summary.scalar(<span class="string">'loss'</span>, self.loss)   <span class="comment"># 在 tensorboard中显示信息</span></span><br><span class="line">            self.summary_op = tf.summary.merge_all()</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">train</span><span class="params">(self, train_data, train_steps=<span class="number">1000</span>)</span>:</span></span><br><span class="line">        <span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">            <span class="comment"># 初始化变量</span></span><br><span class="line">            sess.run(tf.group(tf.local_variables_initializer(), tf.global_variables_initializer()))</span><br><span class="line">            writer = tf.summary.FileWriter(<span class="string">r'E:\back_up\NLP\graph'</span>, sess.graph)   </span><br><span class="line">            initial_step = <span class="number">0</span>                <span class="comment"># self.global_step.eval(session=sess)</span></span><br><span class="line">            step = <span class="number">0</span>   <span class="comment"># 记录总的训练次数</span></span><br><span class="line">            saver = tf.train.Saver(tf.global_variables(), max_to_keep=<span class="number">2</span>)   <span class="comment"># 保存模型</span></span><br><span class="line">            <span class="keyword">for</span> index <span class="keyword">in</span> range(initial_step, train_steps):</span><br><span class="line">                total_loss = <span class="number">0.0</span>     <span class="comment"># 总的loss</span></span><br><span class="line">                <span class="keyword">for</span> batch_count <span class="keyword">in</span> tqdm(range(self.batch_nums)):</span><br><span class="line">                    batch_inputs, batch_labels = train_data.get_batch_data(batch_count)</span><br><span class="line">                    feed_dict = &#123;self.inputs: batch_inputs,</span><br><span class="line">                                 self.labels: batch_labels&#125;</span><br><span class="line"> </span><br><span class="line">                    sess.run(self.optimizer, feed_dict=feed_dict)</span><br><span class="line">                    batch_loss = sess.run(self.loss, feed_dict=feed_dict)</span><br><span class="line">                    summary = sess.run(self.summary_op, feed_dict=feed_dict)</span><br><span class="line">                    <span class="comment"># batch_loss, summary = sess.run([self.loss, self.summary_op])</span></span><br><span class="line">                    total_loss += batch_loss</span><br><span class="line">                    step += <span class="number">1</span></span><br><span class="line">                    <span class="keyword">if</span> step % <span class="number">200</span> == <span class="number">0</span>:</span><br><span class="line">                        saver.save(sess=sess, save_path=<span class="string">r'E:\back_up\NLP\global_variables\global_variables'</span>, global_step=step)</span><br><span class="line">                        writer.add_summary(summary, global_step=step)</span><br><span class="line">                print(<span class="string">'Train Loss at step &#123;&#125;: &#123;:5.6f&#125;'</span>.format(index, total_loss/self.batch_nums))</span><br><span class="line">            word_embedding = sess.run(self.embedding_dict)</span><br><span class="line">            np.save(<span class="string">r"E:\back_up\NLP\word_embedding\word_embedding"</span>, word_embedding)   <span class="comment"># 保存词向量</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span><span class="params">(test_word, word2id, top_k=<span class="number">4</span>)</span>:</span>     <span class="comment"># 测试训练的词向量</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    :param test_word: </span></span><br><span class="line"><span class="string">    :param word2id: </span></span><br><span class="line"><span class="string">    :param top_k:   与testword最相近的k个词 </span></span><br><span class="line"><span class="string">    :return: </span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    sess = tf.Session()</span><br><span class="line">    check_point_file = tf.train.latest_checkpoint(<span class="string">r'E:\back_up\NLP\global_variables'</span>)   <span class="comment"># 加载模型</span></span><br><span class="line">    saver = tf.train.import_meta_graph(<span class="string">"&#123;&#125;.meta"</span>.format(check_point_file), clear_devices=<span class="literal">True</span>)</span><br><span class="line">    saver.restore(sess, check_point_file)</span><br><span class="line">    graph = sess.graph    </span><br><span class="line">    graph_test_word_id = graph.get_operation_by_name(<span class="string">"placeholders/test_word_id"</span>).outputs[<span class="number">0</span>]</span><br><span class="line">    graph_similarity = graph.get_operation_by_name(<span class="string">"evaluation/similarity"</span>).outputs[<span class="number">0</span>]</span><br><span class="line">    test_word_id = [word2id.get(x) <span class="keyword">for</span> x <span class="keyword">in</span> test_word]</span><br><span class="line">    feed_dict = &#123;graph_test_word_id: test_word_id&#125;</span><br><span class="line">    similarity = sess.run(graph_similarity, feed_dict)</span><br><span class="line">    <span class="keyword">for</span> index <span class="keyword">in</span> range(len(test_word)):</span><br><span class="line">        nearest = (-similarity[index, :]).argsort()[<span class="number">0</span>:top_k]     <span class="comment"># argsort()默认按照从小大的顺序  最接近的词</span></span><br><span class="line">        log_info = <span class="string">"Nearest to %s: "</span> % test_word[index]</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> range(top_k):</span><br><span class="line">            closest_word = [x <span class="keyword">for</span> x, v <span class="keyword">in</span> word2id.items() <span class="keyword">if</span> v == nearest[k]]</span><br><span class="line">            log_info = <span class="string">'%s %s,'</span> % (log_info, closest_word)</span><br><span class="line">        print(log_info)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    batch_size = <span class="number">40</span></span><br><span class="line">    window_len = <span class="number">4</span></span><br><span class="line">    words, word2id, sentences, inputs, labels, vocab_size = get_data(obj_path, windows_len=window_len, lines_number=<span class="number">2000</span>)</span><br><span class="line">    train_data = TrainData(inputs, labels, words, vocab_size, batch_size)</span><br><span class="line">    batch_nums = train_data.get_batch_nums()</span><br><span class="line">    <span class="comment"># print(words)</span></span><br><span class="line">    print(<span class="string">"vocab_size: "</span>, vocab_size)</span><br><span class="line">    print(<span class="string">"batch_nums"</span>, batch_nums)</span><br><span class="line">    model = Model(vocab_size=vocab_size, embedding_size=<span class="number">128</span>, batch_nums=batch_nums, num_sampled=<span class="number">5</span>, learning_rate=<span class="number">0.0001</span>)</span><br><span class="line">    model.train(train_data=train_data, train_steps=<span class="number">150</span>)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    batch_size = <span class="number">200</span></span><br><span class="line">    window_len = <span class="number">4</span></span><br><span class="line">    words, word2id, sentences, inputs, labels, vocab_size = get_data(obj_path, windows_len=window_len,</span><br><span class="line">                                                                     lines_number=<span class="number">2000</span>)</span><br><span class="line">    test_word = []</span><br><span class="line">    <span class="keyword">for</span> count <span class="keyword">in</span> range(<span class="number">50</span>):</span><br><span class="line">        test_word.append(np.random.choice(words))</span><br><span class="line">    print(test_word)</span><br><span class="line">    predict(test_word, word2id)</span><br></pre></td></tr></table></figure>
+
+<h2 id="两个方法"><a href="#两个方法" class="headerlink" title="两个方法"></a>两个方法</h2><h3 id="1、Negative-Sampling"><a href="#1、Negative-Sampling" class="headerlink" title="1、Negative Sampling"></a>1、Negative Sampling</h3><p>在每一个训练的时间步，我们不去遍历整个词汇表，而仅仅是抽取一些负样例。考虑一对中心词和上下文词$(w,c)$。这词对是来自训练数据集吗？我们通过$P(D=1\mid w,c)$表示$(w,c)$是来自语料库。相应地，$P(D=0\mid w,c)$表示$(w,c)$不是来自语料库。</p>
+<p>现在，我们建立一个新的目标函数，如果中心词和上下文词确实在语料库中，就最大化概率$P(D=1\mid w,c)$，如果中心词和上下文词确实不在语料库中，就最大化概率$P(D=0\mid w,c)$。我们对这两个概率采用一个简单的极大似然估计的方法（这里我们把$\theta$作为模型的参数，在我们的例子是$\mathcal{V}$和$\mathcal{U}$）</p>
+<p>$$\begin{aligned} \theta &amp;=\underset{\theta}{\operatorname{argmax}} \prod_{(w, c) \in D} P(D=1 | w, c, \theta) \prod_{(w, c) \in \widetilde{D}} P(D=0 | w, c, \theta) \ &amp;=\underset{\theta}{\operatorname{argmax}} \prod_{(w, c) \in D} P(D=1 | w, c, \theta) \prod_{(w, c) \in \widetilde{D}}(1-P(D=1 | w, c, \theta)) \ &amp;=\underset{\theta}{\operatorname{argmax}} \sum_{(w, c) \in D} \log P(D=1 | w, c, \theta)+\sum_{(w, c) \in \widetilde{D}} \log (1-P(D=1 | w, c, \theta)) \ &amp;=\arg \max <em>{\theta} \sum</em>{(w, c) \in D} \log \frac{1}{1+\exp \left(-u_{w}^{T} v_{c}\right)}+\sum_{(w, c) \in \widetilde{D}} \log \left(1-\frac{1}{1+\exp \left(-u_{w}^{T} v_{c}\right)}\right) \ &amp;=\arg \max <em>{\theta} \sum</em>{(w, c) \in D} \log \frac{1}{1+\exp \left(-u_{w}^{T} v_{c}\right)}+\sum_{(w, c) \in \widetilde{D}} \log \left(\frac{1}{1+\exp \left(u_{w}^{T} v_{c}\right)}\right) \end{aligned}$$</p>
+<p>注意到最大化似然函数等同于最小化负对数似然：<br>$$J=-\sum_{(w, c) \in D} \log \frac{1}{1+\exp \left(-u_{w}^{T} v_{c}\right)}-\sum_{(w, c) \in \widetilde{D}} \log \left(\frac{1}{1+\exp \left(u_{w}^{T} v_{c}\right)}\right)$$</p>
+<p>注意$\widetilde{D}$是“假的”或者“负的”语料。例如我们有句子类似“stock boil fish is toy”，这种无意义的句子出现时会得到一个很低的概率。我们可以从语料库中随机抽样出负样例$\widetilde{D}$。</p>
+<p>对于 Skip-Gram 模型，我们对给定中心词$c$来观察的上下文单词$c-m+j$的新目标函数为<br>$$-\log \sigma\left(u_{c-m+j}^{T} \cdot v_{c}\right)-\sum_{k=1}^{K} \log \sigma\left(-\tilde{u}<em>{k}^{T} \cdot v</em>{c}\right)$$</p>
+<p>对 CBOW 模型，我们对给定上下文向量$\widehat{v}=\frac{v_{c-m}+v_{c-m+1}+…+v_{c+m}}{2m}$来观察中心词$u_{c}$的新的目标函数为<br>$$-log,\sigma(u_{c}^{T}\cdot \widehat{v})-\sum_{k=1}^{K}log,\sigma(-\widetilde{u}_{k}^{T}\cdot \widehat{v})$$</p>
+<p>在上面的公式中，${\widetilde{u}<em>{k}\mid k=1…K}$是从$P</em>{n}(w)$中抽样。有很多关于如何得到最好近似的讨论，从实际效果看来最好的是指数为 ¾ 的 Unigram 模型。那么为什么是 ¾？下面有一些例子对比可能让你有一些直观的了解：<br>$$\begin{eqnarray} is: 0.9^{3/4} &amp;=&amp; 0.92 \nonumber \ Constitution: 0.09^{3/4}&amp;=&amp; 0.16 \nonumber \ bombastic:0.01^{3/4}&amp;=&amp; 0.032 \nonumber \end{eqnarray}$$</p>
+<p>“Bombastic”当前被抽样的概率是原来的三倍，而“is”只比原来的提高了一点点。</p>
+<h3 id="2、Hierarchical-Softmax"><a href="#2、Hierarchical-Softmax" class="headerlink" title="2、Hierarchical Softmax"></a>2、Hierarchical Softmax</h3><p>Mikolov 在论文《Distributed Representations of Words and Phrases and their Compositionality.》中提出了 hierarchical softmax，相比普通的 softmax 这是一种更有效的替代方法。<strong>在实际中，hierarchical softmax 对低频词往往表现得更好，负采样对高频词和较低维度向量表现得更好。</strong></p>
+<p>Hierarchical softmax 使用一个二叉树来表示词表中的所有词。树中的每个叶结点都是一个单词，而且只有一条路径从根结点到叶结点。在这个模型中，没有词的输出表示。相反，图的每个节点（根节点和叶结点除外）与模型要学习的向量相关联。单词作为输出单词的概率定义为从根随机游走到单词所对应的叶的概率。计算成本变为$O(log (|V|))$而不是$O(|V|)$。</p>
+<p>在这个模型中，给定一个向量$w_{i}$的下的单词$w$的概率$p(w\mid w_{i})$，等于从根结点开始到对应$w$的叶结点结束的随机漫步概率。这个方法最大的优势是计算概率的时间复杂度仅仅是$O(log(|V|))$，对应着路径的长度。</p>
+<p>下图是 Hierarchical softmax 的二叉树示意图：</p>
+<p><img src="./Pic/NLP/10.png" alt=""></p>
+<p>令$L(w)$为从根结点到叶结点$w$的路径中节点数目。例如，上图中的$L(w_{2})$为3。我们定义$n(w,i)$为与向量$v_{n(w,i)}$相关的路径上第$i$个结点。因此$n(w,1)$是根结点，而$n(w,L(w))$是$w$的父节点。现在对每个内部节点$n$，我们任意选取一个它的子节点，定义为$ch(n)$（一般是左节点）。然后，我们可以计算概率为<br>$$p\left(w | w_{i}\right)=\prod_{j=1}^{L(w)-1} \sigma\left([n(w, j+1)=\operatorname{ch}(n(w, j))] \cdot v_{n(w, j)}^{T} v_{w_{i}}\right)$$</p>
+<p>其中<br>$$[x]=\left{\begin{array}{ll}{1} &amp; {\text { if } x \text { is true }} \ {-1} &amp; {\text { otherwise }}\end{array}\right.$$</p>
+<p>这个公式看起来非常复杂，让我们细细梳理一下。</p>
+<p>首先，我们将根据从根节点$(n(w,1))$到叶节点$(w)$的路径的形状来计算相乘的项。如果我们假设$ch(n)$一直都是$n$的左节点，然后当路径往左时$[n(w,j+1)=ch(n(w,j))]$的值返回 1，往右则返回 0。</p>
+<p>此外，$[n(w,j+1)=ch(n(w,j))]$提供了归一化的作用。在节点$n$处，如果我们将去往左和右节点的概率相加，对于$v_{n}^{T}v_{w_{i}}$的任何值则可以检查，<br>$$\sigma\left(v_{n}^{T} v_{w_{i}}\right)+\sigma\left(-v_{n}^{T} v_{w_{i}}\right)=1$$</p>
+<p>归一化也保证了$\sum_{w=1}^{|V|}P(w\mid w_{i})=1$，和在普通的 softmax 是一样的。</p>
+<p>最后我们计算点积来比较输入向量$v_{w_{i}}$对每个内部节点向量$v_{n(w,j)}^{T}$的相似度。下面我们给出一个例子。以上图中的$w_{2}$为例，从根节点要经过两次左边的边和一次右边的边才到达$w_{2}$，因此<br>$$\begin{aligned} p\left(w_{2} | w_{i}\right) &amp;=p\left(n\left(w_{2}, 1\right), \text {left}\right) \cdot p\left(n\left(w_{2}, 2\right), \text {left}\right) \cdot p\left(n\left(w_{2}, 3\right), \text { right }\right) \ &amp;=\sigma\left(v_{n\left(w_{2}, 1\right)}^{T} v_{w_{i}}\right) \cdot \sigma\left(v_{n\left(w_{2}, 2\right)}^{T} v_{w_{i}}\right) \cdot \sigma\left(-v_{n\left(w_{2}, 3\right)}^{T} v_{w_{i}}\right) \end{aligned}$$</p>
+<p>我们训练模型的目标是最小化负的对数似然$-log,P(w\mid w_{i})$。不是更新每个词的输出向量，而是更新更新二叉树中从根结点到叶结点的路径上的节点的向量。</p>
+<p>该方法的速度由构建二叉树的方式确定，并将词分配给叶节点。Mikolov 在论文《Distributed Representations of Words and Phrases and their Compositionality.》中使用的是哈夫曼树，在树中分配高频词到较短的路径。</p>
+<blockquote>
+<p>参考文章：<br><a href="https://looperxx.github.io/CS224n-2019-01-Introduction%20and%20Word%20Vectors/" target="_blank" rel="noopener">https://looperxx.github.io/CS224n-2019-01-Introduction%20and%20Word%20Vectors/</a><br><a href="https://arxiv.org/abs/1310.4546" target="_blank" rel="noopener">https://arxiv.org/abs/1310.4546</a></p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/fb70fd3e.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/73ac7324.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            CS224n 02_Word Vectors and Word Senses
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/2df51814.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">C++指针详解</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

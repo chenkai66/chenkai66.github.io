@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Python爬虫初级（八）—— lxml 详解及代理IP爬取 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Python爬虫初级（八）—— lxml 详解及代理IP爬取"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Python爬虫初级（八）—— lxml 详解及代理IP爬取
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/ea515678.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.413Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spider/">Spider</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">7 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>前一篇文章的末尾我们提到，可以使用 lxml + xpath 提取文章内容，在这篇文章中，我们将对 lxml 与 xpath 进行详细阐述，在这之前我们使用 pip install lxml 安装 lxml 库。</p>
+<h1 id="Xpath-语法"><a href="#Xpath-语法" class="headerlink" title="Xpath 语法"></a>Xpath 语法</h1><p>XPath 即为 XML 路径语言（XML Path Language），它是一种用来确定 XML 文档中某部分位置的语言。而 XML 我们在<a href="https://blog.csdn.net/ChenKai_164/article/details/105635357" target="_blank" rel="noopener">这篇文章</a>中已经提到了，它的语法与 HTML 基本一致，可以说是通过 HTML发展而来的通用表达形式。</p>
+<h3 id="路径表达式"><a href="#路径表达式" class="headerlink" title="路径表达式"></a>路径表达式</h3><p>XPath 使用路径表达式在 XML 文档中选取节点，节点是通过沿着路径选取的。下面列出了最常用的路径表达式：</p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>nodename</td>
+<td>选取此节点的所有节点</td>
+</tr>
+<tr>
+<td>/</td>
+<td>从根节点选取</td>
+</tr>
+<tr>
+<td>//</td>
+<td>从匹配选择的当前节点选择文档中的节点，而不考虑它们的位置</td>
+</tr>
+<tr>
+<td>.</td>
+<td>选取当前节点</td>
+</tr>
+<tr>
+<td>..</td>
+<td>选取当前节点的父节点</td>
+</tr>
+<tr>
+<td>@</td>
+<td>选取属性</td>
+</tr>
+</tbody></table>
+<h3 id="Predicates"><a href="#Predicates" class="headerlink" title="Predicates"></a>Predicates</h3><table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+<th>实例</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[n]</td>
+<td>选择某节点的第n(n&gt;=1)个子节点</td>
+<td>xpath(“//h//a[1]”)</td>
+<td>选择h节点下第1个a节点</td>
+</tr>
+<tr>
+<td>[last()]</td>
+<td>选择某节点的最后一个子节点</td>
+<td>xpath(“//h//a[last()]”)</td>
+<td>选择h节点下最后一个a节点</td>
+</tr>
+<tr>
+<td>[@attribute]</td>
+<td>选择节点带有attribute属性的节点</td>
+<td>xpath(“//img[@src]”)</td>
+<td>选择带有src属性的img节点</td>
+</tr>
+<tr>
+<td>[@attribute=value]</td>
+<td>选择带有attribute属性值的节点</td>
+<td>xpath(“//a[@href=”aaa.jpg”]”)</td>
+<td>选择href属性值为aaa.jpg的a节点</td>
+</tr>
+<tr>
+<td>*</td>
+<td>任意匹配元素或者属性</td>
+<td>xpath(“//a/“),xpath(“//a[@]”)</td>
+<td>选择a节点下的所有子节点,选择带有属性的a节点</td>
+</tr>
+</tbody></table>
+<h3 id="模糊搜索与匹配"><a href="#模糊搜索与匹配" class="headerlink" title="模糊搜索与匹配"></a>模糊搜索与匹配</h3><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>用法</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>starts-with</td>
+<td>xpath(“//div[starts-with(@id,’user’)]”)</td>
+<td>选择id值以user开头的div节点</td>
+</tr>
+<tr>
+<td>contains</td>
+<td>xpath(“//div[contains(@id,’user’)]”)</td>
+<td>选择id值包含user的div节点</td>
+</tr>
+<tr>
+<td>and</td>
+<td>xpath(“//div[starts-with(@class,”login”) and contains(@id,’user’)]”)</td>
+<td>选择class值以login开头和id值包括user的div节点</td>
+</tr>
+<tr>
+<td>text()</td>
+<td>xpath(“//div[starts-with(text(),”mytest”)]”)</td>
+<td>选取节点文本包含myest的div节点</td>
+</tr>
+</tbody></table>
+<h3 id="xpath轴"><a href="#xpath轴" class="headerlink" title="xpath轴"></a>xpath轴</h3><table>
+<thead>
+<tr>
+<th>轴名称</th>
+<th>表达式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ancestor</td>
+<td>xpath(“./ancestor:: *”)</td>
+<td>选取当前节点的所有父辈节点</td>
+</tr>
+<tr>
+<td>ancestor-or.self</td>
+<td>xpath(“./ancestor-or-self:: *”)</td>
+<td>选取当前节点的父辈节点和节点自身</td>
+</tr>
+<tr>
+<td>child</td>
+<td>xpath(“./child:: *”)</td>
+<td>选择当前节点的所有子节点</td>
+</tr>
+<tr>
+<td>descendant</td>
+<td>xpath(“./descendant:: *”)</td>
+<td>选择当前节点的所有后代节点(子节点、孙节点等)</td>
+</tr>
+<tr>
+<td>follow</td>
+<td>xpath(“./following:: *”)</td>
+<td>选取当前节点结束标签后的所有节点</td>
+</tr>
+<tr>
+<td>follow-sibling</td>
+<td>xpath(“./follow-sibling:: *”)</td>
+<td>选取当前节点之后的兄弟节点</td>
+</tr>
+<tr>
+<td>preceding</td>
+<td>xpath(“./preceding:: *”)</td>
+<td>选取当前开始标签前的所有节点</td>
+</tr>
+</tbody></table>
+<h1 id="lxml-使用"><a href="#lxml-使用" class="headerlink" title="lxml 使用"></a>lxml 使用</h1><p>首先需要导入库：from lxml import etree，下面这行代码 lxml 会将 html 文本转成 xml 对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree = etree.HTML(html)</span><br></pre></td></tr></table></figure>
+<p>我们要使用 lxml + Xpath 从源代码直接获取信息时，会使用 tree.xpath() 语句，括号内的是所需获取内容的一些形式，具体形式在上面已经列出了，比如我们要获取<a href="http://www.dxy.cn/bbs/topic/43201486" target="_blank" rel="noopener">丁香园</a>页面的用户名称信息，首先查看该页面源代码：<br><img src="https://img-blog.csdnimg.cn/20200425135042154.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70" alt="用户信息">我们可以使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree.xpath(<span class="string">'//div[@class=“auth”]/a/text()'</span>)</span><br></pre></td></tr></table></figure>
+<p>我们想要获取评论信息：<br><img src="https://img-blog.csdnimg.cn/20200425135042227.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70" alt="评论信息"><br>我们可以使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree.xpath(<span class="string">'//td[@class=“postbody”]'</span>)</span><br></pre></td></tr></table></figure>
+<p>我们需要注意的是，当我们将文本对象转换为了 lxml 对象后，实际获取内容的方式也发生了改变，参看下面代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line">text = <span class="string">'''</span></span><br><span class="line"><span class="string">&lt;div&gt;</span></span><br><span class="line"><span class="string">    &lt;ul&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-0"&gt;&lt;a href="link1.html"&gt;first item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-1"&gt;&lt;a href="link2.html"&gt;second item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-inactive"&gt;&lt;a href="link3.html"&gt;third item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-1"&gt;&lt;a href="link4.html"&gt;fourth item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-0"&gt;&lt;a href="link5.html"&gt;fifth item&lt;/a&gt;</span></span><br><span class="line"><span class="string">     &lt;/ul&gt;</span></span><br><span class="line"><span class="string"> &lt;/div&gt;</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line">html = etree.HTML(text)</span><br><span class="line"><span class="comment"># 返回 &lt;Element html at 0x233468e5788&gt;</span></span><br><span class="line">result = etree.tostring(html)</span><br><span class="line">print(result)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回 text 中信息</span></span><br></pre></td></tr></table></figure>
+<h1 id="代理-IP-爬取"><a href="#代理-IP-爬取" class="headerlink" title="代理 IP 爬取"></a>代理 IP 爬取</h1><p>介绍完 xpath 的基本内容，我们下面来实战一个非常有用的爬虫 —— 爬取代理IP，其具体页面内容如下：<br><img src="https://img-blog.csdnimg.cn/20200425133902765.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="西刺代理IP主页"><br>我们点击查看源代码，可以发现相关的IP地址直接出现在页面中，因此我们能够通过现有知识进行爬取：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200425134041233.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="西刺代理IP主页源代码"><br>下面是测试代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> requests</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>url = <span class="string">"https://www.xicidaili.com/"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>headers = &#123;<span class="string">"user-agent"</span>:<span class="string">"Mozilla/5.0"</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res = requests.get(url, headers=headers)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res.status_code</span><br><span class="line"><span class="number">200</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res.encoding = res.apparent_encoding</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>text = res.text</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>html = etree.HTML(text)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>html.xpath(<span class="string">'/html/body/div[1]/div[2]/div[1]/div[1]/table/tbody/tr[3]/td[2]'</span>)</span><br><span class="line">[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ip_ = html.xpath(<span class="string">'/html/body/div[1]/div[2]/div[1]/div[1]/table//tr[3]/td[2]'</span>)</span><br><span class="line">[&lt;Element td at <span class="number">0x233473b8d08</span>&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = etree.tostring(ip_[<span class="number">0</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result</span><br><span class="line"><span class="string">b'&lt;td&gt;119.4.13.26&lt;/td&gt;\n</span></span><br></pre></td></tr></table></figure>
+
+<p>事实上，我们在实际使用时，想要获得 Xpath 不一定会直接一行行代码看过去，更可能直接复制 Xpath：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200425140302427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="查看器获取 Xpath"></p>
+<p>我们右键移至复制，会出现一个名为“复制Xpath”的选项，点击复制Xpath 后即可得到相应的 Xpath，但在这里有一点需要注意的是，Xpath 会给页面 HTML 树进行自动补齐，也就是说会出现一些原来没有的东西，就会出现上面代码中倒数第六行出现空返回的问题，这时候就需要我们去仔细检查哪里的信息可能是多余的。</p>
+<p>下面我们展示完整代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle<span class="comment">#我们封装数据要用到的库</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"></span><br><span class="line"><span class="comment">#请求头</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36'</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">construct_url</span><span class="params">()</span>:</span><span class="comment">#老样子，先构建url列表，我这就爬一页</span></span><br><span class="line">    urls = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range (<span class="number">1</span>,<span class="number">2</span>):</span><br><span class="line">        url = <span class="string">'https://www.xicidaili.com/nn/'</span>+str(i)</span><br><span class="line">        urls.append(url)</span><br><span class="line">    <span class="keyword">return</span> urls</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_proxy</span><span class="params">(url)</span>:</span><span class="comment">#从数据中解析出ip数据，并验证ip是否可用</span></span><br><span class="line">    res = requests.get(url,headers=headers)</span><br><span class="line">    html = etree.HTML(res.text,etree.HTMLParser())</span><br><span class="line">    <span class="comment">#把返回的数据解析成etree._Element对象，这样才可以使用Xpath语句提取数据</span></span><br><span class="line">    ip = html.xpath(<span class="string">'//*[@id="ip_list"]/tr/td[2]/text()'</span>)<span class="comment">#ip</span></span><br><span class="line">    ip_port = html.xpath(<span class="string">'//*[@id="ip_list"]/tr/td[3]/text()'</span>)<span class="comment">#端口号</span></span><br><span class="line">    ip_type = html.xpath(<span class="string">'//*[@id="ip_list"]/tr/td[6]/text()'</span>)<span class="comment">#网络类型</span></span><br><span class="line"></span><br><span class="line">    lis = []</span><br><span class="line">    <span class="keyword">for</span> i,j,k <span class="keyword">in</span> zip(ip,ip_port,ip_type):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            proxies = &#123;</span><br><span class="line">                    k.lower():i+<span class="string">':'</span>+j<span class="comment">#注意到爬下来的是HTTP或者是HTTPS，我们要将它们变成http或https</span></span><br><span class="line">                    &#125;</span><br><span class="line">            print(proxies)<span class="comment">#把IP输出来看看</span></span><br><span class="line">            requests.get(<span class="string">'https://www.baidu.com/'</span>,headers=headers,timeout=<span class="number">1</span>,proxies=proxies)</span><br><span class="line">            <span class="comment">#用这个IP发一个请求给百度，测试一下这个IP能不能用</span></span><br><span class="line">            lis.append(proxies)<span class="comment">#如果没有超时，说明能用，存进列表里</span></span><br><span class="line">            print(<span class="string">'http://'</span>+i+<span class="string">':'</span>+j+<span class="string">" is fine"</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            print(<span class="string">'http://'</span>+i+<span class="string">':'</span>+j+<span class="string">" is timeout"</span>)<span class="comment">#超时抛出错误，输出哪个IP超时</span></span><br><span class="line">    <span class="keyword">return</span> lis<span class="comment">#返回可用IP列表</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    urls = construct_url()</span><br><span class="line">    lis = []</span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> urls:</span><br><span class="line">        rlist = get_proxy(url)</span><br><span class="line">        lis += rlist</span><br><span class="line">    pickle.dump(lis,open(<span class="string">'ip.pkl'</span>,<span class="string">'wb'</span>))<span class="comment">#将可用的IP进行存储</span></span><br><span class="line">    print(<span class="string">'----可用IP---'</span>)</span><br><span class="line">    <span class="keyword">for</span> item <span class="keyword">in</span> lis:</span><br><span class="line">        print(item)</span><br><span class="line">    print(<span class="string">'---  END  ---'</span>)</span><br></pre></td></tr></table></figure> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/ea515678.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/617da02a.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Python爬虫初级（六）—— 正则表达式库入门
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/f995f5ca.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Python爬虫初级（五）—— 中国大学排名定向爬虫</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

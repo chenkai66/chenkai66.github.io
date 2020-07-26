@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    区块链入门（二） —— web3js |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-区块链入门（二） —— web3js"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  区块链入门（二） —— web3js
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/67d22044.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.510Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Blockchain/">Blockchain</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">16 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="web3-js基础"><a href="#web3-js基础" class="headerlink" title="web3.js基础"></a>web3.js基础</h1><h2 id="web3-js是什么"><a href="#web3-js是什么" class="headerlink" title="web3.js是什么"></a>web3.js是什么</h2><ul>
+<li>Web3 JavaScript app API</li>
+<li>web3..js 是一个JavaScript API库。要使DApper在以太坊上运行，我们可以使用web3.js库提供的web3对象</li>
+<li>web3.js通过RPC调用与本地节点通信，它可以用于任何暴露了RPC层的以太坊节点</li>
+<li>web3包含了eth对象 - web3.eth（专门与以太坊区块链交互）和 shh对象 - web3.shh（用于与 Whisper交互）[Whisper是以太坊生态系统的一部分，主要用来做消息传递]</li>
+</ul>
+<p>如果我们想要在以太坊上开发合约，目前来说最方便的方法就是调用Web3.js库，它会给我们一个Web3对象。我们首先进入geth控制台，直接键入web3，下面对这些弹出的内容进行一个总览。</p>
+<p>我们先看到db，db是操作区块链底层数据库的，整个以太坊的底层数据库就是LevelDB，其接口如下：</p>
+<p><img src="./Pic/Blockchain/db.png" alt=""></p>
+<p>然后看到eth，一个我们已经很熟悉的模块：</p>
+<p><img src="./Pic/Blockchain/eth.png" alt=""></p>
+<p>里面含有getBalance,gasPrice等最常用的操作。</p>
+<p>再然后是personal，里面包含了我们创建账户的信息：</p>
+<p><img src="./Pic/Blockchain/personal.png" alt=""></p>
+<p>还有shh等等，这里就不一一列举了：</p>
+<p><img src="./Pic/Blockchain/shh.png" alt=""></p>
+<h2 id="web3-模块加载"><a href="#web3-模块加载" class="headerlink" title="web3 模块加载"></a>web3 模块加载</h2><ul>
+<li>首先需要将 web3 模块安装在项目中，安装方式为（后面可以加版本也可以不加）  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install web3@0.20.1</span><br></pre></td></tr></table></figure></li>
+<li>然后创建一个web3实例，设置一个”provider”</li>
+<li>为了保证我们的MetaMask设置好的provider不被覆盖掉，在引入web3之前我们一般要做当前环境检查(以v0.20.1为例)：  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if(typeof web3 !&#x3D;&#x3D; &#39;undifined&#39;)&#123;</span><br><span class="line">	web3 &#x3D; new Web3(web3.currentProvider);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">	web3 &#x3D; new Web3(new Web3.providers.HttpProvider(&#39;http:&#x2F;&#x2F;localhost:8545&#39;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="异步回调（callback）"><a href="#异步回调（callback）" class="headerlink" title="异步回调（callback）"></a>异步回调（callback）</h2><ul>
+<li>web3js API 设计的最初目的，主要是为了和本地RPC节点共同使用，所以默认情况下发送的是同步HTTP请求</li>
+<li>如果要发送异步请求，可以在函数的最后一个参数位置上，传入一个回调函数，回调函数是可选的(optional)</li>
+<li>我们一般采用的风格是所谓的“错误优先”，例如：  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getback(48, function(error, result))&#123;</span><br><span class="line">	if(!error)</span><br><span class="line">    	console.log(JSON.stringify(result));</span><br><span class="line">    else</span><br><span class="line">    	console.error(error);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>我们直接在geth尝试这一过程，并与同步过程对比：</p>
+<p><img src="./Pic/Blockchain/ybdy.png" alt=""></p>
+<p>我们看到输出的内容没有任何区别，不过由刚才的同步调用方式改成了异步调用，那有了更简便的同步调用，我们为何还需要异步调用呢？</p>
+<p>同步调用会将当前执行的进程完全阻塞在这里，只有当前面的步骤拿到代码返回之后后面的代码才会执行，所以同步的顺序是指定的，让谁先执行谁就先执行，但劣势也在此，可能会一直被卡在这里，在开发DApp等实际应用的时候，往往都需要用异步，互不干扰。</p>
+<h2 id="回调Promise事件"><a href="#回调Promise事件" class="headerlink" title="回调Promise事件"></a>回调Promise事件</h2><p>目前基本上所有的东西大家都默认了状态是异步调用，那我们是否就无法保证顺序了呢？实际上不是的。</p>
+<ul>
+<li>为了帮助web3集成到不同标准的所有类型项目中，1.0.0版本提供了多种方式来处理异步函数。大多数的web3对象允许将一个回调函数作为最后一个函数参数传入，同时返回一个promise用于链式函数调用。</li>
+<li>以太坊作为一个区块链系统，一次请求具有不同的结束阶段。为了满足这样的请求，1.0.0版本将这类函数调用的返回之包成一个“承诺事件”(promiEvent)，这是一个promise和EventEmitter的结合体</li>
+<li>PromiEvent的用法就像promise一样，另外还加入了.on,.once和.off方法  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.sendTransaction(&#123;from:&#39;0x123...&#39;, data:&#39;0x432...&#39;&#125;)</span><br><span class="line">.once(&#39;transactionHash&#39;, function(hash)&#123;...&#125;)</span><br><span class="line">.once(&#39;receipt&#39;, function(receipt)&#123;...&#125;)</span><br><span class="line">.on(&#39;confirmation&#39;, function(confNumber, receipt)&#123;...&#125;)</span><br><span class="line">.on(&#39;error&#39;, function&#123;...&#125;)</span><br><span class="line">.then(function(receipt)&#123;&#125;);</span><br></pre></td></tr></table></figure>
+回调完成的标志是收到receipt，也就是交易打包进块。</li>
+</ul>
+<h2 id="应用二进制接口（ABI）"><a href="#应用二进制接口（ABI）" class="headerlink" title="应用二进制接口（ABI）"></a>应用二进制接口（ABI）</h2><ul>
+<li>web3.js通过以太坊智能合约的json接口（Application Binary Interface， ABI）创建一个JavaScript对象，用来在js代码中描述</li>
+<li>函数（functions）<ul>
+<li>type:函数类型，默认“function”，也可能是”constructor”</li>
+<li>constant, payable, stateMutability: 函数的状态可变性</li>
+<li>inputs, outputs: 函数输入、输出参数描述列表</li>
+</ul>
+</li>
+<li>事件（events）<ul>
+<li>type: 类型，总是”event”</li>
+<li>inputs: 输入对象列表，包括name、type、indexed</li>
+</ul>
+</li>
+</ul>
+<p>我们首先创建一个sol文件，并进行编译，Coin.sol文件如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity &gt;<span class="number">0.4</span><span class="number">.22</span>;</span><br><span class="line"></span><br><span class="line">contract Coin&#123;</span><br><span class="line">    address public minter;</span><br><span class="line">    mapping(address=&gt;uint) public balances;</span><br><span class="line">    event Sent(address <span class="keyword">from</span>, address to, uint amount);</span><br><span class="line">    constructor()public&#123;</span><br><span class="line">        minter = msg.sender;</span><br><span class="line">    &#125;</span><br><span class="line">    function mint(address receiver, uint amount)public&#123;</span><br><span class="line">        require(msg.sender == minter);</span><br><span class="line">        balances[receiver] += amount;</span><br><span class="line">    &#125;</span><br><span class="line">    function send(address receiver, uint amount)public&#123;</span><br><span class="line">        require(balances[msg.sender] &gt;= amount);</span><br><span class="line">        balances[msg.sender] -= amount;</span><br><span class="line">        balances[receiver] += amount;</span><br><span class="line">        emit Sent(msg.sender, receiver, amount);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="./Pic/Blockchain/abi.png" alt=""></p>
+<p>将上面的JSON文件稍微格式化一下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">[&#123;</span><br><span class="line">	<span class="attr">"inputs"</span>: [],</span><br><span class="line">	<span class="attr">"stateMutability"</span>: <span class="string">"nonpayable"</span>,</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"constructor"</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	<span class="attr">"anonymous"</span>: <span class="literal">false</span>,</span><br><span class="line">	<span class="attr">"inputs"</span>: [&#123;</span><br><span class="line">		<span class="attr">"indexed"</span>: <span class="literal">false</span>,</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"from"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"indexed"</span>: <span class="literal">false</span>,</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"to"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"indexed"</span>: <span class="literal">false</span>,</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"uint256"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"amount"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"uint256"</span></span><br><span class="line">	&#125;],</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"Sent"</span>,</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"event"</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	<span class="attr">"inputs"</span>: [&#123;</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">""</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;],</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"balances"</span>,</span><br><span class="line">	<span class="attr">"outputs"</span>: [&#123;</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"uint256"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">""</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"uint256"</span></span><br><span class="line">	&#125;],</span><br><span class="line">	<span class="attr">"stateMutability"</span>: <span class="string">"view"</span>,</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"function"</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	<span class="attr">"inputs"</span>: [&#123;</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"receiver"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"uint256"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"amount"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"uint256"</span></span><br><span class="line">	&#125;],</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"mint"</span>,</span><br><span class="line">	<span class="attr">"outputs"</span>: [],</span><br><span class="line">	<span class="attr">"stateMutability"</span>: <span class="string">"nonpayable"</span>,</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"function"</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	<span class="attr">"inputs"</span>: [],</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"minter"</span>,</span><br><span class="line">	<span class="attr">"outputs"</span>: [&#123;</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">""</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;],</span><br><span class="line">	<span class="attr">"stateMutability"</span>: <span class="string">"view"</span>,</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"function"</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	<span class="attr">"inputs"</span>: [&#123;</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"receiver"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"uint256"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"amount"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"uint256"</span></span><br><span class="line">	&#125;],</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"send"</span>,</span><br><span class="line">	<span class="attr">"outputs"</span>: [],</span><br><span class="line">	<span class="attr">"stateMutability"</span>: <span class="string">"nonpayable"</span>,</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"function"</span></span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>我们集中看一下下面这小段：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"anonymous"</span>: <span class="literal">false</span>,</span><br><span class="line">	<span class="attr">"inputs"</span>: [&#123;</span><br><span class="line">		<span class="attr">"indexed"</span>: <span class="literal">false</span>,</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"from"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"indexed"</span>: <span class="literal">false</span>,</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"address"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"to"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"address"</span></span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"indexed"</span>: <span class="literal">false</span>,</span><br><span class="line">		<span class="attr">"internalType"</span>: <span class="string">"uint256"</span>,</span><br><span class="line">		<span class="attr">"name"</span>: <span class="string">"amount"</span>,</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"uint256"</span></span><br><span class="line">	&#125;],</span><br><span class="line">	<span class="attr">"name"</span>: <span class="string">"Sent"</span>,</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"event"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先是一个<strong>annoymous</strong>，这是一个匿名参数，如果你填了false，我们的事件在日志中的第一条topic就会为空（不写入），主题是对整个事件做的哈希，也就相当于这个事件没有签名了，事实上他出发的其他事件的log仍会计入，只不过没有整个事件签名了。然后是<strong>index</strong>，定义参数时如果设置index=True，则这个参数会被设置成可索引参数，就会被记在topic下。<br>我们可以看到这段JSON对应的是下面这一行代码，于是其他部分我们也很容易一一对上了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">event Sent(address <span class="keyword">from</span>, address to, uint amount);</span><br></pre></td></tr></table></figure>
+
+<p>我们看到合约编译可生成两种文件，一种是字节码，这是要部署到以太坊上的，另一种是根据源码生成ABI，这一套二进制接口是给web3使用的。下面我们安装web3模块：</p>
+<ul>
+<li>安装nodejs</li>
+<li>npm install web3@^0.20.0</li>
+<li>npm i npm to update</li>
+<li>npm cache verify</li>
+<li>npm install -g ethereumjs-testrpc</li>
+<li>在终端启动testrpc</li>
+<li>切换新的终端，创建文件connect.js，文件内容为  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var Web3 &#x3D; require(&#39;web3&#39;)</span><br><span class="line">var web3 &#x3D; new Web3(new Web3.providers.HttpProvider(&#39;http:&#x2F;&#x2F;localhost:8545&#39;))</span><br><span class="line">console.log(web3.eth.accounts)</span><br><span class="line">console.log(&#39;OK&#39;)</span><br><span class="line">var version &#x3D; web3.version.node;</span><br><span class="line">console.log(version);</span><br></pre></td></tr></table></figure></li>
+<li>node connect.js后显示：</li>
+</ul>
+<p><img src="./Pic/Blockchain/web3_1.png" alt=""></p>
+<p>事实上我们也可以一行行在node命令行中输入，这样可以更清晰地观察到结果：</p>
+<p><img src="./Pic/Blockchain/web3_2.png" alt=""></p>
+<p>代码同上，读者自行键入即可。我们还可以获得web3的其他信息：</p>
+<p><img src="./Pic/Blockchain/web3_3.png" alt=""></p>
+<h2 id="批处理请求-batch-requests"><a href="#批处理请求-batch-requests" class="headerlink" title="批处理请求(batch requests)"></a>批处理请求(batch requests)</h2><ul>
+<li>批处理请求允许我们将请求排序，然后一起处理它们</li>
+<li>注意：批处理请求不会更快，在某些情况下，一次性地发出许多请求会更快，因为请求是异步处理的。（我们想要加速通常会手动进行异步处理）</li>
+<li>批处理请求主要用于确保请求的顺序，并串行处理</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var batch = web3.createBatch();</span><br><span class="line">batch.add(web3.eth.getBalance.request(<span class="string">'0x0000000000000'</span>, <span class="string">'latest'</span>, callback));</span><br><span class="line">batch.add(web3.eth.contract(abi).at(address).balance.requests(address,callback2));</span><br><span class="line">batch.excute();</span><br></pre></td></tr></table></figure>
+
+<h2 id="大数处理-big-numbers"><a href="#大数处理-big-numbers" class="headerlink" title="大数处理(big numbers)"></a>大数处理(big numbers)</h2><ul>
+<li>JavaScript中默认的数字精度较小，所以web3.js会自动添加一个依赖库BigNumber，专门用于大数处理</li>
+<li>对于数值，我们应该习惯将它转化为BigNumber对象来处理</li>
+<li>BigNumber.toString(10)对小数只保留20位浮点精度，所以推荐的做法是，我们内部总是用wei来表示余额（大整数），只有在需要显示给用户看的时候才转化为Ether或其他单位</li>
+</ul>
+<p>定义方式如下：</p>
+<p><img src="./Pic/Blockchain/balance.png" alt=""></p>
+<p>我们看到显示的s:1表示这个数是正数，若为负数s=-1，c则为 字符串拼接结果，e为科学计数法e跟的位数，c是所有有效数字，每14位对BigNumber切割一次形成的数组，toString()可以看到这个数字，也可以在括号内填如希望转化的进制。</p>
+<h1 id="常用API-——-基本信息查询"><a href="#常用API-——-基本信息查询" class="headerlink" title="常用API —— 基本信息查询"></a>常用API —— 基本信息查询</h1><p>下面先列举常用命令，后面再一一敲代码~</p>
+<h2 id="基本信息查询"><a href="#基本信息查询" class="headerlink" title="基本信息查询"></a>基本信息查询</h2><p><strong>查看web3版本</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version.api</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>查看web3连接到的节点版本(clientVersion)</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version.node</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version.getNode((error,resuIt)&#x3D;&gt;console.log(result))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getNodeInfo().then(console.log)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>获取network</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version.network</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version.getNetwork((err,res)&#x3D;&gt;console.log(res))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.net.getId().then(console.log)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>获取点以太坊版本</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version.ethereum</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.version.getEthereum((err,res)&#x3D;&gt;console.log(res))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getProtocolVersion().then(console.log)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>具体操作见下图：</p>
+<p><img src="./Pic/Blockchain/version.png" alt=""></p>
+<p><img src="./Pic/Blockchain/version2.png" alt=""></p>
+<h2 id="网络状态查询"><a href="#网络状态查询" class="headerlink" title="网络状态查询"></a>网络状态查询</h2><p><strong>是否有节点连接/监听，返回true</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.isConnect() 或者 web3.net.listening</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.net.getListening((err,res)&#x3D;&gt;console.log(res))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.net.isListening().then(console.log)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>查看当前连接的peer节点</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.net.peerCount</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.net.getPeerCount((err,res)&#x3D;&gt;console.log(res))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.net.getPeerCount().then(console.log)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>Provider</strong></p>
+<ul>
+<li><p>查看当前设置的web3 provider</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.currentPrrovider</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看浏览器环境设置的web3 provider</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.givenProvider</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置provider</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.setProvider(new web3.providers.HttpProvider(&#39;http:&#x2F;&#x2F;localhost:8545&#39;))</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，0.20.1版本与1.0.0版本的操作有些出入。</p>
+</li>
+</ul>
+<h2 id="web3通用工具方法"><a href="#web3通用工具方法" class="headerlink" title="web3通用工具方法"></a>web3通用工具方法</h2><ul>
+<li>以太单位转换<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">web3..fromWei</span><br><span class="line">web3..toWei</span><br></pre></td></tr></table></figure></li>
+<li>数据类型转换<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">web3.toString</span><br><span class="line">web3.toDecimal</span><br><span class="line">web3.toBigNumber</span><br></pre></td></tr></table></figure></li>
+<li>字符编码转换<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">web3.toHex</span><br><span class="line">web3.toAscii</span><br><span class="line">web3.toUtf8</span><br><span class="line">web3.fromUtf8</span><br></pre></td></tr></table></figure></li>
+<li>地址相关<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">web3.isAddress</span><br><span class="line">web3.toChecksumAddress</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>注意</strong>：</p>
+<ol>
+<li>地址是40个16进制字符，比如：0x4DFdd4c39B99C88d795E7a200f05A6A8f5D80A5b</li>
+<li>在1.0.0版本中，上述操作大多被放入web3.utils中</li>
+</ol>
+<h2 id="web3-eth-——-账户相关"><a href="#web3-eth-——-账户相关" class="headerlink" title="web3.eth —— 账户相关"></a>web3.eth —— 账户相关</h2><p><strong>coinbase查询</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<ul>
+<li>同步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.coinbase</span><br></pre></td></tr></table></figure></li>
+<li>异步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getCoinbase((err,res)&#x3D;&gt;console.log(res))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getCoinbase().then(console.log)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>账户查询</strong></p>
+<ul>
+<li><p>v0.2.x.x</p>
+<ul>
+<li>同步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.accounts</span><br></pre></td></tr></table></figure></li>
+<li>异步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getAccounts((err,res)&#x3D;&gt;console.log(res))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>v1.0.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getAccounts().then(console.log)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="区块相关"><a href="#区块相关" class="headerlink" title="区块相关"></a>区块相关</h2><p><strong>区块高度查询</strong></p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.blockNumber</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getBlockNumber(callback)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>gasPrice 查询</strong></p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.gasPrice</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getGasPrice(callback)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="交易相关"><a href="#交易相关" class="headerlink" title="交易相关"></a>交易相关</h2><ul>
+<li><p>余额查询</p>
+<ul>
+<li>同步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getBalance(addressHexString [, defaultBlock])</span><br></pre></td></tr></table></figure></li>
+<li>异步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getBalance(addressHexString [, defaultBlock] [,callback])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>交易查询</p>
+<ul>
+<li>同步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getTransaction(transactionHash)</span><br></pre></td></tr></table></figure></li>
+<li>异步<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getTransaction(transactionHash [,callback])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>交易收据查询</p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getTransactionReceipt(hashString)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.getTransactionReceipt(hashString [, callback])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>估计gas消耗量</p>
+<ul>
+<li><p>同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.estimateGas(callObject)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.estimateGas(callObject [, callback])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>发送交易</p>
+<ul>
+<li>from： 发送地址</li>
+<li>to：接收地址</li>
+<li>value：交易金额，以wei为单位，可选</li>
+<li>gas：交易消耗gas上限，可选</li>
+<li>gasPrice：交易gas单价，可选</li>
+<li>data：交易携带的字串数据，可选</li>
+<li>nonce：整数nonce值，可选<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.sendTransaction(transactionObject [,callback])</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<p>发送交易过程如下：</p>
+<p><img src="./Pic/Blockchain/trans1.png" alt=""></p>
+<h2 id="消息调用"><a href="#消息调用" class="headerlink" title="消息调用"></a>消息调用</h2><p>消息调用与交易的区别是，当我们想给合约发起调用（调用函数，这时我们使用的是call方法），给别人发币时使用sendTransaction()，而调用合约时其实也可以使用sendTransaction()，但一般我们将不需要提交交易的消息调用上，比如我们不做状态改变（纯计算、查询等）。若引发了状态改变则一定要用sendTransaction()。</p>
+<p><strong>参数</strong>：</p>
+<ul>
+<li>调用对象：与交易对象相同，只是from也是可选的</li>
+<li>默认区块：默认”latest“，可以传入指定的区块高度</li>
+<li>回调函数：如果没有则为同步调用</li>
+</ul>
+<h2 id="日志过滤（事件监听）"><a href="#日志过滤（事件监听）" class="headerlink" title="日志过滤（事件监听）"></a>日志过滤（事件监听）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.filter(filterOptions [.callback])</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>filterString可以是”latest”or”pending”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var filter &#x3D; web3.eth.filter(filterString);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>或者可以填入一个日志过滤options</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var filter &#x3D; web3.eth.filter(options);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>监听日志变化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">filter.watch(options, function(error, result)&#123;</span><br><span class="line">	if (!error) console.log(result);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>停止监听</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filter.stopWatching()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>还可以用传入回调函数的方法，立刻开始监听日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.filter(options, function(error, result)&#123;</span><br><span class="line">	if (!error) console.log(result);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><img src="./Pic/Blockchain/filter.png" alt=""></p>
+<h2 id="合约相关"><a href="#合约相关" class="headerlink" title="合约相关"></a>合约相关</h2><h3 id="创建合约"><a href="#创建合约" class="headerlink" title="创建合约"></a>创建合约</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.contract</span><br></pre></td></tr></table></figure>
+
+<p>创建合约有两种方式，第一种方式为传入abi：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var MyContract &#x3D; web3.eth.contract(abiArray);</span><br></pre></td></tr></table></figure>
+
+<p>这时候我们拿到了一个js中的合约实例，但还未和区块链关联起来，我们还需要通过地址初始化合约实例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var contractinstance &#x3D; MyContract.at(address);</span><br></pre></td></tr></table></figure>
+
+<p>或者是部署一个新合约：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var contractinstance &#x3D; MyContract.new([contructorParam1][contructorParam2],&#123;data:&quot;0x12345...&quot;,from:myAccount, gas&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>constructorParam1主要是传入需要赋的初值，data部分其实就是字节码。因此综上所述，在使用web3部署合约时需同时使用abi和字节码。接下来我们开始部署自己的合约：</p>
+<p>合约如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity &gt;0.6.0;</span><br><span class="line"></span><br><span class="line">contract Coin&#123;</span><br><span class="line">    address public minter;</span><br><span class="line">    mapping(address&#x3D;&gt;uint) public balances;</span><br><span class="line">    event Sent(address from, address to, uint amount);</span><br><span class="line">    constructor()public&#123;</span><br><span class="line">        minter &#x3D; msg.sender;</span><br><span class="line">    &#125;</span><br><span class="line">    function mint(address receiver, uint amount)public&#123;</span><br><span class="line">        require(msg.sender &#x3D;&#x3D; minter);</span><br><span class="line">        balances[receiver] +&#x3D; amount;</span><br><span class="line">    &#125;</span><br><span class="line">    function send(address receiver, uint amount)public&#123;</span><br><span class="line">        require(balances[msg.sender] &gt;&#x3D; amount);</span><br><span class="line">        balances[msg.sender] -&#x3D; amount;</span><br><span class="line">        balances[receiver] +&#x3D; amount;</span><br><span class="line">        </span><br><span class="line">        emit Sent(msg.sender, receiver, amount);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="./Pic/Blockchain/contract1.png" alt=""></p>
+<p>我们在上面的步骤中，首先将前面已经得到的contract编译过后的abi传入：var coinContract = web3.eth.contract(abi)，然后获得字节码(byteCode)，连同其他参数一起new合约，于是就部署好了一个合约，这里需要注意的是，在传入字节码时需要在最前面加入’0x’，这是由于字节码本身就是16进制的，但编译出来的结果头部并没有带0x，需要手动去加。</p>
+<p>我们看一看部署的合约长啥样：</p>
+<p><img src="./Pic/Blockchain/contract2.png" alt=""></p>
+<p><img src="./Pic/Blockchain/contract3.png" alt=""></p>
+<p><img src="./Pic/Blockchain/contract4.png" alt=""></p>
+<p>以上是打印结果，然后我们可以通过coinContractInstance.address获得合约地址，同时也可以根据相应接口获得其他信息。</p>
+<h3 id="调用合约"><a href="#调用合约" class="headerlink" title="调用合约"></a>调用合约</h3><p>可以通过已创建的合约实例，直接调用合约函数</p>
+<ul>
+<li><p>直接调用，自动按函数类型决定用sendTransaction还是call</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myContractInstance.myMethod(param1 [,param2,...][,transactionObject][,defaultBlock][,callback]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>显式以消息调用形式call该函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myContractInstance.myMethod.call(param1 [,param2,...][,transactionObject][,defaultBlock][,callback]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>显式以发送交易形式调用该函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myContractInstance.myMethod.sendTransaction(param1 [,param2,...][,transactionObject][,defaultBlock][,callback]);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>最后的callback回调函数可选，若不选则为同步调用，但推荐使用异步调用方式。</p>
+<p>我们还是来直接尝试调用一下合约：（由于testrpc不太方便，我在这里改用了ganache）</p>
+<p><img src="./Pic/Blockchain/coin1.png" alt=""></p>
+<p><img src="./Pic/Blockchain/coin2.png" alt=""></p>
+<p><img src="./Pic/Blockchain/coin3.png" alt=""></p>
+<p>需要注意的是，这里我们需要在mint的时候写上：{from:web3.eth.accounts[0]}，因为需要让合约知道调用合约的人是谁才能发币。</p>
+<p>我们可以看到在ganache-cli中立刻出现了我们刚刚调用的合约情况：</p>
+<p><img src="./Pic/Blockchain/coin4.png" alt=""></p>
+<h3 id="监听合约事件"><a href="#监听合约事件" class="headerlink" title="监听合约事件"></a>监听合约事件</h3><ul>
+<li><p>合约的event类似于filter，可以设置过略选项来监听</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var event &#x3D; myContractInstance.MyEvent(&#123;valueA:23&#125; [,additionalFilterObject])</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>监听事件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">event.watch(function(err,, res)&#x3D;&gt;console.log(res))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以使用传入回调函数的方法，立刻开始监听事件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var event &#x3D; myContractInstance.MyEvent(&#123;valueA:23&#125;</span><br><span class="line">			[,additionalFilterObject], function(err, res)&#123;</span><br><span class="line">          			if(!err) console.log(res);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>可以通过以下方式触发监听：</p>
+<p><img src="./Pic/Blockchain/sent.png" alt=""></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/67d22044.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/c649d14b.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            头疼的Borel
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/733c8737.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">区块链入门（三） —— web3js编写以太坊脚本</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

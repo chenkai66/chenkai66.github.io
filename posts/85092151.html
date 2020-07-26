@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Python爬虫初级（四）—— 信息组织与提取方法 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Python爬虫初级（四）—— 信息组织与提取方法"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Python爬虫初级（四）—— 信息组织与提取方法
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/85092151.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.469Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spider/">Spider</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">8 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="信息标记的三种形式"><a href="#信息标记的三种形式" class="headerlink" title="信息标记的三种形式"></a>信息标记的三种形式</h1><blockquote>
+<p>信息的标记：<br>标记后的信息可形成信息组织结构，增加信息维度<br>标记后的信息可用于通信、存储或展示<br>标记的结构和信息一样具有重要价值<br>标记后的信息更利于程序理解和运用</p>
+</blockquote>
+<p>国际公认的信息标记的三种形式分别是 XML、JSON、YAML，下面分别介绍这三者：<br><strong>XML 即 eXtensible Markup Language</strong>，采用了以标签为主来构建信息和表达信息的方式，比如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"china.jpg size="</span><span class="attr">10</span>"&gt;</span> ... <span class="tag">&lt;/<span class="name">img</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"china.jpg size="</span><span class="attr">10</span>" /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- This is a comment --&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们不难发现，XML 的形式与 HTML 几乎完全一致，可以说 XML 是通过 HTML发展而来的通用表达形式。<br>另一种信息标记形式是 <strong>JSON (JavaScript Object Notation)</strong>，它是 JavaScript 语言中对面向对象的信息的一种表达形式，简单来讲，JSON 是由有类型的键值对构建的信息表达方式，具体形式如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"key1":"value1"</span><br><span class="line">"key2":["value2", "value3"]</span><br><span class="line">"key3":&#123;"subkey":"subvalue"&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>YAML(YAML Ain’t Markup Language)</strong> 是一种递归的定义，采用的是五类型的键值对来组织信息，和 Python 语言类似，YAML 通过缩进的方式表达所属关系比如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span>	<span class="comment"># 用 tab 表示所属关系</span></span><br><span class="line">	<span class="attr">newName :</span> <span class="string">abc</span></span><br><span class="line">	<span class="attr">oldName :</span> <span class="string">ABC</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span>	<span class="comment"># 用-表示并列关系</span></span><br><span class="line">	<span class="string">-abc</span></span><br><span class="line">	<span class="string">-ABC</span></span><br><span class="line"></span><br><span class="line"><span class="attr">text:</span> <span class="string">|</span>	<span class="comment"># 用 | 表示整块数据</span></span><br><span class="line">	<span class="string">简介：汉武帝刘彻（前156年7月7日—前87年3月29日），</span></span><br><span class="line">	<span class="string">西汉第七位皇帝（含前后少帝），政治家、文学家。</span></span><br><span class="line">	<span class="string">汉武帝在位期间（前141年—前87年），在政治上，创设中外朝制、刺史制、察举制，</span></span><br><span class="line">	<span class="string">颁行推恩令，加强君主专制与中央集权。</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="三种信息标记形式的比较"><a href="#三种信息标记形式的比较" class="headerlink" title="三种信息标记形式的比较"></a>三种信息标记形式的比较</h1><table>
+<thead>
+<tr>
+<th>信息标记形式</th>
+<th>特点</th>
+<th>应用情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>XML</td>
+<td>是最早的通用信息标记语言，可扩展性好，但较为繁琐</td>
+<td>Internet 上的信息交互与传递</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>信息有类型，适合程序处理，比 XML 更简洁</td>
+<td>移动应用云端和节点的信息通信，无注释</td>
+</tr>
+<tr>
+<td>YAML</td>
+<td>信息无类型，文本信息比例最高，可读性好</td>
+<td>各类系统的配置文件，有注释易读，应用相对较广泛</td>
+</tr>
+</tbody></table>
+<h1 id="信息提取的一般方法"><a href="#信息提取的一般方法" class="headerlink" title="信息提取的一般方法"></a>信息提取的一般方法</h1><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>例子</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>完整解析信息标记形式，再提取关键信息，需要标记解析器</td>
+<td>bs4 库的标签树遍历</td>
+<td>信息解析准确</td>
+<td>提取过程繁琐、速度慢</td>
+</tr>
+<tr>
+<td>无视标记形式，直接搜索关键信息</td>
+<td>Word 对信息的文本查找函数</td>
+<td>提取过程简介，速度较快</td>
+<td>提取结果准确性与信息内容相关</td>
+</tr>
+</tbody></table>
+<p>实际上更常用的是两者结合的融合方法：即结合形式解析与搜索方法，提取关键信息，这需要标记解析器及文本查找函数。下面我们考虑实例：提取 HTML 中所有的 URL 链接，具体思路是：</p>
+<blockquote>
+<p>  1） 搜索所有 &lt;a&gt; 标签<br>  2） 解析 &lt;a&gt; 标签格式，提取 href 后的链接内容</p>
+</blockquote>
+<p>具体代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> requests</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>url = <span class="string">"http://python123.io/ws/demo.html"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res = requests.get(url)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>demo = res.text</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>demo</span><br><span class="line"><span class="string">'&lt;html&gt;&lt;head&gt;&lt;title&gt;This is a python demo page&lt;/title&gt;&lt;/head&gt;\r\n&lt;body&gt;\r\n&lt;p class="title"&gt;&lt;b&gt;The demo python introduces several python courses.&lt;/b&gt;&lt;/p&gt;\r\n&lt;p class="course"&gt;Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\r\n&lt;a href="http://www.icourse163.org/course/BIT-268001" class="py1" id="link1"&gt;Basic Python&lt;/a&gt; and &lt;a href="http://www.icourse163.org/course/BIT-1001870001" class="py2" id="link2"&gt;Advanced Python&lt;/a&gt;.&lt;/p&gt;\r\n&lt;/body&gt;&lt;/html&gt;'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup = BeautifulSoup(demo, <span class="string">"html.parser"</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> link <span class="keyword">in</span> soup.find_all(<span class="string">"a"</span>):</span><br><span class="line">	print(link.get(<span class="string">"href"</span>))</span><br><span class="line"></span><br><span class="line">http://www.icourse163.org/course/BIT<span class="number">-268001</span></span><br><span class="line">http://www.icourse163.org/course/BIT<span class="number">-1001870001</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="基于-BeautifulSoup-库的内容查找方法"><a href="#基于-BeautifulSoup-库的内容查找方法" class="headerlink" title="基于 BeautifulSoup 库的内容查找方法"></a>基于 BeautifulSoup 库的内容查找方法</h1><p>由前例我们可以看见， find_all 方法可以返回一个列表类型，存储查找的结果，find_all 的具体使用方法为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;&gt;.find_all(name, attrs, recursive, string, **kwargs)</span><br></pre></td></tr></table></figure>
+<p>其中，name 为对标签的检索字符串，如果我们希望查找两个标签，可以以列表形式传入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"a"</span>)</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all([<span class="string">"a"</span>,<span class="string">"b"</span>])</span><br><span class="line">[&lt;b&gt;The demo python introduces several python courses.&lt;/b&gt;, &lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> tag <span class="keyword">in</span> soup.find_all(true):</span><br><span class="line">		print(tag.name)</span><br><span class="line">	</span><br><span class="line">html</span><br><span class="line">head</span><br><span class="line">title</span><br><span class="line">body</span><br><span class="line">p</span><br><span class="line">b</span><br><span class="line">p</span><br><span class="line">a</span><br><span class="line">a</span><br></pre></td></tr></table></figure>
+
+<p>我们看到，若 find_all(true) ，则会返回所有标签。若希望只显示所有以 b 开头的标签，包括 b 和 body 标签，我们应该怎么办呢？这时我们应该使用正则表达式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> tag <span class="keyword">in</span> soup.find_all(re.compile(<span class="string">'b'</span>)):</span><br><span class="line">	print(tag.name)</span><br><span class="line">	</span><br><span class="line">body</span><br><span class="line">b</span><br></pre></td></tr></table></figure>
+
+<p>find_all 的第二个参数 attrs 是对标签属性值的检索字符串，可标注属性检索。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"p"</span>, <span class="string">"course"</span>)</span><br><span class="line">[&lt;p class="course"&gt;Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:</span><br><span class="line">&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt; and &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;.&lt;/p&gt;]</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(id=<span class="string">"link1"</span>)</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(id=<span class="string">"link"</span>)</span><br><span class="line">[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(id=re.compile(<span class="string">"link"</span>))</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>find_all 的第三个参数是 recursive，即是否对子孙进行全部检索，默认为 True。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"a"</span>)</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"a"</span>,recursive=<span class="literal">False</span>)</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
+
+<p>上述代码说明，soup 的根节点下是没有 a 标签的， a 标签在其子孙节点中。<br>find_all 的第四个参数是 string，是对 &lt;&gt;…&lt;/&gt; 中字符串区域的检索字符串，下面看一个例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re </span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(string=<span class="string">"Basic Python"</span>)</span><br><span class="line">[<span class="string">'Basic Python'</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(string=<span class="string">"Python"</span>)</span><br><span class="line">[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(string=re.compile(<span class="string">"Python"</span>))</span><br><span class="line">[<span class="string">'Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\r\n'</span>, <span class="string">'Basic Python'</span>, <span class="string">'Advanced Python'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>事实上，我们有一个简写的形式，即：</p>
+<blockquote>
+<p>&lt;tag&gt;(…)  等价于 &lt;tag&gt;.find_all(…)<br>soup(…) 等价于 soup.find_all(…)</p>
+</blockquote>
+<p>BeautifulSoup 库有八个常用方法，都是顾名思义的，就不在此做详细介绍了，方法列举为：find_all, find, find_parent, find_parents, find_next_siblings, find_next_sibling, find_previous_sibling, find_previous_siblings </p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/85092151.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/acf1f2c0.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Tensorflow 神经网络搭建（一）—— 组件构建与基础使用
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/5cc32bbc.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Python爬虫初级（十）—— Session 和 Cookie 详解</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

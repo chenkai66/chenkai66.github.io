@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    HOG特征描述算子-行人检测 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-HOG特征描述算子-行人检测"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  HOG特征描述算子-行人检测
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/91c329d0.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.227Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/CV/">CV</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.6k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">13 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="HOG特征"><a href="#HOG特征" class="headerlink" title="HOG特征"></a>HOG特征</h1><h2 id="HOG特征概述"><a href="#HOG特征概述" class="headerlink" title="HOG特征概述"></a>HOG特征概述</h2><p>方向梯度直方图（Histogram of Oriented Gradient, HOG）特征是一种在计算机视觉和图像处理中用来进行物体检测的特征描述子。它通过计算和统计图像局部区域的梯度方向直方图来构成特征。Hog特征结合SVM分类器已经被广泛应用于图像识别中，尤其在行人检测中获得了极大的成功。需要提醒的是，HOG+SVM进行行人检测的方法是法国研究人员Dalal在2005的CVPR上提出的，而如今虽然有很多行人检测算法不断提出，但基本都是以HOG+SVM的思路为主。</p>
+<p><strong>主要思想</strong></p>
+<p>在一副图像中，局部目标的表象和形状（appearance and shape）能够被梯度或边缘的方向密度分布很好地描述。（本质：梯度的统计信息，而梯度主要存在于边缘的地方）。</p>
+<p><strong>具体的实现方法</strong></p>
+<p>首先将图像分成小的连通区域，我们把它叫细胞单元（胞元）。然后采集细胞单元中各像素点的梯度的或边缘的方向直方图。最后把这些直方图组合起来就可以构成特征描述器。</p>
+<p><strong>提高性能</strong></p>
+<p>把这些局部直方图在图像的更大的范围内（我们把它叫区间或block）进行对比度归一化（contrast-normalized），所采用的方法是：先计算各直方图在这个区间（block）中的密度，然后根据这个密度对区间中的各个细胞单元做归一化。通过这个归一化后，能对光照变化和阴影获得更好的效果。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>由于HOG是在图像的局部方格单元上操作，所以它对图像几何的和光学的形变都能保持很好的不变性，这两种形变只会出现在更大的空间领域上；</li>
+<li>在粗的空域抽样、精细的方向抽样以及较强的局部光学归一化等条件下，只要行人大体上能够保持直立的姿势，可以容许行人有一些细微的肢体动作，这些细微的动作可以被忽略而不影响检测效果。因此HOG特征是特别适合于做图像中的人体检测的。</li>
+</ul>
+<h2 id="HOG特征提取方法"><a href="#HOG特征提取方法" class="headerlink" title="HOG特征提取方法"></a>HOG特征提取方法</h2><p>大体来说，首先对输入的图片进行预处理，然后计算像素点的梯度特特性，包括梯度幅值和梯度方向。然后投票统计形成梯度直方图，然后对blocks进行normalize，最后收集到HOG feature（其实是一行多维的vector）放到SVM里进行监督学习，从而实现行人的检测。</p>
+<p><img src="./Pic/CV/hog1.png" alt=""></p>
+<p>将上述过程拆分如下，下面分别进行讲解。</p>
+<h3 id="灰度化（将图像看做一个-x-y-z-（灰度）的三维图像）；"><a href="#灰度化（将图像看做一个-x-y-z-（灰度）的三维图像）；" class="headerlink" title="灰度化（将图像看做一个$x,y,z$（灰度）的三维图像）；"></a>灰度化（将图像看做一个$x,y,z$（灰度）的三维图像）；</h3><ul>
+<li>灰度处理是可选操作，因为灰度图像和彩色图像都可以用于计算梯度图。对于彩色图像，先对三通道颜色值分别计算梯度，然后取梯度值最大的那个作为该像素的梯度。</li>
+</ul>
+<h3 id="采用Gamma校正法对输入图像进行颜色空间的标准化（归一化）"><a href="#采用Gamma校正法对输入图像进行颜色空间的标准化（归一化）" class="headerlink" title="采用Gamma校正法对输入图像进行颜色空间的标准化（归一化）"></a>采用Gamma校正法对输入图像进行颜色空间的标准化（归一化）</h3><p><strong>目的是调节图像的对比度，降低图像局部的阴影和光照变化所造成的影响，同时可以抑制噪音的干扰；</strong></p>
+<ul>
+<li>伽马矫正公式：$f(I)=I^{\gamma}$，其中$I$表示原图像<ul>
+<li>当$\gamma&lt;1$时，输入图像的低灰度值区域动态范围变大，进而图像低灰度值区域对比度得以增强；在高灰度值区域，动态范围变小，进而图像高灰度值区域对比度得以降低。 最终，图像整体的灰度变亮。</li>
+<li>当$\gamma&gt;1$时，输入图像的高灰度值区域动态范围变小，进而图像低灰度值区域对比度得以降低；在高灰度值区域，动态范围变大，进而图像高灰度值区域对比度得以增强。 最终，图像整体的灰度变暗。</li>
+<li>比如可以取$\gamma=\frac12$</li>
+</ul>
+</li>
+</ul>
+<p>灰度图转化以及Gamma校正处理代码实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line">img = cv2.imread(<span class="string">'*.png'</span>, <span class="number">0</span>)</span><br><span class="line">img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)</span><br><span class="line">img2 = np.power(img/float(np.max(img)),<span class="number">1</span>/<span class="number">2.2</span>)</span><br><span class="line">plt.imshow(img2)</span><br><span class="line">plt.axis(<span class="string">'off'</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="计算图像每个像素的梯度（包括大小和方向）"><a href="#计算图像每个像素的梯度（包括大小和方向）" class="headerlink" title="计算图像每个像素的梯度（包括大小和方向）"></a>计算图像每个像素的梯度（包括大小和方向）</h3><p><strong>主要是为了捕获轮廓信息，同时进一步弱化光照的干扰。</strong></p>
+<ul>
+<li><p>为了得到梯度直方图，那么首先需要计算图像水平方向和垂直方向梯度。一般使用特定的卷积核对图像滤波实现，可选用的卷积模板有：soble算子、Prewitt算子、Roberts模板等等。一般采用soble算子，OpenCV也是如此，最常用的方法是：首先用$[-1,0,1]$梯度算子对原图像做卷积运算，得到$x$方向（水平方向，以向右为正方向）的梯度分量gradscalx，然后用$[1,0,-1]^T$梯度算子对原图像做卷积运算，得到$y$方向（竖直方向，以向上为正方向）的梯度分量gradscaly。然后再用以上公式计算该像素点的梯度大小和方向。</p>
+</li>
+<li><p>利用soble水平和垂直算子与输入图像卷积计算$dx、dy$的计算方式为：<br>$$Sobel_X=\begin{bmatrix}1\0\-1\end{bmatrix}<em>\begin{bmatrix}1&amp;2&amp;1\end{bmatrix}=\begin{bmatrix}1&amp;2&amp;1\0&amp;0&amp;0\-1&amp;-2&amp;-1\end{bmatrix}\Sobel_X=\begin{bmatrix}1\2\1\end{bmatrix}</em>\begin{bmatrix}1&amp;0&amp;-1\end{bmatrix}=\begin{bmatrix}1&amp;0&amp;-1\2&amp;0&amp;-2\1&amp;0&amp;-1\end{bmatrix}$$<br>$$d_x=f(x,y)<em>Sobel_X(x,y)\<br>d_y=f(x,y)</em>Sobel_Y(x,y)$$<br>或者更广泛地说：<br>$$d_x=H(x+1,y)-H(x-1,y)$$<br>$$d_y=H(x,y+1)-H(x,y-1)$$<br>其中$H(x,y)$为像素点$(x,y)$处的像素值。</p>
+</li>
+<li><p>进一步可以得到图像梯度的幅值：<br>$$M(x,y)=\sqrt{d_x^2(x,y)+d_y^2(x,y)}$$<br>为了简化计算，幅值也可以作如下近似：<br>$$M(x,y)=|d_x(x,y)|+|d_y(x,y)|$$<br>而梯度方向为：<br>$$\alpha(x,y)=tan^{-1}(\frac{G_y(x,y)}{G_x(x,y)})$$</p>
+</li>
+<li><p>计算梯度代码如下：</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># Read image</span></span><br><span class="line">img = cv2.imread(<span class="string">'*.jpg'</span>)</span><br><span class="line">img = np.float32(img) / <span class="number">255.0</span>  <span class="comment"># 归一化</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算x和y方向的梯度</span></span><br><span class="line">gx = cv2.Sobel(img, cv2.CV_32F, <span class="number">1</span>, <span class="number">0</span>, ksize=<span class="number">1</span>)</span><br><span class="line">gy = cv2.Sobel(img, cv2.CV_32F, <span class="number">0</span>, <span class="number">1</span>, ksize=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算合梯度的幅值和方向（角度）</span></span><br><span class="line">mag, angle = cv2.cartToPolar(gx, gy, angleInDegrees=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="为每个细胞单元构建梯度方向直方图"><a href="#为每个细胞单元构建梯度方向直方图" class="headerlink" title="为每个细胞单元构建梯度方向直方图"></a>为每个细胞单元构建梯度方向直方图</h3><p><strong>将图像划分成小cells（例如$6*6$像素/cell），统计每个cell的梯度直方图（不同梯度的个数），即可形成每个cell的descriptor</strong></p>
+<ul>
+<li><p>经过前两步计算，每一个像素点都会有两个值：梯度幅值/梯度方向。在这一步中，图像被分成若干个8×8的cell(每个cell可以是矩形圆形或是星形)，例如我们将图像resize至64x128的大小，那么这幅图像就被划分为8x16个8x8的cell单元，并为每个8×8的cell计算梯度直方图。当然，cell的划分也可以是其他值：16x16，8x16等，根据具体的场景确定。</p>
+</li>
+<li><p>在计算梯度直方图，让我们先了解一下为什么我们将图像分成若干个cell?这是因为如果对一整张梯度图逐像素计算，其中的有效特征是非常稀疏的，不但运算量大，而且会受到一些噪声干扰。于是我们就使用局部特征描述符来表示一个更紧凑的特征，计算这种局部cell上的梯度直方图更具鲁棒性。</p>
+</li>
+<li><p>以8x8的cell为例，一个8x8的cell包含了8x8x2 = 128个值，因为每个像素包括梯度的大小和方向。在HOG中，每个8x8的cell的梯度直方图本质是一个由9个数值组成的向量， 对应于0、20、40、60…160的梯度方向(角度)。那么原本cell中8x8x2 = 128个值就由长度为9的向量来表示，用这种梯度直方图的表示方法，大大降低了计算量，同时又对光照等环境变化更加地鲁棒。首先看下图：</p>
+</li>
+</ul>
+<p><img src="./Pic/CV/hog2.png" alt=""></p>
+<ul>
+<li><p>左图是衣服64x128的图像，被划分为8x16个8x8的cell；中间的图像表示一个cell中的梯度矢量，箭头朝向代表梯度方向，箭头长度代表梯度大小。右图是 8×8 的cell中表示梯度的原始数值，注意角度的范围介于0到180度之间，而不是0到360度， 这被称为“无符号”梯度，因为两个完全相反的方向被认为是相同的。</p>
+</li>
+<li><p>接下来，我们来计算cell中像素的梯度直方图，将0-180度分成9等份，称为9个bins，分别是0，20，40…160。然后对每个bin中梯度的贡献进行统计：</p>
+</li>
+</ul>
+<p><img src="./Pic/CV/hog3.png" alt=""></p>
+<p>统计方法是一种加权投票统计， 如上图所示，某像素的梯度幅值为13.6，方向为36，36度两侧的角度bin分别为20度和40度，那么就按一定加权比例分别在20度和40度对应的bin加上梯度值，加权公式为：</p>
+<ul>
+<li>20度对应的bin：$((40-36)/20) * 13.6$，分母的20表示20等份，而不是20度；</li>
+<li>40度对应的bin：$(36-20)/20) * 13.6$，分母的20表示20等份，而不是20度；</li>
+</ul>
+<p>还有一个细节需要注意，如果某个像素的梯度角度大于160度，也就是在160度到180度之间，那么把这个像素对应的梯度值按比例分给0度和160度对应的bin。如左下图绿色圆圈中的角度为165度，幅值为85，则按照同样的加权方式将85分别加到0度和160度对应的bin中。</p>
+<p><img src="./Pic/CV/hog4.png" alt=""></p>
+<p>对整个cell进行投票统计，正是在HOG特征描述子中创建直方图的方式，最终得到由9个数值组成的向量—梯度方向图：</p>
+<p><img src="./Pic/CV/hog5.png" alt=""></p>
+<h3 id="把细胞单元组合成大的block，块内归一化梯度直方图"><a href="#把细胞单元组合成大的block，块内归一化梯度直方图" class="headerlink" title="把细胞单元组合成大的block，块内归一化梯度直方图"></a>把细胞单元组合成大的block，块内归一化梯度直方图</h3><p><strong>将每几个cell组成一个block（例如$3*3$cell/block或4cell/block），一个block内所有cell的特征descriptor串联起来便得到该block的HOG特征descriptor</strong></p>
+<p>由于局部光照的变化以及前景-背景对比度的变化，使得梯度强度的变化范围非常大。这就需要对梯度强度做归一化。</p>
+<p>作者采取的办法是：把各个细胞单元组合成大的、空间上连通的区间（blocks）。这样，一个block内所有cell的特征向量串联起来便得到该block的HOG特征。这些区间是互有重叠的，这就意味着：每一个单元格的特征会以不同的结果多次出现在最后的特征向量中。我们将归一化之后的块描述符（向量）就称之为HOG描述符。</p>
+<p><strong>归一化能够进一步地对光照、阴影和边缘进行压缩。</strong>归一化的方法有很多：L1-norm、L2-norm、max/min等等，一般选择L2-norm。具体方式为：</p>
+<ul>
+<li>一个cell有一个梯度方向直方图，包含9个数值，一个block有4个cell，那么一个block就有4个梯度方向直方图，将这4个直方图拼接成长度为36的向量，然后对这个向量进行归一化。</li>
+<li>而每一个block将按照上图滑动的方式进行重复计算，直到整个图像的block都计算完成</li>
+</ul>
+<h3 id="收集HOG特征，将block串联得到image"><a href="#收集HOG特征，将block串联得到image" class="headerlink" title="收集HOG特征，将block串联得到image"></a>收集HOG特征，将block串联得到image</h3><p>最后一步就是将检测窗口中所有重叠的块进行HOG特征的收集，并将它们结合成最终的特征向量供分类使用。将图像image内的所有block的HOG特征descriptor串联起来就可以得到该image（你要检测的目标）的HOG特征descriptor，这个就是最终的可供分类使用的特征向量。</p>
+<h3 id="HOG过程梳理及特征维数"><a href="#HOG过程梳理及特征维数" class="headerlink" title="HOG过程梳理及特征维数"></a>HOG过程梳理及特征维数</h3><ul>
+<li>把样本图像分割为若干个像素的单元（cell），把梯度方向平均划分为9个区间（bin）</li>
+<li>在每个单元里面对所有像素的梯度方向在各个方向区间进行直方图统计，得到一个9维的特征向量</li>
+<li>每相邻的4个单元构成一个块（block），把一个块内的特征向量联起来得到36维的特征向量</li>
+<li>用块对样本图像进行扫描，扫描步长为一个单元</li>
+<li>最后将所有块的特征串联起来，就得到了人体的特征</li>
+</ul>
+<p>例如，对于$64<em>128$的图像而言，每$8</em>8$的像素组成一个cell，每$2<em>2$个cell组成一个块，因为每个cell有9个特征，所以每个块内有$4</em>9=36$个特征，以8个像素为步长，那么，水平方向将有7个扫描窗口，垂直方向将有15个扫描窗口。也就是说，$64<em>128$的图片，总共有$36</em>7*15=3780$个特征。</p>
+<h1 id="HOG行人检测"><a href="#HOG行人检测" class="headerlink" title="HOG行人检测"></a>HOG行人检测</h1><h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>提取正负样本hog特征</li>
+<li>投入svm分类器训练，得到model</li>
+<li>由model生成检测子</li>
+<li>利用检测子检测负样本，得到hardexample</li>
+<li>提取hardexample的hog特征并结合第一步中的特征一起投入训练，得到最终检测子。</li>
+</ol>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2 <span class="keyword">as</span> cv</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    src = cv.imread(<span class="string">"*.jpg"</span>)</span><br><span class="line">    cv.imshow(<span class="string">"input"</span>, src)</span><br><span class="line"></span><br><span class="line">    hog = cv.HOGDescriptor()</span><br><span class="line">    hog.setSVMDetector(cv.HOGDescriptor_getDefaultPeopleDetector())</span><br><span class="line">    <span class="comment"># Detect people in the image</span></span><br><span class="line">    (rects, weights) = hog.detectMultiScale(src,</span><br><span class="line">                                            winStride=(<span class="number">2</span>,<span class="number">4</span>),</span><br><span class="line">                                            padding=(<span class="number">8</span>, <span class="number">8</span>),</span><br><span class="line">                                            scale=<span class="number">1.2</span>,</span><br><span class="line">                                            useMeanshiftGrouping=<span class="literal">False</span>)</span><br><span class="line">    <span class="keyword">for</span> (x, y, w, h) <span class="keyword">in</span> rects:</span><br><span class="line">        cv.rectangle(src, (x, y), (x + w, y + h), (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    cv.imshow(<span class="string">"hog-detector"</span>, src)</span><br><span class="line">    cv.imwrite(<span class="string">"hog-detector.jpg"</span>,src)</span><br><span class="line">    cv.waitKey(<span class="number">0</span>)</span><br><span class="line">    cv.destroyAllWindows()</span><br></pre></td></tr></table></figure>
+
+<p>可视化方式为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> skimage <span class="keyword">import</span> feature, exposure</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line">image = cv2.imread(<span class="string">'sp_g.jpg'</span>)</span><br><span class="line">image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)</span><br><span class="line"></span><br><span class="line">fd, hog_image = feature.hog(image, orientations=<span class="number">9</span>, pixels_per_cell=(<span class="number">8</span>, <span class="number">8</span>),</span><br><span class="line">                    cells_per_block=(<span class="number">2</span>, <span class="number">4</span>), visualize=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Rescale histogram for better display</span></span><br><span class="line">hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(<span class="number">0</span>, <span class="number">10</span>))</span><br><span class="line"></span><br><span class="line">cv2.namedWindow(<span class="string">"img"</span>,cv2.WINDOW_NORMAL)</span><br><span class="line">cv2.imshow(<span class="string">'img'</span>, image)</span><br><span class="line">cv2.namedWindow(<span class="string">"hog"</span>,cv2.WINDOW_NORMAL)</span><br><span class="line">cv2.imshow(<span class="string">'hog'</span>, hog_image_rescaled)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)==ord(<span class="string">'q'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>我们的实验图片为：</p>
+<p><img src="./Pic/CV/xr.jpg" alt=""></p>
+<p>实验结果为：</p>
+<p><img src="./Pic/CV/hd.jpg" alt=""></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>HOG算法具有以下优点：</p>
+<ol>
+<li>HOG描述的是边缘结构特征，可以描述物体的结构信息</li>
+<li>对光照影响不敏感</li>
+<li>分块的处理可以使特征得到更为紧凑的表示</li>
+</ol>
+<p>HOG算法具有以下缺点：</p>
+<ol>
+<li>特征描述子获取过程复杂，维数较高，导致实时性差</li>
+<li>遮挡问题很难处理</li>
+<li>对噪声比较敏感</li>
+</ol>
+<blockquote>
+<p>参考链接</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><a href="https://blog.csdn.net/liulina603/article/details/8291093" target="_blank" rel="noopener">https://blog.csdn.net/liulina603/article/details/8291093</a></li>
+<li><a href="https://www.cnblogs.com/hehuaizhou/p/13206415.html" target="_blank" rel="noopener">https://www.cnblogs.com/hehuaizhou/p/13206415.html</a></li>
+</ul>
+</blockquote>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/91c329d0.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/3b6698e9.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            JAVA基础（一）—— String
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/5f014252.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Harris特征点检测器-兴趣点检测</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

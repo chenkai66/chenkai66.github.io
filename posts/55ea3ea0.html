@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    数理统计笔记_假设检验 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-数理统计笔记_假设检验"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  数理统计笔记_假设检验
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/55ea3ea0.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.528Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mathematics/">Mathematics</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.1k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">10 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="假设检验"><a href="#假设检验" class="headerlink" title="假设检验"></a>假设检验</h1><p><strong>含义</strong>：提出一个看法，判断一个看法（假设）是否成立，即为假设检验问题。</p>
+<p><strong>检验</strong>：关于参数的判断，称为参数检验问题，不涉及参数的检验称为非参数检验，检验的基本思想是概率意义下的反证法。</p>
+<p><strong>小概率原理</strong>：概率很小的时间在一次实验中，实际上几乎不会发生</p>
+<p>假设检验也叫显著性检验，是以小概率反证法的逻辑推理，判断假设是否成立的统计方法，它首先假设样本对应的总体参数（或分布）与某个已知总体参数（或分布）相同，然后根据统计量的分布规律来分析样本数据，利用样本信息判断是否支持这种假设，并对检验假设做出取舍抉择，做出的结论是概率性的，不是绝对的肯定或者否定。</p>
+<p>假设检验有两种错误，第一类型错误和第二类型错误。第一类型错误，是零假设成立的情况下拒绝零假设。第二类型错误，是备选假设成立的情况下接受零假设。</p>
+<p>假设检验保证，第一类型错误概率不超过α。这是因为在零假设成立的情况下，统计量 st 值落在区域 I 的可能性小于等于α。对于第二类错误，假设检验就没有什么控制了。为什么假设检验控制第一类错误，而忽略第二类错误呢？一般情况下，零假设代表无效、无作用或者无影响，而备选假设代表有效、有作用或者有影响。这时候第一类错误的危害比第二类错误的大。比如在验证新算法有效性实验中，新算法实际无效但被认为有效的第一类型错误，会让大家错误地使用这个算法。新算法有效而被认为无效的第二类错误，只是让自己发不出论文，对大众没有影响。</p>
+<h2 id="假设检验的步骤"><a href="#假设检验的步骤" class="headerlink" title="假设检验的步骤"></a>假设检验的步骤</h2><ol>
+<li>建立检验假设和确定检验水准</li>
+<li>选定检验方法和计算检验统计量</li>
+<li>确定P值和做出推断结论</li>
+</ol>
+<h3 id="建立检验假设和确定检验水准"><a href="#建立检验假设和确定检验水准" class="headerlink" title="建立检验假设和确定检验水准"></a>建立检验假设和确定检验水准</h3><h4 id="建立检验假设"><a href="#建立检验假设" class="headerlink" title="建立检验假设"></a>建立检验假设</h4><p>在均数的比较中，检验假设是针对总体特征而言，包括相互对立的两个方面：</p>
+<ul>
+<li>原假设、零假设$H_0$：它是要否定的假设</li>
+<li>备择假设$H_1$：它是$H_0$的对立面</li>
+</ul>
+<p>二者是从反证法的思想提出的，$H_0$和$H_1$是相互联系又相互对立的假设。</p>
+<p>研究者可能有两种目的：</p>
+<ol>
+<li>推断两个总体均数有无明显差别。不管是病人某体征高于正常人还是低于正常人，两种可能性都存在，研究者同等关心，则应使用双侧检验。</li>
+<li>根据专业知识，已知病人不会低于正常人，或是研究者只关心病人该体征是否高于正常人，应当使用单侧检验。</li>
+</ol>
+<h4 id="确定检验水准"><a href="#确定检验水准" class="headerlink" title="确定检验水准"></a>确定检验水准</h4><p>建设检验还需根据不同研究目的事先设置是否拒绝原假设的判断标准，即检验水准。检验水准也称为显著性水准，它指无效假设$H_0$为真，但被错误地拒绝的一个小概率值，一般取$\alpha=0.05$</p>
+<p>原假设、备择假设和显著性水准的确定，以及单侧检验或双侧检验的选择，都应该结合研究设计，在未获得样本结果之前决定，而不受样本结果的影响。</p>
+<h3 id="选定检验方法和计算检验统计量"><a href="#选定检验方法和计算检验统计量" class="headerlink" title="选定检验方法和计算检验统计量"></a>选定检验方法和计算检验统计量</h3><p>要根据研究设计的类型和统计推断的目的选用不同的检验方法。如成组设计的两样本均数的比较用t检验，多个样本均数的比较用F检验。</p>
+<p>检验统计量时用于抉择是否拒绝原假设的统计量，其统计分布在统计推断中是至关重要的，不同的检验方法要用不同的方式计算现有样本的检验统计量值。</p>
+<h3 id="确定P值和做出推断结论"><a href="#确定P值和做出推断结论" class="headerlink" title="确定P值和做出推断结论"></a>确定P值和做出推断结论</h3><p>P值是指由原假设成立时的检验统计量出现在由样本计算出来的检验统计量的末端或更末端处的概率值。</p>
+<p><strong>$P≤α$时，结论为按所取检验水准拒原假设，接受备择假设。</strong>这样做出结论的理由是：在原假设成立的条件下，出现等于及大于现有检验统计量值的概率小于$α$（也即发生一类错误的概率），是小概率事件，这在一次抽样中是不大可能发生的，现有样本信息不支持原假设，因此拒绝他。</p>
+<p><strong>如果$P&gt;α$，即样本信息支持原假设，就没有理由拒绝它，因此只好接受原假设。</strong></p>
+<p>假设检验的结论是具有概率性的，不管是拒绝还是接受原假设，都有可能发生错误。拒绝原假设不等于原假设肯定不成立，因为小概率事件仍有可能发生只是可能性很小而已；同理，不拒绝原假设也不等于原假设肯定成立。</p>
+<h2 id="均值的比较：-t-检验"><a href="#均值的比较：-t-检验" class="headerlink" title="均值的比较：$t$检验"></a>均值的比较：$t$检验</h2><p>$t$检验也称学生$t$检验，$t$检验是用于<strong>两个样本（或样本与群体）平均值差异程度</strong>的检验方法。它是用$T$分布理论来推断差异发生的概率，从而判定两个平均数的差异是否显著。</p>
+<p>T检验的适用条件为<strong>样本分布符合正态分布</strong>。</p>
+<p><strong>t检验的应用条件</strong>：</p>
+<ol>
+<li>当样本数较小时，要求样本取自正态总体</li>
+<li>做两样本均数比较时，要求两样本的总体方差相同（如果方差不同也可进行t检验）</li>
+</ol>
+<h3 id="t-检验的类型"><a href="#t-检验的类型" class="headerlink" title="$t$检验的类型"></a>$t$检验的类型</h3><p>$t$检验有多种类型，可以分为只有一组样本的单体检验和有两组样本的双体检验。单体检验用于检验样本的分布期望是否等于某个值。双体检验用于检验两组样本的分布期望是否相等，又分为配对双体检验和非配对双体检验。配对双体检验的两组样本数据是一一对应的，而非配对双体检验的两组数据则是独立的。比如药物实验中，配对双体检验适用于观察同一组人服用药物之前和之后，非配对双体检验适用于一组服用药物而一组不服用药物。</p>
+<h4 id="单体检验"><a href="#单体检验" class="headerlink" title="单体检验"></a>单体检验</h4><p>单体检验是针对一组样本的假设检验。零假设为$H_0:μ=μ_0$。统计量服从自由度为$n-1$的$T$分布:<br>$$t = \frac{\bar x-\mu_0}{\frac{s}{\sqrt{n}}}$$<br>其中$\bar x$为样本均值，$s$为样本标准差，$n$为样本数。</p>
+<h4 id="配对双体检验"><a href="#配对双体检验" class="headerlink" title="配对双体检验"></a>配对双体检验</h4><p>配对样本应用场景：同一个样本在两个时间点的检测数据、同一个样本用两种检测方式的检测数据。</p>
+<p><strong>前提：两组独立样本必须都符合正态分布！！</strong></p>
+<p>配对双体检验针对配对的两组样本。配对双体检验假设两组样本之间的差值服从正态分布。如果该正态分布的期望为零，则说明这两组样本不存在显著差异。零假设为$H_0:\mu=\mu_0$，统计量服从自由度$n-1$的$T$分布：<br>$$t = \frac{d-\mu_0}{\frac{s}{\sqrt{n}}}$$<br>其中$d$是差值的平均值，$s$是差值的样本标准差。</p>
+<blockquote>
+<p>配对设计的t检验研究的是差值均数（样本均数）与理论上的差值总体均数的比较。<br>首先计算出各对差值$d$的均数。当两种处理结果无差别或某种处理不起作用时，理论上差值d的总体均数$μ_d=0$</p>
+</blockquote>
+<h4 id="非配对双体检验"><a href="#非配对双体检验" class="headerlink" title="非配对双体检验"></a>非配对双体检验</h4><p>非配对双体检验针对独立的两组样本。非配对双体检验假设两组样本是从不同的正态分布采样出来的。<strong>根据两个正态分布的标准差是否相等</strong>，非配对双体检验又可以分两类。</p>
+<p>一种是分布标准差相等的情况（<strong>方差齐性</strong>）。零假设是两组样本的分布期望相等，统计量$T$服从自由度为$n_1+n_2-2$的$T$分布：<br>$$t = \frac{\bar x_1-\bar x_2}{s_{x_1,x_2}\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}}$$<br>$$s_{x_1x_2} = \sqrt{\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}}$$</p>
+<p>另一种是分布标准差不相等的情况（方差非齐性），零假设也是两组样本的分布期望相等，统计量$T$服从$T$分布：<br>$$t = \frac{\bar x_1 - \bar x_2}{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$$</p>
+<h2 id="卡方检验"><a href="#卡方检验" class="headerlink" title="卡方检验"></a>卡方检验</h2><p>$\chi^2$概率分布主要用于检查实际结果与期望结果之间何时存在显著差别，该概率分布使用检验统计量$X^2$进行检验：<br>$$X^2 = \sum{\frac{(O-E)^2}{E}}$$<br>其中$X^2$~$\chi^2$，$O$代表观察值，$E$代表期望值，$v$表示自由度（即用于检验统计量$\chi_2$的独立变量的数目，或者说是独立信息段的数目），一般来说$v = $组数-限制数</p>
+<p>检验统计量的值越大，则说明观察值与期望结果之间存在的差异越明显，因此当检验统计量的结果大于查表得到的拒绝域时，就认为实际观察值与期望值不符，需要拒绝原假设。</p>
+<h3 id="卡方检验的两个主要用途"><a href="#卡方检验的两个主要用途" class="headerlink" title="卡方检验的两个主要用途"></a>卡方检验的两个主要用途</h3><h4 id="用于检验拟合优度"><a href="#用于检验拟合优度" class="headerlink" title="用于检验拟合优度"></a>用于检验拟合优度</h4><p>也就是可以检验一组给定的数据与指定分布的吻合程度，例如，用于检验给定数据的出现频率是否与理论频率相吻合。</p>
+<p>$\chi^2$拟合优度检验对相当多的概率分布都有效，只要你得到一组观察频数，且能算出期望频数，就可以使用$\chi^2$分布检验任何概率分布的拟合优度。而最大的困难在于计算自由度$v$（在查表确定拒绝域的时候需要自由度）</p>
+<h4 id="用于检验两个变量的独立性"><a href="#用于检验两个变量的独立性" class="headerlink" title="用于检验两个变量的独立性"></a>用于检验两个变量的独立性</h4><p>通过这个方法可以检查变量之间是否存在某种关联。</p>
+<h2 id="方差的比较：F检验"><a href="#方差的比较：F检验" class="headerlink" title="方差的比较：F检验"></a>方差的比较：F检验</h2><p>F检验又叫方差齐性检验，用于检验两组服从正态分布的样本是否具有相同的总体方差，即方差齐性。</p>
+<p>非参数检验</p>
+<p>参数检验是在假设总体分布已知的情况下进行的，但在实际生活中，那种对总体的分布的假定并不是能随便做出的。数据并不是来自所假定分布的总体，或者，数据根本不是来自一个增提；还有可能数据因为种种原因被污染。在这种情形下，在假定总体分布已知的情况下进行推断的做法就可能产生错误甚至导致灾难性的结论。于是，人们希望在不对整体分布做出假定的情况下，尽量从数据本身来获得所需要的信息，这就是分参数统计推断的总宗旨。</p>
+<p>参数检验中的重点是t检验，不同的t检验方法适用于不同的分析场景，在不满足t检验的条件的时候就需要非参数检验了，下表整理了不同场景下的检验方法：</p>
+<table>
+<thead>
+<tr>
+<th>分析方法</th>
+<th>功能</th>
+<th>正态性（前提）</th>
+<th>不服从正态时</th>
+<th>方差齐性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单样本T检验</td>
+<td>与某数字对比差异</td>
+<td>服从正态分布</td>
+<td>单样本Wilcoxon检验</td>
+<td>-</td>
+</tr>
+<tr>
+<td>配对样本T检验</td>
+<td>配对数据差异</td>
+<td>差值服从正态分布</td>
+<td>配对Wilcoxon检验</td>
+<td>无要求</td>
+</tr>
+<tr>
+<td>独立样本T检验</td>
+<td>两组数据差异</td>
+<td>两组数据均服从正态分布</td>
+<td>Mann-Whitney检验</td>
+<td>要求方差齐</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>本文转载自CSDN博客 <a href="https://blog.csdn.net/qq_26822029/article/details/103632054?utm_medium=distribute.pc_relevant.none-task-blog-baidujs-1" target="_blank" rel="noopener">https://blog.csdn.net/qq_26822029/article/details/103632054?utm_medium=distribute.pc_relevant.none-task-blog-baidujs-1</a> ，用于本人资料查询，不做商用</p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/55ea3ea0.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/c100533b.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            数理统计笔记_参数估计
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/b57883cc.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">数据结构之排序技术（五）—— 分配排序</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

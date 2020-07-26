@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Python爬虫初级（十三）—— 水木社区论坛爬取实战 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Python爬虫初级（十三）—— 水木社区论坛爬取实战"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Python爬虫初级（十三）—— 水木社区论坛爬取实战
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/e97854a0.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.435Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spider/">Spider</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">8 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="实战阶段一：分析首页大板块-URL"><a href="#实战阶段一：分析首页大板块-URL" class="headerlink" title="实战阶段一：分析首页大板块 URL"></a>实战阶段一：分析首页大板块 URL</h1><p>我们首先打开待爬取页面 —— 水木社区的首页：<a href="http://www.newsmth.net/nForum/#!mainpage，进入后页面如下：" target="_blank" rel="noopener">http://www.newsmth.net/nForum/#!mainpage，进入后页面如下：</a><br><img src="https://img-blog.csdnimg.cn/20200428102419709.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="水木社区板块">我们看到左边有很多讨论区板块，我们点进去试试：<br><img src="https://img-blog.csdnimg.cn/20200428102956475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="休闲娱乐板块页面"><br>我们现在就已经点进去了休闲娱乐讨论区，在这个讨论区中我们可以看到最上面的链接：<a href="http://www.newsmth.net/nForum/#!section/2，那这个链接就很有灵魂了，我们很容易就能猜到只要我们修改不同的" target="_blank" rel="noopener">http://www.newsmth.net/nForum/#!section/2，那这个链接就很有灵魂了，我们很容易就能猜到只要我们修改不同的</a> section，我们就可以进入不同的讨论区，我们进入讨论区后可以看到有不同的板块：<br><img src="https://img-blog.csdnimg.cn/20200428110506257.png#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="实战阶段二：获取子板块-URL"><a href="#实战阶段二：获取子板块-URL" class="headerlink" title="实战阶段二：获取子板块 URL"></a>实战阶段二：获取子板块 URL</h1><p>我们希望获取到这些板块的链接和标题，但点进去之后发现这些板块并不像它的上一级打开一样有 section 给我们选择，它是一个个的板块名称的英文，有人或许会想我们可以直接把这些对应的名称输入字典翻译过来再输回来不就可以了吗，但事实上每一个英文单词可能有不同的表达，而且就算我们能够确定他们的表达，我们还得建一个字典爬虫，这多麻烦啊。<br>我们先试着查看一下这篇网页的 notwork，打开 network 再点击刷新，我们筛选 XML 类型的数据：<br><img src="https://img-blog.csdnimg.cn/20200428111143949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="XML数据">事实上 XML 的数据并不多，我们只需要都看一看他们的响应值就可以找到这样一个汇总了所有条目信息的数据，我们点开这条 XML 的消息头：<br><img src="https://img-blog.csdnimg.cn/20200428111322899.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="消息头"><br>将对应的请求网址输入 POSTMAN 工具，点击 send 后得到对应的消息头：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200428111530817.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="POSTMAN"><br>点击最右侧的 code，此时它就会把我们所需的 headers 返回给我们：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200428111648269.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="Code"><br>我们直接复制 headers 部分，然后就按套路就能得到响应了（如果连套路都不会的话大家赶紧复习一下前面的内容：<a href="https://blog.csdn.net/ChenKai_164/article/details/105617886" target="_blank" rel="noopener">requests 实战</a>，最好把前前后后的知识都补一遍！<br>下面是这个部分的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"></span><br><span class="line">url = <span class="string">"http://www.newsmth.net/nForum/slist.json?uid=guest&amp;root=sec-9"</span></span><br><span class="line">headers = &#123;</span><br><span class="line">  <span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0'</span>,</span><br><span class="line">  <span class="string">'Host'</span>: <span class="string">'www.newsmth.net'</span>,</span><br><span class="line">  <span class="string">'Accept'</span>: <span class="string">'application/json, text/javascript, */*; q=0.01'</span>,</span><br><span class="line">  <span class="string">'Accept-Language'</span>: <span class="string">'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2'</span>,</span><br><span class="line">  <span class="string">'Accept-Encoding'</span>: <span class="string">'gzip, deflate'</span>,</span><br><span class="line">  <span class="string">'X-Requested-With'</span>: <span class="string">'XMLHttpRequest'</span>,</span><br><span class="line">  <span class="string">'Connection'</span>: <span class="string">'keep-alive'</span>,</span><br><span class="line">  <span class="string">'Referer'</span>: <span class="string">'http://www.newsmth.net/nForum/'</span>,</span><br><span class="line">  <span class="string">'Cookie'</span>: <span class="string">'Hm_lvt_bbac0322e6ee13093f98d5c4b5a10912=1587005280; main[UTMPUSERID]=guest; main[UTMPKEY]=40324888; main[UTMPNUM]=37000; Hm_lpvt_bbac0322e6ee13093f98d5c4b5a10912=1587005521; main[XWJOKE]=hoho; __gads=ID=c8ebf8ba150e0059:T=1587005311:S=ALNI_MZ_fNqTOR1qs7ZaHX7DWAcYp5CD8A; left-index=00100000000'</span>,</span><br><span class="line">  <span class="string">'Cache-Control'</span>: <span class="string">'max-age=0'</span>,</span><br><span class="line">  <span class="string">'Cookie'</span>: <span class="string">'main[UTMPUSERID]=guest; main[UTMPKEY]=10851192; main[UTMPNUM]=83713'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_text</span><span class="params">(url)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        res = requests.get(url, headers=headers)</span><br><span class="line">        res.raise_for_status</span><br><span class="line">        res.encoding = res.apparent_encoding</span><br><span class="line">        text = res.text</span><br><span class="line">        <span class="keyword">return</span> text</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line"></span><br><span class="line">text = get_text(url)</span><br><span class="line">text = text.replace(<span class="string">"["</span>, <span class="string">""</span>)</span><br><span class="line">text = text.replace(<span class="string">"]"</span>, <span class="string">""</span>)</span><br><span class="line">text_split = text.split(<span class="string">","</span>)</span><br><span class="line">href_list = []</span><br><span class="line">title_list = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(text_split)):</span><br><span class="line">    str_i = text_split[i]</span><br><span class="line">    pat1 = re.compile(<span class="string">r'a href=\\"(.*?)" title='</span>)</span><br><span class="line">    pat2 = re.compile(<span class="string">r'title=\\"(.*?)\\"&gt;'</span>)</span><br><span class="line">    href_ = re.findall(pat1, str_i)</span><br><span class="line">    title_ = re.findall(pat2, str_i)</span><br><span class="line">    <span class="keyword">if</span> (len(href_)) &gt; <span class="number">0</span> &amp; (len(title_) &gt; <span class="number">0</span>):</span><br><span class="line">        href_list.append(href_[<span class="number">0</span>])</span><br><span class="line">        title_list.append(title_[<span class="number">0</span>])</span><br><span class="line">print(href_list,<span class="string">"\n"</span>,title_list)</span><br><span class="line"></span><br><span class="line">href_list = [<span class="string">"http://www.newsmth.net"</span> + href.replace(<span class="string">"\\"</span>, <span class="string">""</span>) <span class="keyword">for</span> href <span class="keyword">in</span> href_list]</span><br><span class="line">href_list</span><br></pre></td></tr></table></figure>
+<p>大家最好都手敲一遍，事实上这段代码大家完全不用看我的，自己都可以敲出来，这是最终得到的结果，URL 和标题信息都有了：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200428112224201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="URL和标题信息"><br>我们上面得到的标题，可以作为我们建立新文件夹的依据，我们得到的 URL，我们可以进一步分析得到文章的条件，然后按照套路抓取到所有的文章。接下来我们就看看怎么通过这些 URL 得到对应的文章：</p>
+<h1 id="实战阶段三：获取子版块下所有文章"><a href="#实战阶段三：获取子版块下所有文章" class="headerlink" title="实战阶段三：获取子版块下所有文章"></a>实战阶段三：获取子版块下所有文章</h1><p>我们任意点进去一个子版块，以 AppleDev 子版块为例，依然是点开 network 刷新，得到一些 ajax 信息， ajax 在我们前面的 <a href="https://blog.csdn.net/ChenKai_164/article/details/105786852" target="_blank" rel="noopener">Ajax 详解</a><br>已经有讲过了，我们仍然按照套路抓取链接得到内容，然后由正则表达式匹配文章链接，文章链接的形式我们可以任意点开一篇文章观察到，或者也可以直接通过返回的信息得到，下面是抓取的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">res_ = requests.get(<span class="string">"http://www.newsmth.net/nForum/board/AppleDev?ajax"</span>, headers=headers)</span><br><span class="line">res_.encoding = res_.apparent_encoding</span><br><span class="line">text = res_.text</span><br><span class="line">pat3 = re.compile(<span class="string">r'(/nForum/article/AppleDev/\d+)'</span>)</span><br><span class="line">href_text = re.findall(pat3, text)</span><br><span class="line">total_href_text = [<span class="string">"http://www.newsmth.net"</span>+ href <span class="keyword">for</span> href <span class="keyword">in</span> href_text]</span><br><span class="line">print(total_href_text)</span><br></pre></td></tr></table></figure>
+<p>我们将得到的链接内容进行截图：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200428115615131.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="链接内容"><br>不出意料，我们点进去任何一个链接看到的文章都正是我们想要得到的内容！</p>
+<h1 id="实战阶段四：编写结构化代码"><a href="#实战阶段四：编写结构化代码" class="headerlink" title="实战阶段四：编写结构化代码"></a>实战阶段四：编写结构化代码</h1><p>我们现在直接开始编写结构化的代码：<br>首先导入我们所需要的包：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br></pre></td></tr></table></figure>
+
+<p>有人可能会好奇，为什么还要导入 selenium 包，事实上在爬取文章内容的时候，我试图分析了一波网页源代码和 Network 的 response，似乎并没有好的方法获得文章内容，于是我果断放弃，选择了相对低效的 selenium，至于问为什么低效，是因为我的代码中每一次都需要打开 passage 的网页才能抓取，当然现在有不需要打开网页的 selenium 方法，别问，问就是懒。<br>下面我们写一个很常用很老套的函数，从 URL 获得文章的 Text：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getText</span><span class="params">(url)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        res = requests.get(url)</span><br><span class="line">        res.raise_for_status</span><br><span class="line">        res.encoding = res.apparent_encoding</span><br><span class="line">        <span class="keyword">return</span> res.text</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br></pre></td></tr></table></figure>
+<p>这几行代码如果大家看了前几期文章，现在倒着都能默出来了吧，如果没有的话赶紧去看看前面所有爬虫系列的文章噢~</p>
+<p>然后我们定义一个函数，获取所有的 Section 的 URL：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getSectionURL</span><span class="params">()</span>:</span></span><br><span class="line">    url_list = []</span><br><span class="line">    base_url = <span class="string">r"http://www.newsmth.net/nForum/#!section/"</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</span><br><span class="line">        url_list.append(base_url+str(i))</span><br><span class="line">    <span class="keyword">return</span> url_list</span><br></pre></td></tr></table></figure>
+<p>下面这堆代码的用途是获得 Section 的名称，大家可以用这个名称在爬取完文章后建立文件夹保存文章：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getSectionList</span><span class="params">()</span>:</span></span><br><span class="line">    sectionTitleURL = <span class="string">"http://www.newsmth.net/nForum/slist.json?uid=guest&amp;root=list-section"</span></span><br><span class="line">    text = getText(sectionTitleURL)</span><br><span class="line">    textList = text.split(<span class="string">","</span>)</span><br><span class="line">    textList = [i <span class="keyword">for</span> i <span class="keyword">in</span> textList <span class="keyword">if</span> i.endswith(<span class="string">'&lt;/a&gt;"'</span>)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(textList)):</span><br><span class="line">        textList[i] = re.findall(<span class="string">r'\\"&gt;(.*?)&lt;/a&gt;'</span>, textList[i])</span><br><span class="line">    textList = [i[<span class="number">0</span>] <span class="keyword">for</span> i <span class="keyword">in</span> textList <span class="keyword">if</span> len(i)&gt;<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> textList</span><br></pre></td></tr></table></figure>
+<p>下面这段代码用于爬取大板块下面的所有子版块的链接和标题：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getSubSectionList</span><span class="params">(section_num)</span>:</span></span><br><span class="line">    url = <span class="string">"http://www.newsmth.net/nForum/section/"</span> + str(section_num) + <span class="string">"?ajax"</span></span><br><span class="line">    text = getText(url)</span><br><span class="line">    soup = BeautifulSoup(text, <span class="string">"html"</span>)</span><br><span class="line">    hrefList = soup.select(<span class="string">"td a"</span>)</span><br><span class="line">    hrefList = [str(href) <span class="keyword">for</span> href <span class="keyword">in</span> hrefList]</span><br><span class="line">    hrefList = [href <span class="keyword">for</span> href <span class="keyword">in</span> hrefList <span class="keyword">if</span> href.startswith(<span class="string">r'&lt;a href="/nForum/board'</span>)]</span><br><span class="line">    pat1 = re.compile(<span class="string">r'&lt;a href="(.*?)"&gt;'</span>)</span><br><span class="line">    pat2 = re.compile(<span class="string">r'"&gt;(.*?)&lt;/a&gt;'</span>)</span><br><span class="line">    HrefList = []</span><br><span class="line">    TitleList = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(hrefList)):</span><br><span class="line">        href = re.findall(pat1, hrefList[i])</span><br><span class="line">        href = <span class="string">"http://www.newsmth.net"</span> + href[<span class="number">0</span>]</span><br><span class="line">        title = re.findall(pat2, hrefList[i])</span><br><span class="line">        HrefList.append(href)</span><br><span class="line">        TitleList.append(title[<span class="number">0</span>])</span><br><span class="line">    <span class="keyword">return</span> HrefList, TitleList</span><br></pre></td></tr></table></figure>
+<p>下面这行代码用于从上面获得的 SubSectionURL 中获得所有文章的 URL 链接：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getPassageURL</span><span class="params">(SubSectionURL)</span>:</span></span><br><span class="line">    TextURL = SubSectionURL + <span class="string">"?ajax"</span></span><br><span class="line">    text = getText(TextURL)</span><br><span class="line">    title = re.findall(<span class="string">r"nForum/board/(.*)\?ajax"</span>, TextURL)[<span class="number">0</span>]</span><br><span class="line">    pat = re.compile(<span class="string">r'href="/nForum/article/'</span> + re.escape(title) + <span class="string">r'/(\d&#123;2,10&#125;)'</span>)</span><br><span class="line">    article_num = re.findall(pat, text)</span><br><span class="line">    href_list = [<span class="string">r"http://www.newsmth.net/nForum/#!article/"</span> + title + <span class="string">"/"</span> + href <span class="keyword">for</span> href <span class="keyword">in</span> article_num]</span><br><span class="line">    <span class="keyword">return</span> href_list</span><br></pre></td></tr></table></figure>
+<p>下面这行代码用于从上面的文章 URL 中解析出文章内容，评论区内容被截掉了，大家可根据需要修改代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getPassageFromURL</span><span class="params">(PassageURL_List)</span>:</span></span><br><span class="line">    text_List = []</span><br><span class="line">    i=<span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> PassageURL_List:</span><br><span class="line">        driver = webdriver.Firefox()</span><br><span class="line">        driver.get(url)</span><br><span class="line">        page = driver.page_source</span><br><span class="line">        soup = BeautifulSoup(page)</span><br><span class="line">        content = soup.select(<span class="string">"td[class~=a-content]"</span>)</span><br><span class="line">        passage = re.findall(<span class="string">r'&lt;td class="a-content"&gt;(.*?)&lt;/td&gt;'</span>, str(content[<span class="number">0</span>]))</span><br><span class="line">        print(passage)</span><br><span class="line">        text_List.append(passage)</span><br><span class="line">        driver.close()</span><br><span class="line">    <span class="keyword">return</span> text_List</span><br></pre></td></tr></table></figure>
+<p>大功告成！大家试着运行一下代码看看能不能跑通吧~</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/e97854a0.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/ac35ade0.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Python爬虫初级（十二）—— 新闻消息爬取实战
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/26182e00.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Python爬虫初级（十一）—— Selenium 详解</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

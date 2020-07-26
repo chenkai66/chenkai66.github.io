@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    数理统计笔记_参数估计 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-数理统计笔记_参数估计"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  数理统计笔记_参数估计
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/c100533b.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.534Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mathematics/">Mathematics</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">18 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="数理统计"><a href="#数理统计" class="headerlink" title="数理统计"></a>数理统计</h1><p>核心内容是统计推断，基本理论和方法有两部分：参数估计和假设检验，有两大应用方法：方差分析和回归分析。</p>
+<h2 id="参数估计"><a href="#参数估计" class="headerlink" title="参数估计"></a>参数估计</h2><p><strong>实际问题里常碰到两类问题</strong>：<br>（1）$X$ ~ $F(x;\theta)$，分布形式已知，但 $\theta$ 未知（ $\theta$ 可以是一个向量）<br>（2）$X$ 的分布自由，尽管新 $X$ 的某种数字特征 ，如期望、方差等</p>
+<p>参数估计有<strong>点估计</strong>和<strong>区间估计</strong>之分，要求给出参数 $\theta$ 的一个值或一个范围的估计。</p>
+<hr>
+<h3 id="点估计"><a href="#点估计" class="headerlink" title="点估计"></a>点估计</h3><p><strong>点估计方法定义</strong>：设$\theta$为待估计参数，构造统计量来估计$\theta$，当用统计量$g(X_1, X_2,…,X_n)$来估计$\theta$时，称此统计量为$\theta$的估计量，记为 $\hat\theta$，即$\hat\theta = g(X_1,X_2,…,X_n)$。对样本的一次观察值  $(x_1,x_2,…x_n)$，估计量的值$g(x_1, x_2,…,x_n)$称为$\theta$的估计值，仍记为$\hat\theta$。</p>
+<p><strong>常用的点估计方法有两种</strong>：矩估计法与极大似然估计法。</p>
+<hr>
+<h4 id="矩估计法"><a href="#矩估计法" class="headerlink" title="矩估计法"></a>矩估计法</h4><p><strong>计算方法</strong>：用样本k阶原点矩代替总体k阶原点矩：令$EX^k=\frac1n\sum_{i=1}^nX_i^k,k=1,2,…,L$，$L$是未知参数个数，理论依据是大数定律。<br>（1）未知参数仅一个时，则可以解方程$EX=\bar X$得到矩估计<br>（2）未知参数仅两个时，可以解方程组<br>$$\begin{cases}<br>EX = \bar X\<br>DX = S^2<br>\end{cases}<br>$$<br>&emsp;&emsp; 得到矩估计，其中 $S^2 = \frac1n\sum^n_{i=1}(X_i-\bar X)^2$。</p>
+<p><strong>矩估计的优点</strong>：简单易算，n大时精确度高，不依赖于总体分布形式。<br><strong>矩估计的理论依据</strong>：大数定律</p>
+<blockquote>
+<p>伯努利大数定律：解释频率的稳定性<br>独立同分布大数定律：$X_1,X_2,…X_n$独立同分布，则$X_1^k,X_2^k,…,X_n^k$也独立同分布</p>
+</blockquote>
+<p><strong>参数函数的矩估计</strong>：设 $\hat\theta$ 是$\theta$的矩估计，$g(\theta)$为$\theta$的连续函数，则定义$g(\theta)$的矩估计为$g(\hat\theta)$。</p>
+<hr>
+<h4 id="极大似然估计法"><a href="#极大似然估计法" class="headerlink" title="极大似然估计法"></a>极大似然估计法</h4><p><strong>思想</strong>：选择使样本出现可能性最大的p作为p的估计</p>
+<p><strong>定义1（似然函数）</strong>：设总体$X$的密度函数为$f(x;\theta_1,\theta_2,…,\theta_k)$，来自$X$的样本为 $X_1, X_2,…,X_n$，其观察值为$x_1, x_2,…,x_n$，称$L(\theta_1,\theta_2,…,\theta_k)=\prod_{i=1}^nf(x_1;\theta_1,\theta_2,…,\theta_k)$为似然函数（注：它就是样本的联合密度函数，离散型变量换成联合分布率）</p>
+<p><strong>定义2（极大似然估计）</strong>：若$L(\hat\theta_1,\hat\theta_2,…\hat\theta_k) = max_{\theta_1,\theta_2,…,\theta_k\in \Theta}L(\theta_1,\theta_2,…,\theta_k)$，则称$\hat\theta_i$是$\theta_i$的极大似然估计，简记为MLE。</p>
+<p><strong>定义3（对数似然函数）</strong>：$LnL(\theta_1,\theta_2,…,\theta_k)$</p>
+<p>对似然方程组：<br>$$\begin{cases}<br>\frac{\partial LnL}{\partial \theta_1} = 0\<br>\frac{\partial LnL}{\partial \theta_2} = 0\<br>…\<br>\frac{\partial LnL}{\partial \theta_k} = 0<br>\end{cases}<br>$$<br>解此方程组并验证可得参数的MLE</p>
+<p><strong>例1</strong>：设$X_1,X_2,…,X_n$为来自总体$X(\mu,\sigma^2)$的样本，求$\mu, \sigma^2$的MLE。<br>解：设样本观察值为 $x_1,x_2,…,x_n$<br>$$L(\mu,\sigma^2) = \prod_{i=1}^nf(x_i) = \prod_{i=1}^n\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x_i-\mu)^2}{2\sigma^2}} = \frac{1}{\sqrt{2\pi}^n\sigma^n}e^{-\frac{\sum_{i=1}^n(x_i-\mu)^2}{2\sigma^2}}$$<br>则：<br>$$LnL = ln\frac{1}{(\sqrt{2\pi})^n} + ln\frac{1}{\sigma^n} -\frac{\sum_{i=1}^n(x_i-\mu)^2}{2\sigma^2} = ln\frac{1}{(\sqrt{2\pi})^n} - \frac{n}{2}ln\sigma^2 -\frac{\sum_{i=1}^n(x_i-\mu)^2}{2\sigma^2}$$<br>置偏导为0：<br>$$\frac{\partial lnL}{\partial \mu} = \frac{1}{\sigma^2}\sum_{i=1}^n(x_i-\mu) = 0$$<br>$$\frac{\partial lnL}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{\sum_{i=1}^{n}(x_i-\mu)^2}{2\sigma^4}$$<br>易解得：<br>$$\mu = \bar x, \sigma^2 = s^2$$<br>（验证：若驻点唯一且不在边界上取到，则可以把驻点作为MLE）</p>
+<p><strong>例2</strong>：设$X_1,X_2,…,X_n$为来自总体$B(1,p)$的样本，求$p$的MLE。<br>解：设样本观察值为$x_1,x_2,…,x_n$,<br>$$L(p) = \prod_{i=1}^nP(X_i=x_i)$$<br>又 $P(X=x)=p^x(1-p)^{1-x}$，故<br>$$L(p) = \prod_{i=1}^np^{x_i}(1-p)^{1-x_i} = p^{\sum_{i=1}^nx_i}(1-p)^{n-\sum_{i=1}^nx_i} $$<br>取对数似然函数：<br>$$LnL(p) = \sum_{i=1}^nx_ilnp+(n-\sum_{i=1}^nx_i)ln(1-p)$$<br>对p求偏导：<br>$$\frac{\partial lnL(p)}{\partial p} = \frac{\sum_{i=1}^nx_i}{p} - \frac{n-\sum_{i=1}^nx_i}{1-p}$$<br>解得：<br>$$p = \bar x$$<br>求二阶导数，$\frac{\partial^2lnL(p)}{\partial^2p}$严格小于0，故$p=\bar x$是极大值点，故$p$的 MLE 为$\hat p=\bar x$.</p>
+<p><strong>例3</strong>：设$X_1,X_2,…,X_n$为来自总体$U[0,\theta]$的样本，求$\theta$的MLE。<br>解：设样本观察值为$x_1,x_2,…,x_n$,<br>由密度函数：<br>$$f(x) = \begin{cases}<br>\frac{1}{\theta},0\le x\le \theta\<br>0，其他<br>\end{cases}<br>$$<br>似然函数为：<br>$$L(\theta) = \prod_{i=1}^nf(x_i) = \frac{1}{\theta^n}, 0\le x_i \le \theta,i=1,2,…,n$$<br>对$\theta$求导：<br>$$\frac{\partial l(\theta)}{\partial \theta} = \frac{-n}{\theta^{n+1}} = 0$$<br>驻点不存在，只能通过定义求：<br>$$\theta = \frac{1}{\theta^n}, 0\le x_i \le \theta,i=1,2,…,n = \frac{1}{\theta^n}, 0\le x_{(1)} \le x_{(n)} \le \theta$$<br>故 $\hat \theta = X_{(n)} = max{ {x_1, x_2,…,x_n} }$</p>
+<p><strong>定理1</strong>：设$\hat\theta$是$\theta$的MLE，$g(\theta)$是$\theta$的严格单调函数，则$g(\theta)$的MLE为$\hat{g(\theta)}$ =  $g(\hat\theta)$.(与矩估计的相应结论类似)</p>
+<p><strong>例4</strong>：从一批产品中抽取了n件产品检查质量，发现其中k件产品不合格，求这批产品中合格品数与不合格品数之比的MLE。<br>解：设这批产品的总数为N，其中不合格品数为K件，则这批产品中合格品数与不合格品数之比$=\frac{N-K}{K} = \frac{1-p}{p} = \frac{1}{p}-1$，其中p表示这批产品中的不合格率，关于 $p$ 严格单调，故所求的MLE$=\hat {\frac{1-p}{p}}= \frac{1-\hat p}{\hat p} = \frac{1-\bar x}{\bar x}$，其中$\bar x$是样本不合格率。</p>
+<hr>
+<h4 id="点估计的优良标准"><a href="#点估计的优良标准" class="headerlink" title="点估计的优良标准"></a>点估计的优良标准</h4><ol>
+<li>无偏性：设 $\theta$ 是待估计参数，$\hat \theta$ 是 $\theta$ 的估计量，若 $E\hat \theta = \theta$，则称$\hat \theta$是$\theta$的无偏估计；（无偏估计有无穷多个）</li>
+<li>有效性：设$T_1,T_2$均是$\theta$的无偏估计，若$DT_1\le DT_2$，则称$T_1$ 比$T_2$有效；（最佳点估计）</li>
+<li>一致性：设$\hat \theta$是$\theta$的估计量，若任意的$\epsilon \lt 0$都有$\lim_{n\rightarrow \infty} P(|\hat \theta-\theta|\lt \epsilon) = 1$，则称 $\hat\theta$是$\theta$的一致估计。</li>
+</ol>
+<p><strong>定理2</strong>：样本均值是总体均值的无偏估计；样本方差是总体方差的无偏估计<br>证明：记总体$X$有$EX=\mu$，$DX = \delta^2$，来自$X$的样本为$x_1,x_2,…,x_n$，样本均值$\bar X = \frac1n\sum_{i=1}^nx_i$，方差$S^{<em>2} = \frac1{n-1}\sum_{i=1}^n(x_i-\bar x)^2$，有<br>$$E\bar X = E\frac1n\sum_{i=1}^nEx_i = \frac1n\sum_{i=1}^n\mu = \mu$$<br>因此 $\bar X$ 是 $\mu$ 的无偏估计，又<br>$$\begin{eqnarray}ES^{</em>2} &amp;=&amp; E\frac{n}{n-1}\sum_{i=1}^n\frac{(x_i-\bar x)^2}{n} \<br>&amp;=&amp; \frac{n}{n-1}E(\frac1n\sum_{i=1}^nx_i^2 - \bar x^2) \<br>&amp;=&amp; \frac{n}{n-1}(\frac1n\sum_{i=1}^nEx_i^2 - E\bar x^2)\<br>&amp;=&amp; \frac{n}{n-1}(\frac1n\sum_{i=1}^n(\sigma^2+\mu^2) - (\frac{\sigma^2}{n} + \mu^2)\<br>&amp;=&amp; \sigma^2<br>\end{eqnarray}$$</p>
+<p>注意到 $ES^2 = \frac{n-1}{n}ES^{*2}$ 不是无偏估计，是有偏估计。</p>
+<p><strong>定义4</strong>：若$E\hat \theta \neq \theta$，但$\lim\limits_{n \rightarrow +\infty} E\hat \theta = \theta$，则称$\hat \theta$是$\theta$的渐近无偏估计。<br>显见，$ES^2$是总体方差的渐近无偏估计。</p>
+<p><strong>例5</strong>：设总体$X$ ~ $U[0,\theta]$，$\hat\theta$是$\theta$的MLE，找常数$a,b$使$a\hat \theta + b$是$\theta$的无偏估计。<br>解：由例3结果，$\hat\theta = X_{(n)}$，分布函数为：<br>$$f_{X(n)} = n[F(x)]^{n-1}f(x)$$<br>且已知：<br>$$f(x) = \begin{cases}<br>\frac{1}{\theta},0\le x\le \theta\<br>0，其他<br>\end{cases}$$<br>以及：<br>$$F(x) = \begin{cases}<br>0, x\lt 0\<br>\frac{1}{\theta},0\le x\le \theta\<br>1,x\geq\theta<br>\end{cases}$$<br>代入得：<br>$$f_{X(n)}(x)=\begin{cases}<br>n(\frac{x}{\theta})^{n-1}\frac1\theta,0\le x\le \theta\<br>0,其他<br>\end{cases}<br>$$<br>故：<br>$$\begin{eqnarray}<br>EX_{(n)} &amp;=&amp; \int_{-\infty}^{+\infty}xf_{x_{(n)}}(x){\rm d}x\<br>&amp;=&amp; \int_0^\theta x·n\frac{x^{n-1}}{\theta^n}{\rm d}x\<br>&amp;=&amp; \frac{n}{n+1}\theta<br>\end{eqnarray}$$<br>令<br>$$E(aX_{(n)}+b) = aEX_{(n)} + b = a\frac{n}{n+1}\theta + b = \theta$$<br>有：<br>$$a = \frac{n+1}{n}, b=0.$$<br>即 $\frac{n+1}{n}X_{(n)}$ 是$\theta$的无偏估计。</p>
+<p><strong>定义5</strong>：$\theta$ 的无偏估计全体构成一个集合 —— $\theta$ 的无偏估计类，其中方差最小的估计称为最小元素无偏估计，记为MVUE。</p>
+<p><strong>定义6</strong>：设$T$是 $g(\theta)$ 的任意一个无偏估计，在一定条件下，有下列 C-R 不等式：$DT\ge \frac{[g^`(\theta)]^2}{nI(\theta)}$，其中$I(\theta) = E[\frac{\partial (lnf(X;\theta))}{\partial \theta}]^2$，不等式右边实自被称为$g(\theta)$的无偏估计 C-R 下界。</p>
+<p><strong>定义7</strong>：设T是$\theta$的无偏估计，称$e_T = \frac{\frac{1}{nI(\theta)}}{DT}$为$\theta$ 的有效率$(0\le e_T \le 1)$，有效率为1的估计称为优效估计。若$e_T\neq 1$，但$\lim_{n\rightarrow \infty}e_T = 1$，称为渐近优效估计。</p>
+<h3 id="区间估计"><a href="#区间估计" class="headerlink" title="区间估计"></a>区间估计</h3><p><strong>定义1</strong>：设$T_1,T_2$是 $\theta$ 的估计量，若对于给定值 $\alpha(0\lt \alpha \lt 1)$有，$P(T_1\le \theta \le T_2)=1-\alpha$，则称$[T_1,T_2]$是$\theta$ 的置信水平为$1-\alpha$的区间估计或置信区间。</p>
+<p><strong>区间估计的优良标准</strong>：</p>
+<ol>
+<li>可靠性：$1-\alpha$越大越可靠</li>
+<li>精确性：$E(T_1-T_2)$越小越精确</li>
+</ol>
+<p>可靠性与精确性是一对矛盾，一般处理原则：在可靠性条件满足的下，找 $E[T_2-T_1]$ 最小的，这样的区间估计被认为是最优的。</p>
+<h4 id="单个正态总体-N-mu-sigma-2-参数的区间估计"><a href="#单个正态总体-N-mu-sigma-2-参数的区间估计" class="headerlink" title="单个正态总体 $N(\mu,\sigma^2)$ 参数的区间估计"></a>单个正态总体 $N(\mu,\sigma^2)$ 参数的区间估计</h4><p><strong>$\mu$ 的区间估计</strong></p>
+<ol>
+<li><p>当$\sigma$已知时，$\mu$的置信水平为$1-\alpha$的区间估计是$[\bar x-z_{1-\frac{\alpha}{2}} \frac{\sigma}{\sqrt{n}},\bar x + z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}})]$<br>证明：要找 $\mu \in [T_1, T_2]$，使得$P(T_1&lt;\mu &lt; T_2) = 1-\alpha$，取$a, b$，使得 $\mu \in [\bar x - a, \bar x + b]$，使得 $P(\bar x- a&lt;\mu &lt; \bar x + b) = 1-\alpha$，由于$\frac{\bar x - \mu}{\sigma}\sqrt n$~$N(0, 1)$，我们可以将原始化为<br>$$P(-\frac{b\sqrt{n}}{\sigma} \le \frac{\bar x - \mu}{\sigma}\sqrt{n} \le \frac{a\sqrt n}{\sigma}) = 1-\alpha$$<br>我们只需找到$a^<em>$与$b^</em>$，使得<br>$$P(b^* \le \frac{\bar x - \mu}{\sigma}\sqrt{n} \le a^<em>) = 1-\alpha$$<br>左式 = $\int_{b^</em>}^{a^<em>}\phi(x){\rm d}x$，设正态曲线分布图 $b^</em>$左边区域面积为 $\beta$，则有：<br>$$P(z_{1-\alpha+\beta} \le \frac{\bar x - \mu}{\sigma}\sqrt{n} \le z_\beta) = 1-\alpha$$<br>即：<br>$$P(\bar x-z_\beta \frac{\sigma}{\sqrt{n}} \le \mu \le \bar x - z_{1-\alpha+\beta}\frac{\sigma}{\sqrt{n}}) = 1-\alpha$$<br>(任意取定 $\alpha$，$\beta$有无穷多个取值，可以构造无穷多个满足条件的区间<br>找最优的区间估计：<br>$$E[\bar x - z_{1-\alpha+\beta}\frac{\sigma}{\sqrt{n}} - \bar x+z_\beta \frac{\sigma}{\sqrt{n}}] = E(z_\beta - z_{1-\alpha+\beta})\frac{\sigma}{\sqrt{n}} = (z_\beta - z_{1-\alpha+\beta})\frac{\sigma}{\sqrt{n}}$$<br>令 $g^<code>(\beta) = z_\beta - z_{1-\alpha+\beta} = (z_\beta)^</code> - (z_{1-\alpha+\beta})^<code>$
+设分布函数为 $\Phi(z_\beta) = \beta$，两边对$\beta$求导，得：
+$$\Phi(z_\beta)(z_{\beta})^</code><em>\beta = 1$$<br>因此有 $(z_\beta)^`_\beta = \frac {1}{\Phi(z_\beta)}$，又有 $\Phi(z</em>{1-\alpha+\beta}) = 1-\alpha+\beta$，两边对 $\beta$ 求导，得：<br>$$\Phi(z_{1-\alpha+\beta})(z_{1-\alpha+\beta})^<code>_\beta = 1$$
+因此有 $(z_{1-\alpha+\beta})^</code> = \frac{1}{\Phi(z_{1-\alpha+\beta})}$<br>综上，要使 $g^`(\beta) =0$，即使 $\frac {1}{\Phi(z_\beta)} = \frac{1}{\Phi(z_{1-\alpha+\beta})}$，也就是$\Phi(z_\beta) = \Phi(z_{1-\alpha+\beta})$，因此两点关于 $y$ 轴对称，此时能保证平均长度最短</p>
+</li>
+<li><p>当 $\sigma$ 未知时， $\mu$ 的置信水平为 $1-\alpha$ 的区间估计是 $[\bar X - t_\frac{\alpha}{2}(n-1)\frac{S}{\sqrt{n}},\bar X + t_\frac{\alpha}{2}(n-1)\frac{S}{\sqrt{n}}]$<br>证明：$\sigma$ 未知，我们可以考虑它的估计量  $S^<em>$，由前面推导：<br>$$\frac{\bar X-\mu}{S^</em>}\sqrt{n} - t(n-1)$$<br>因此有<br>$$P(-a\le \frac{\bar X-\mu}{S^*}\sqrt{n}\le a) = \int_{-a}^a f_T(x){\rm d}x = 1-\alpha$$<br>容易确定 $a = t_{\frac{\alpha}{2}}(n-1)$，即得所证</p>
+</li>
+</ol>
+<p><strong>$\sigma$ 的区间估计</strong></p>
+<ol>
+<li>$\sigma^2$的置信水平为$1-\alpha$的置信区间为 $[\frac{(n-1)S^{<em>2}}{\chi^2_{\frac{\alpha}{2}}(n-1)}, \frac{(n-1)S^{</em>2}}{\chi^2_{1-\frac{\alpha}{2}}(n-1)}]$.</li>
+</ol>
+<p>证明：由已知<br>$$\frac{(n-1)S^{<em>2}}{\sigma^2} - \chi^2(n-1)$$<br>设<br>$$P(a\le \frac{(n-1)S^{</em>2}}{\sigma^2} \le b) = 1-\alpha$$<br>实际上，卡方密度函数并不对称，但我们可以近似认为其对称以求出简单化的结果：<br>$$a = \chi^2_{1-\frac{\alpha}{2}}(n-1), b = \chi^2_{\frac{\alpha}{2}}(n-1)$$<br>取倒数，不等号反向即可<br>2. $\sigma$ 的置信水平为 $1-\alpha$ 的置信区间为 $[\sqrt{\frac{(n-1)S^{<em>2}}{\chi^2_{\frac{\alpha}{2}}(n-1)}}, \sqrt{\frac{(n-1)S^{</em>2}}{\chi^2_{1-\frac{\alpha}{2}}(n-1)}}]$</p>
+<p>证明：事实上，由于 $\sigma&gt;0$，有：<br>$$P(T_1\le \sigma^2 \le T_2) = 1-\alpha  P(\sqrt{T_1} \le \sigma \le \sqrt{T_2}) = 1-\alpha$$<br>故 $\sigma \in [\sqrt{T_1},\sqrt{T2}]$<br>(类似的有： $e^{\sigma} \in [e^{\sqrt{T_1}}, e^{\sqrt{T_2}}]$)</p>
+<h4 id="分布自由时总体均值的区间估计"><a href="#分布自由时总体均值的区间估计" class="headerlink" title="分布自由时总体均值的区间估计"></a>分布自由时总体均值的区间估计</h4><p>$EX$的置信水平为$1-\alpha$的近似区间估计为$[\bar X-u_{1-\frac{\alpha}{2}}\frac{S^<em>}{\sqrt{n}}, \bar X+u_{1-\frac{\alpha}{2}}\frac{S^</em>}{\sqrt{n}}]$</p>
+<blockquote>
+<p>中心极限定理：设$x_1,x_2,…,x_n$独立同分布，且$Ex_1 = \mu, Dx_1=\sigma^2$存在，则 $lim_{n\rightarrow \infty}P(\frac{\sum_{i=1}^nx_i - n\mu}{\sqrt{n}\sigma} \le x) = \Phi(x), x \in R$，因此当$n$充分大时，$\frac{\sum_{i=1}^nx_i-n\mu}{\sqrt{n}\sigma}$ ~ $N(0,1)$，由于左式实际上为关于$\sum_{i=1}^nx_i$的线性变换，因此$\sum_{i=1}^nx_i$~$N(a, b)$，其中$a=n\mu, b=n\sigma^2$，同理$\bar X =\frac{\sum_{i=1}^nx_i}{n}$ ~ $N(\mu, \frac{\sigma^2}{n})$。</p>
+</blockquote>
+<p><strong>例</strong>：设样本总体 $X$ ~ $E(\lambda)$，来自$X$的样本为 $x_1,x_2,…,x_n$，求$\lambda$的置信水平为$1-\alpha$的区间估计，提示：若$x$~$E(\lambda)$，则$2x\lambda$ ~ $\chi^2(2)$</p>
+<p>解：$P(a\le2\lambda n\bar x\le b) = 1-\alpha$，直接取左右两边各为$\frac{\alpha}{2}$即可满足，因此$a=\chi_{1-\frac{\alpha}{2}}^2(2n)$，$b=\chi_{\frac{\alpha}{2}}^2(2n)$，取倒数即可解出$\lambda$的区间估计。</p>
+<h4 id="两个正态总体参数的区间估计"><a href="#两个正态总体参数的区间估计" class="headerlink" title="两个正态总体参数的区间估计"></a>两个正态总体参数的区间估计</h4><p><strong>均值差的区间估计</strong></p>
+<ol>
+<li><p>$\sigma_1^2, \sigma_2^2$已知，则$\mu_1-\mu_2$的置信水平为$1-\alpha$的区间估计为$[\bar X - \bar Y -Z_{1-\frac{\alpha}{2}}\sqrt{\frac{\sigma_1^2}{n} + \frac{\sigma_2^2}{m}}, \bar X - \bar Y +Z_{1-\frac{\alpha}{2}}\sqrt{\frac{\sigma_1^2}{n} + \frac{\sigma_2^2}{m}}]$<br>证明：$\bar X$ ~ $N(\mu_1, \frac{\sigma_1^2}{n})$，$\bar Y$ ~ $N(\mu_2, \frac{\sigma_2^2}{m})$，<br>$E(\bar X-\bar Y)=\mu_1-\mu_2$，$D(\bar X-\bar Y) = D\bar X+D(-\bar Y) = D\bar X +D\bar Y$，<br>因此$\frac{\bar X-\bar Y - (\mu_1-\mu_2)}{\sqrt{\frac{\sigma_1^2}{n}+\frac{\sigma_2^2}{m}}}$~$N(0,1)$，由枢轴量法易解</p>
+</li>
+<li><p>$\sigma_1^2,\sigma_2^2$未知，但$\sigma_1^2=\sigma_2^2 = \sigma^2$.<br>证明：$\frac{\bar X-\bar Y - (\mu_1-\mu_2)}{\sqrt{\frac{\sigma^2}{n}+\frac{\sigma^2}{m}}} = \frac{\bar X-\bar Y - (\mu_1-\mu_2)}{\sigma\sqrt{\frac{1}{n}+\frac{1}{m}}}$~$N(0,1)$，由于$\sigma$未知，因此不可以直接作为枢轴量。<br>由已知<br>$\frac{(n-1)S_X^2}{\sigma^2}+\frac{(m-1)S_Y^2}{\sigma^2}$ ~ $\chi^2(n+m-2)$，易知该变量与标准正态独立，因此联立消去$\sigma$即可</p>
+</li>
+</ol>
+<h4 id="求区间估计的常用方法——找枢轴量法"><a href="#求区间估计的常用方法——找枢轴量法" class="headerlink" title="求区间估计的常用方法——找枢轴量法"></a>求区间估计的常用方法——找枢轴量法</h4><p>设 $\theta$ 是待估计参数，样本为 $x_1, x_2, …, x_n$</p>
+<ol>
+<li>构造函数$g(x_1, x_2, …, x_n;\theta)$关于$\theta$单调；</li>
+<li>求此函数得分布；</li>
+<li>确定分位数；</li>
+<li>解不等式可得$\theta$得区间估计.</li>
+</ol>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/c100533b.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/eb79fc5f.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            新闻文本分类实战
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/55ea3ea0.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">数理统计笔记_假设检验</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    k8s 核心技术 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-k8s 核心技术"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  k8s 核心技术
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/44e24bf5.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.245Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Structure/">Structure</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">13 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <meta name="referrer" content="no-referrer" />
+
+<h1 id="认识-kubernetes-架构及应用场景"><a href="#认识-kubernetes-架构及应用场景" class="headerlink" title="认识 kubernetes 架构及应用场景"></a>认识 kubernetes 架构及应用场景</h1><h2 id="kubernetes（k8s-在企业中的应用场景"><a href="#kubernetes（k8s-在企业中的应用场景" class="headerlink" title="kubernetes（k8s) 在企业中的应用场景"></a>kubernetes（k8s) 在企业中的应用场景</h2><h3 id="构建自动化运维平台"><a href="#构建自动化运维平台" class="headerlink" title="构建自动化运维平台"></a>构建自动化运维平台</h3><p>（1） 中小型企业，使用 k8s 构建一套自动化运维平台（降本增效）<br>（2） 大型互联网公司更要使用，实现更高效的运作方式</p>
+<h3 id="充分利用服务器资源"><a href="#充分利用服务器资源" class="headerlink" title="充分利用服务器资源"></a>充分利用服务器资源</h3><p>怎么理解充分利用服务器资源这一条呢，我们举个例子：假设并发量200请求，服务器是两核心CPU，4G内存，其中静态请求150个，比如访问CDN、nginx、缓存等，动态请求50个，主要是访问数据库，把数据读入内存，我们来估算服务器资源（只考虑内存，不考虑程序员RT与CPU切换时间）：</p>
+<p>静态+动态 = 150*2M + 50 *10M = 800M<br>也就是说200个请求占用了800M内存</p>
+<p>我们可以估算这台服务器的并发能力QPS为 200*4 = 8000，但实际上 800 QPS 是无法达到的，我们需要考虑 response time，cpu切换时间，内存等等，因此实际上我们会给它安排 300 QPS，此时先然无法充分利用服务器资源，有很多资源被浪费掉了。而 k8s 使用类似 Docker 的容器化方式，也就是我们在其中部署多个容器，将服务器资源做隔离，容器中部署的就是 web 服务。</p>
+<h3 id="服务无缝衔接"><a href="#服务无缝衔接" class="headerlink" title="服务无缝衔接"></a>服务无缝衔接</h3><p>那么服务的无缝迁移又该怎么理解呢？首先我们开发时应该有三种环境，分别是是开发环境、测试环境和生产环境。在开发 web 项目时有许多配套服务，在测试环境中这些环境也必须存在，测试完之后产品就可以上线，但这时会出现一个问题：项目在测试时没有毛病，但一旦上市生产就出现了很大的问题，这经常是环境的不一致性造成的，这时候往往就会花费大量精力去调试环境，非常麻烦，而容器化方式可以做到服务无缝迁移。也就是说我们可以把 JDK、MQ、ES、MySQL 等做成一个个镜像，这些镜像可以脱离我们的依赖环境，因此这些镜像可以做到无缝迁移。</p>
+<h2 id="服务部署模式变迁-amp-服务部署模式变化的思考"><a href="#服务部署模式变迁-amp-服务部署模式变化的思考" class="headerlink" title="服务部署模式变迁&amp;服务部署模式变化的思考"></a>服务部署模式变迁&amp;服务部署模式变化的思考</h2><p>我们考虑下面几个问题：</p>
+<h3 id="服务部署模式是怎么变迁的。"><a href="#服务部署模式是怎么变迁的。" class="headerlink" title="服务部署模式是怎么变迁的。"></a>服务部署模式是怎么变迁的。</h3><ol>
+<li>物理机部署：就是直接把服务部署到物理机上（不能充分利用物理机资源）</li>
+<li>虚拟化（虚拟机）方式，也就是通过虚拟机将物理资源进行隔离部署服务，将服务部署到虚拟机上，但虚拟机本身就非常占用资源，因此我们寻求一种更好的方式</li>
+<li>使用容器化方式进行部署（容器更轻量级，运行更快）</li>
+</ol>
+<h3 id="服务部署模式变化，带来哪些问题？"><a href="#服务部署模式变化，带来哪些问题？" class="headerlink" title="服务部署模式变化，带来哪些问题？"></a>服务部署模式变化，带来哪些问题？</h3><ol>
+<li><p>前提条件：SOA架构，微服务架构的模式下，项目拆分越来越多，服务越来越多，这么多服务我们是怎么管理？</p>
+<ul>
+<li><p>虚拟机服务部署方式（openstack）</p>
+</li>
+<li><p>容器化部署模式（k8s）</p>
+<p>容器我们可以认为是一个更轻量级的虚拟机，使用了与虚拟机不同的技术，因此与openstack用于管理虚拟机类似， k8s 就是用来管理容器的。</p>
+</li>
+</ul>
+</li>
+<li><p>面临问题：</p>
+<ul>
+<li><p>如何对服务进行横向扩展（不能 简单地加机器，会影响服务）</p>
+</li>
+<li><p>容器宕机如何解决，数据怎么恢复</p>
+</li>
+<li><p>重新发布新的版本如何在线上快速更新，更新后不影响业务（k8s可以做滚动更新）</p>
+</li>
+<li><p>如何监控容器（容器出现问题怎么办）</p>
+</li>
+<li><p>容器如何调度创建</p>
+</li>
+<li><p>数据安全性如何保证</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="云架构-amp-云原生"><a href="#云架构-amp-云原生" class="headerlink" title="云架构 &amp; 云原生"></a>云架构 &amp; 云原生</h2><h3 id="云和-k8s-是什么关系"><a href="#云和-k8s-是什么关系" class="headerlink" title="云和 k8s 是什么关系"></a>云和 k8s 是什么关系</h3><ul>
+<li>云就是使用容器构建的一套服务集群网络，云由大量容器构成，不同容器有不同功能</li>
+<li>k8s 就是用来管理云中的容器</li>
+</ul>
+<h3 id="云架构"><a href="#云架构" class="headerlink" title="云架构"></a>云架构</h3><h4 id="iaas-基础设施即服务"><a href="#iaas-基础设施即服务" class="headerlink" title="iaas 基础设施即服务"></a>iaas 基础设施即服务</h4><pre><code>用户：可以租用（购买|分配权限）云主机，用户就不需要考虑网络，DNS，硬件环境方面的问题。
+运营商：（私有云或公有云平台）提供网络，存储，DNS（基础设施服务）</code></pre><h4 id="paas-平台即服务"><a href="#paas-平台即服务" class="headerlink" title="paas 平台即服务"></a>paas 平台即服务</h4><pre><code>MYSQL\ES\R等服务都由平台提供了</code></pre><h4 id="saas-软件即服务（目前很多系统都是该系统）"><a href="#saas-软件即服务（目前很多系统都是该系统）" class="headerlink" title="saas 软件即服务（目前很多系统都是该系统）"></a>saas 软件即服务（目前很多系统都是该系统）</h4><pre><code>钉钉：给每个公司提供一个系统，每个公司使用独立一套功能
+财务管理软件：维护交给运营商维护，用户只需要使用其中的功能即可</code></pre><h4 id="serverless-无服务"><a href="#serverless-无服务" class="headerlink" title="serverless 无服务"></a>serverless 无服务</h4><pre><code>站在用户角度：不需要服务器，用户只需要使用云服务器即可，在云服务器所有基础环境 ，软件环境都不需要 用户自己安装
+未来：服务开发都是 serverless，企业都构建了自己的私有云环境，或者使用公有云环境（阿里云）
+    阿里将所有服务部署到云端之后，效率提升了60%</code></pre><h3 id="云原生"><a href="#云原生" class="headerlink" title="云原生"></a>云原生</h3><p>就是为了让应用程序（项目、服务软件）都 运行在云上的解决方案，这样的方案叫做云原生。<br><strong>特点</strong>：<br>（1）容器化 —— 所有服务部署都必须部署在容器中<br>（2）微服务 —— web 服务架构、微服务架构<br>（3）CI、CD —— 可持续交互与可持续部署<br>（4）DevOps —— 开发与运维密不可分</p>
+<h2 id="kubernetes-架构原理"><a href="#kubernetes-架构原理" class="headerlink" title="kubernetes 架构原理"></a>kubernetes 架构原理</h2><p>1）kubernetes 是 Google 使用 go 语言开发，原来的系统是 borg 系统（也是云平台管理工具），Docker后来自己开发了容器管理平台 Docker Swarm，Google 表示不服，因此参照 borg 架构开发了 k8s 架构</p>
+<p>2）k8s 架构</p>
+<p><img src="./Pic/k8s/arch1.jpg" alt=""></p>
+<p>关系：一个 master 对应多个 node 节点</p>
+<p><strong>master 节点</strong></p>
+<ol>
+<li>api server：k8s 网关，所有指令请求都必须经过 api server</li>
+<li>scheduler：调度器，使用调度算法，将请求资源调度给某一个 node 节点</li>
+<li>controller 控制器：维护 k8s 资源对象（添加、删除、更新、修改）</li>
+<li>etcd：存储资源对象，服务的注册与发现</li>
+</ol>
+<p><strong>node 节点</strong></p>
+<ol>
+<li>docker：运行容器的基础环境，容器引擎</li>
+<li>kuberlet：在每个 node 节点都存在一份，在 node 节点上的资源操作指令由其执行</li>
+<li>kube-proxy：代理服务，负载均衡</li>
+<li>fluentd：日志收集服务</li>
+<li>pod：是 k8s 管理的基本单位，内部是容器，也即是 k8s 不直接管理容器，而是管理 pod</li>
+</ol>
+<h1 id="深入认识-kubernetes-核心组件原理"><a href="#深入认识-kubernetes-核心组件原理" class="headerlink" title="深入认识 kubernetes 核心组件原理"></a>深入认识 kubernetes 核心组件原理</h1><h2 id="pod的核心原理"><a href="#pod的核心原理" class="headerlink" title="pod的核心原理"></a>pod的核心原理</h2><p><strong>k8s的作用</strong>：k8s是用来管理容器的，但不直接操作容器，最小操作单元是pod（间接地管理容器）<br><strong>k8s的特点</strong>：</p>
+<ol>
+<li>一个master有一群node节点与之对应</li>
+<li>master节点不存储容器，只负责调度、网关、控制器、资源对象存储</li>
+<li>容器是存储在node节点（容器是存储在pod内部）</li>
+<li>pod内部都可以有一个容器，或者是多个容器</li>
+<li>kubelet负责本地的pod维护</li>
+<li>kube-proxy负责在多个pod之间做负载均衡</li>
+</ol>
+<p><strong>pod是什么呢</strong>:pod也是一个容器，但这个容器中装的是docker创建的容器，也就是pod是用来封装容器的容器，pod是一个虚拟化分组（pod有自己的地址，主机名），相当于一台独立的沙箱环境（主机），可以封装一个容器或多个容器</p>
+<p><strong>pod用来干什么</strong>：通常情况下，在服务部署时使用pod来管理一组相关服务（一个pod要么部署一个服务，要么部署一组相关的服务），所谓的一组相关的服务，即为链式调用的调用链路上的服务。</p>
+<p><img src="./Pic/k8s/pod1.png" alt=""></p>
+<p><strong>web服务集群如何实现</strong>：只需要复制多方pod的副本即可，这也是k8s管理的先进之处，k8s如果继续扩容、缩容，只需要控制pod的数量即可</p>
+<p><strong>pod底层网络，数据存储是如何进行的</strong>：pod内部容器创建之前必须先创建pause容器，服务容器之间的访问使用localhost访问，性能非常高，实际就像访问本地服务一样</p>
+<p><img src="./Pic/k8s/pod2.png" alt=""></p>
+<h2 id="ReplicaSet副本控制器"><a href="#ReplicaSet副本控制器" class="headerlink" title="ReplicaSet副本控制器"></a>ReplicaSet副本控制器</h2><p><strong>什么叫做副本控制器</strong>：<strong>用于控制pod副本的数量</strong>，使副本数量与预期数量保持一致。例如，我们提前设置replicas=3（有三个副本），因此创建三个pod。当有一个pod宕机之后，k8s会立刻创建一个新的，保证副本数量等于三个，这就是副本控制器的作用——永远保证副本数量为设定值。</p>
+<p>副本控制器能通过<strong>标签选择器</strong>选择维护一组相关的服务（它自己的服务），那么它要怎么判断是自己的服务呢？这里就通过标签选择，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">selector:</span><br><span class="line">	app &#x3D; web</span><br><span class="line">    release &#x3D; stable</span><br></pre></td></tr></table></figure>
+
+<p><strong>ReplicationController和ReplicaSet两个副本控制器有什么区别</strong>：</p>
+<ol>
+<li>ReplicaSet<ul>
+<li>单选</li>
+<li>复合选择</li>
+</ul>
+</li>
+<li>ReplicationController<ul>
+<li>单选</li>
+</ul>
+</li>
+</ol>
+<p>在新版的k8s中，推荐使用Replicaset作为副本控制器（功能更强大），ReplicationController不再使用</p>
+<h2 id="Deployment资源部署对象"><a href="#Deployment资源部署对象" class="headerlink" title="Deployment资源部署对象"></a>Deployment资源部署对象</h2><ul>
+<li>服务部署结构模型</li>
+<li>滚动更新</li>
+</ul>
+<p>虽然在企业中我们采用ReplicaSet作为副本控制器，但在实际中项目不断更新，项目的版本将会不停的发版，版本的变化如何做到服务的更新呢？我们做的是滚动更新，如下图，每当发布一个新的版本，每更新一个POD，就要干掉原有的POD。</p>
+<p><img src="./Pic/k8s/Deployment.png" alt=""></p>
+<p>那么滚动更新是由谁实现的呢？这就涉及到部署模型：因为事实上ReplicaSet是不支持滚动更新的，滚动更新是由Deployment支持的，通常两者一起使用，因此部署模型为如下结构：</p>
+<p><img src="./Pic/k8s/dep2.png" alt=""></p>
+<p>如果后一个版本出现问题，k8s也可以支持向前滚动。</p>
+<h2 id="StatefulSet部署有状态服务"><a href="#StatefulSet部署有状态服务" class="headerlink" title="StatefulSet部署有状态服务"></a>StatefulSet部署有状态服务</h2><p>StatefulSet和Deployment类似，区别就是StatefulSet是为了解决有状态服务容器化部署问题而产生的。</p>
+<p>思考：MySQL使用容器化部署，存在怎样的问题？</p>
+<ul>
+<li>容器是有生命周期的，一旦宕机，数据丢失</li>
+<li>pod部署：pod有生命周期，但重启pod集群副本时数据可能丢失</li>
+</ul>
+<p>因此容器是不太适合部署数据这样的有状态服务的，对于k8s而言，不能使用Deployment模型来部署有状态服务，通常情况下Deployment用于部署无状态服务，对于有状态服务的部署使用StatefulSet。</p>
+<p>什么是有状态什么是无状态呢？</p>
+<ul>
+<li>有状态服务<ul>
+<li>有实时的的数据需要存储</li>
+<li>有状态服务集群中，把某一个服务抽离出去，一段时间后再加入机器网络，如果集群网络无法使用就被称为有状态服务</li>
+</ul>
+</li>
+<li>无状态服务<ul>
+<li>无实时的的数据需要存储</li>
+<li>有状态服务集群中，把某一个服务抽离出去，一段时间后再加入机器网络，对集群网络没有影响</li>
+</ul>
+</li>
+</ul>
+<p>底层的数据存储借助PVC文件系统，而StatefulSet会保证POD重新建立后，hostname不会发生变化，POD就可以通过hostname来关联数据</p>
+<h1 id="kubernetes-的服务的注册与发现（核心）"><a href="#kubernetes-的服务的注册与发现（核心）" class="headerlink" title="kubernetes 的服务的注册与发现（核心）"></a>kubernetes 的服务的注册与发现（核心）</h1><h2 id="pod在生产环境中的访问流程"><a href="#pod在生产环境中的访问流程" class="headerlink" title="pod在生产环境中的访问流程"></a>pod在生产环境中的访问流程</h2><p><strong>pod的结构</strong>：根据前面所说，pod相当于一个容器，有独立的ip地址，也有自己的hostname，利用namespace进行资源隔离，独立沙箱环境。同时pod内部封装的是容器，可以封装一个，也可以封装一组相关的容器。</p>
+<p><strong>pod网络</strong>：有自己独立的ip地址，pod内部容器之间访问采用localhost访问。</p>
+<h3 id="pod如何对外网提供服务"><a href="#pod如何对外网提供服务" class="headerlink" title="pod如何对外网提供服务"></a>pod如何对外网提供服务</h3><ul>
+<li>前提思考：pod有PODID和hostname，pod是虚拟的资源对象（进程），没有对应的实体（物理机，物理网卡），单独的POD不能直接对外提供访问，对外提供访问一定要有物理机，通过端口访问</li>
+<li>解决方案：POD如果想要对外提供访问，必须绑定物理机的端口，（在物理及上开启端口，让这个端口和POD的端口建立映射），这样就可以通过物理机进行数据包的转发</li>
+<li>总结为步骤：①先通过物理机IP+port进行访问NODE节点；②数据包转发</li>
+</ul>
+<h3 id="pod如何实现负载均衡访问"><a href="#pod如何实现负载均衡访问" class="headerlink" title="pod如何实现负载均衡访问"></a>pod如何实现负载均衡访问</h3><p>一组相同的副本直接POD如何实现负载均衡访问，思考nginx能否做负载均衡：事实上pod是一个进程，是有生命周期的（宕机，版本更新），都会创建新的pod（ip地址发生变化，hostname发生变化）,nginx做负载均衡不太合适，因为nginx不能识别出hostname的变化，因此在pod动态变化的前提下（且由于经常做滚动更新，变化速度比较快），nginx不能发现我们的服务。因此我们使用service VIP实现负载均衡。</p>
+<h4 id="利用service来实现负载均衡"><a href="#利用service来实现负载均衡" class="headerlink" title="利用service来实现负载均衡"></a>利用service来实现负载均衡</h4><ul>
+<li>POD IP：pod的ip地址</li>
+<li>NODE IP：物理机的IP地址</li>
+<li>cluster IP：虚拟化IP，是由k8s抽象出的service对象，这个service对象是一个VIP的资源对象</li>
+</ul>
+<p>Kubernetes 这样定义Service ：逻辑上的一组 Pod，一种可以访问Pod的策略，通常称之为微服务。 这一组 Pod 能够被 Service 访问到，通常是通过selector实现的。当我们调用某个服务时并不关心调用了哪个Pod，对外提供服务一组的 Pod 实际上可能会发生变化(是否能提供服务，或者在销毁中，或者在创建中)，而Service 能够解耦这种关联。</p>
+<p>在 Kubernetes 集群中，每个Node运行一个 kube-proxy代理进程。kube-proxy 负责为 Service实现了一种VIP(虚拟 IP)。</p>
+<p>以下为Service资源对象:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-svc</span><br><span class="line">  labels:</span><br><span class="line">    app: nginx</span><br><span class="line">spec:</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">    - port: 80</span><br><span class="line">       targetPort: 80</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx</span><br></pre></td></tr></table></figure>
+
+<h4 id="Service如何实现负载均衡"><a href="#Service如何实现负载均衡" class="headerlink" title="Service如何实现负载均衡"></a>Service如何实现负载均衡</h4><p>我们知道了一组相关的port做负载均衡会使用虚拟IP来做数据包转发，但service是节点（资源对象）是怎么实现数据包的转发呢？</p>
+<p><strong>我们已知的</strong>：</p>
+<ol>
+<li>service和pod都是一个进行，因此service也不能对外网提供服务</li>
+<li>service和pod之间可以直接进行通信，它们的通信属于局域网通信</li>
+<li>把请求交给service后，service使用(ipstables,ipvs)来做数据包分发</li>
+</ol>
+<p><strong>访问步骤</strong>：</p>
+<ol>
+<li>在物理机上绑定端口</li>
+<li>通过ip:port访问</li>
+<li>访问完成之后将请求转交给service</li>
+<li>service将数据包分发给相应的pod</li>
+</ol>
+<p><strong>service对象是如何与pod建立关联的？</strong></p>
+<p>每一组相同的pod（副本）会有相同的标签，通过标签选择器（selector），service对一组相同的副本提供服务，如果是需要访问另一组，则需在创建一个service。因此不同的业务会有不同的service。然后service将对应的POD的IP地址存储到endpoints中，由此将service和相应的pod关联起来了。</p>
+<p><strong>当pod宕机或者发布了新的版本，service怎么发现pod发生了变化？</strong></p>
+<p>主要是依靠kube-proxy组件，k8s安装后每个节点都运行着这个组件。kube-proxy进程将监听所有的pod，一旦发现pod有变化，就会更新service中endpoint中的映射关系。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/44e24bf5.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/2b071c91.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            LBP特征描述算子-人脸检测
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/ece897f8.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">JAVA基础（二）—— HashMap（更新中）</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

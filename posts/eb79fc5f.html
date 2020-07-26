@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    新闻文本分类实战 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-新闻文本分类实战"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  新闻文本分类实战
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/eb79fc5f.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.544Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NLP/">NLP</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">6.3k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">24 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="赛题理解及思考"><a href="#赛题理解及思考" class="headerlink" title="赛题理解及思考"></a>赛题理解及思考</h1><h2 id="获取数据"><a href="#获取数据" class="headerlink" title="获取数据"></a>获取数据</h2><p>我们直接打开<a href="https://tianchi.aliyun.com/competition/entrance/531810/information" target="_blank" rel="noopener">天池大赛找到零基础入门NLP比赛</a>，看到的是这样一个页面：</p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/25.png" alt=""></p>
+<p>接着就三步走：注册报名下载数据，查看数据前五行可以看到我们获得的数据如下：</p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/26.png" alt=""></p>
+<p>其中左边的label是数据集文本对应的标签，而右边的text则是编码后的文本，文本对应的标签列举如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;'科技': 0, '股票': 1, '体育': 2, '娱乐': 3, '时政': 4, '社会': 5, '教育': 6, '财经': 7, '家居': 8, '游戏': 9, '房产': 10, '时尚': 11, '彩票': 12, '星座': 13&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据官方描述：赛题以匿名处理后的新闻数据为赛题数据，数据集报名后可见并可下载。赛题数据为新闻文本，并按照字符级别进行匿名处理。整合划分出14个候选分类类别：财经、彩票、房产、股票、家居、教育、科技、社会、时尚、时政、体育、星座、游戏、娱乐的文本数据。</p>
+<p>赛题数据由以下几个部分构成：训练集20w条样本，测试集A包括5w条样本，测试集B包括5w条样本。为了预防选手人工标注测试集的情况，我们将比赛数据的文本按照字符级别进行了匿名处理。</p>
+<p>同时我们还应该注意到官网有给出结果评价指标，我们也需要根据这个评价指标衡量我们的验证集数据误差：</p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/27.png" alt=""></p>
+<p>既然该拿到的我们都拿到了，我们接下来就开始构思我们都应该使用哪些思路来完成我们的预测。</p>
+<h2 id="赛题构思"><a href="#赛题构思" class="headerlink" title="赛题构思"></a>赛题构思</h2><p>由于赛题给出的数据是匿名化的，因此我们无法使用分词等操作提取关键词来简单预测，我们可以使用的是对文本提取特征的分类器或者是深度学习分类器，综合我们有如下思路：</p>
+<ul>
+<li><p>思路1：TF-IDF + 机器学习分类器：直接使用TF-IDF对文本提取特征，并使用分类器进行分类。在分类器的选择上，可以使用SVM、LR、或者XGBoost。</p>
+</li>
+<li><p>思路2：FastText：FastText是入门款的词向量，利用Facebook提供的FastText工具，可以快速构建出分类器。</p>
+</li>
+<li><p>思路3：WordVec + 深度学习分类器：WordVec是进阶款的词向量，并通过构建深度学习分类完成分类。深度学习分类的网络结构可以选择TextCNN、TextRNN或者BiLSTM。</p>
+</li>
+<li><p>思路4：Bert词向量：Bert是高配款的词向量，具有强大的建模学习能力。</p>
+</li>
+</ul>
+<p>我们后续将一一实现。</p>
+<h2 id="基础数据分析"><a href="#基础数据分析" class="headerlink" title="基础数据分析"></a>基础数据分析</h2><p>虽然这里的数据都是编码的文本数据，我们很难通过简单的数据分析获得很多有价值的信息，但我们还是希望获得诸如文本长度分布，文本类别分布、文本字符分布等信息以获得一个直观的印象，下面我们完成这些操作：</p>
+<p>读取数据（由于数据量较大读取前一百行便于操作）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train_df = pd.read_csv(<span class="string">"train_set.csv"</span>, sep=<span class="string">"\t"</span>, nrows=<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="统计文章词数"><a href="#统计文章词数" class="headerlink" title="统计文章词数"></a>统计文章词数</h3><p>统计每篇文章的词数并绘制直方图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line">train_df[<span class="string">"text_len"</span>] = train_df[<span class="string">"text"</span>].apply(<span class="keyword">lambda</span> x:len(x.split(<span class="string">" "</span>)))</span><br><span class="line">print(train_df[<span class="string">"text_len"</span>].describe())</span><br><span class="line">_ = plt.hist(train_df[<span class="string">'text_len'</span>], bins=<span class="number">200</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Text char count'</span>)</span><br><span class="line">plt.title(<span class="string">"Histogram of char count"</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/charCount-1595154665274.jpg" alt="charCount"></p>
+<h3 id="统计不同种类新闻数量"><a href="#统计不同种类新闻数量" class="headerlink" title="统计不同种类新闻数量"></a>统计不同种类新闻数量</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">train_df[<span class="string">"label"</span>].value_counts().plot(kind=<span class="string">"bar"</span>)</span><br><span class="line">plt.title(<span class="string">'News class count'</span>)</span><br><span class="line">plt.xlabel(<span class="string">"category"</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/classCount.jpg" alt=""></p>
+<h3 id="统计单词频率"><a href="#统计单词频率" class="headerlink" title="统计单词频率"></a>统计单词频率</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line">all_lines = <span class="string">" "</span>.join(list(train_df[<span class="string">"text"</span>]))</span><br><span class="line">word_count = Counter(all_lines.split(<span class="string">" "</span>))</span><br><span class="line">word_count = sorted(word_count.items(), key=<span class="keyword">lambda</span> d:d[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line">print(len(word_count))</span><br><span class="line">print(word_count[<span class="number">-1</span>])</span><br><span class="line">print(word_count[<span class="number">0</span>])</span><br><span class="line">print(word_count[<span class="number">1</span>])</span><br><span class="line">print(word_count[<span class="number">2</span>])</span><br></pre></td></tr></table></figure>
+
+<p>打印结果为编码”3750”，”648”，”900”为出现次数最多的字符且每篇文章中出现率均很高，我们有理由猜测这三个（或其中一两个）字符是标点符号，由此我们可以试着统计文章句子长度(假设这三个字符为标点符号)。</p>
+<h3 id="统计文章平均句子长度"><a href="#统计文章平均句子长度" class="headerlink" title="统计文章平均句子长度"></a>统计文章平均句子长度</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">sent_count = Counter(re.split(<span class="string">'3750|648|900'</span>, all_lines))</span><br><span class="line">sent_count = sorted(sent_count.items(), key=<span class="keyword">lambda</span> d:d[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line">sent_count = sent_count[<span class="number">1</span>:<span class="number">-1</span>]</span><br><span class="line">count = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(sent_count)):</span><br><span class="line">    count += sent_count[i][<span class="number">1</span>]</span><br><span class="line">print(<span class="string">"Average amount of sentences per article:"</span>, count/<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+
+<p>结果显示平均每篇文章有78.5个句子。当然这三个编码未必都是标点符号，猜测应该是一个逗号一个句号一个常见字（估计是“的”），因此每篇文章文章句子数应该更少（可以查看上面代码中的第一个sent count，每个分割句都比我们平时遇见的短很多），具体分析哪个编码是表示这个常见字可以对其他新闻文本数据做分析，看看排名前三的关键字是否匹配，这个特征感兴趣的可以自行研究。</p>
+<h3 id="统计每类新闻最常出现的n个单词"><a href="#统计每类新闻最常出现的n个单词" class="headerlink" title="统计每类新闻最常出现的n个单词"></a>统计每类新闻最常出现的n个单词</h3><p>另外我们可以统计每类新闻出现次数最多的字符，只需要将前100个文本中每类新闻的编码文本拼接起来进行如上统计即可，因此我们可以写一个函数用于输出出现次数前n的字符，然后传入对应的文本即可，实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">TopWord</span><span class="params">(type_, n)</span>:</span></span><br><span class="line">    all_lines = <span class="string">" "</span>.join([train_df[<span class="string">"text"</span>][i] <span class="keyword">for</span> i <span class="keyword">in</span> range(len(train_df[<span class="string">"text"</span>])) <span class="keyword">if</span> train_df[<span class="string">"label"</span>][i]==type_])</span><br><span class="line">    word_count = Counter(all_lines.split(<span class="string">" "</span>))</span><br><span class="line">    word_count = sorted(word_count.items(), key=<span class="keyword">lambda</span> d:d[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</span><br><span class="line">        print(word_count[i])</span><br><span class="line">        </span><br><span class="line">TopWord(<span class="number">2</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<p>其中参数type_的取值范围为[0,13]内的整数，意为对应的标签，参数n为打印出现次数前n的单词对应的编码。当然也可以对其制作不同类别的文本出现次数前n的单词的直方图，由于这里不准备对单词频率等特征做过多分析因此略过不提。</p>
+<h1 id="基于机器学习的文本分类"><a href="#基于机器学习的文本分类" class="headerlink" title="基于机器学习的文本分类"></a>基于机器学习的文本分类</h1><p>在机器学习算法的训练过程中，假设给定$N$个样本，每个样本有$M$个特征，这样组成了$N×M$的样本矩阵，然后完成算法的训练和预测。同样的在计算机视觉中可以将图片的像素看作特征，每张图片看作hight×width×3的特征图，一个三维的矩阵来进入计算机进行计算。</p>
+<p>但是在自然语言领域，上述方法却不可行：文本是不定长度的。文本表示成计算机能够运算的数字或向量的方法一般称为词嵌入（Word Embedding）方法。词嵌入将不定长的文本转换到定长的空间内，是文本分类的第一步。</p>
+<h2 id="词袋模型"><a href="#词袋模型" class="headerlink" title="词袋模型"></a>词袋模型</h2><p>词嵌入的最简单的方法就是将每一个字转为一个onehot编码，然后对于句子或者文章直接统计每个字出现的次数（词袋模型），例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">句子1：我 爱 北 京 天 安 门</span><br><span class="line">转换为 [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]</span><br><span class="line"></span><br><span class="line">句子2：我 喜 欢 上 海</span><br><span class="line">转换为 [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]</span><br></pre></td></tr></table></figure>
+
+<p>在sklearn中可以直接<code>CountVectorizer</code>来实现这一步骤：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> CountVectorizer</span><br><span class="line">corpus = [</span><br><span class="line">    <span class="string">'This is the first document.'</span>,</span><br><span class="line">    <span class="string">'This document is the second document.'</span>,</span><br><span class="line">    <span class="string">'And this is the third one.'</span>,</span><br><span class="line">    <span class="string">'Is this the first document?'</span>,</span><br><span class="line">]</span><br><span class="line">vectorizer = CountVectorizer()</span><br><span class="line">vectorizer.fit_transform(corpus).toarray()</span><br></pre></td></tr></table></figure>
+
+<p>CountVectorizer的使用及参数表如下，具体可见<a href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html" target="_blank" rel="noopener">官方文档</a>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CountVectorizer(input=<span class="string">'content'</span>, encoding=<span class="string">'utf-8'</span>,  decode_error=<span class="string">'strict'</span>, strip_accents=<span class="literal">None</span>, lowercase=<span class="literal">True</span>, preprocessor=<span class="literal">None</span>, tokenizer=<span class="literal">None</span>, stop_words=<span class="literal">None</span>, </span><br><span class="line">token_pattern=<span class="string">'(?u)\b\w\w+\b'</span>, ngram_range=(<span class="number">1</span>, <span class="number">1</span>), analyzer=<span class="string">'word'</span>, max_df=<span class="number">1.0</span>, min_df=<span class="number">1</span>, max_features=<span class="literal">None</span>, vocabulary=<span class="literal">None</span>, binary=<span class="literal">False</span>, dtype=&lt;<span class="class"><span class="keyword">class</span> '<span class="title">numpy</span>.<span class="title">int64</span>'&gt;)</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>参数表</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>input</td>
+<td>一般使用默认即可，可以设置为”filename’或’file’</td>
+</tr>
+<tr>
+<td>encodeing</td>
+<td>使用默认的utf-8即可，分析器将会以utf-8解码raw document</td>
+</tr>
+<tr>
+<td>decode_error</td>
+<td>默认为strict，遇到不能解码的字符将报UnicodeDecodeError错误，设为ignore将会忽略解码错误，还可以设为replace，作用尚不明确</td>
+</tr>
+<tr>
+<td>strip_accents</td>
+<td>默认为None，可设为ascii或unicode，将使用ascii或unicode编码在预处理步骤去除raw document中的重音符号</td>
+</tr>
+<tr>
+<td>analyzer</td>
+<td>一般使用默认，可设置为string类型，如’word’, ‘char’, ‘char_wb’，还可设置为callable类型，比如函数是一个callable类型</td>
+</tr>
+<tr>
+<td>preprocessor</td>
+<td>设为None或callable类型</td>
+</tr>
+<tr>
+<td>tokenizer</td>
+<td>设为None或callable类型</td>
+</tr>
+<tr>
+<td>ngram_range</td>
+<td>词组切分的长度范围，待详解</td>
+</tr>
+<tr>
+<td>stop_words</td>
+<td>设置停用词，设为english将使用内置的英语停用词，设为一个list可自定义停用词，设为None不使用停用词，设为None且max_df∈[0.7, 1.0)将自动根据当前的语料库建立停用词表</td>
+</tr>
+<tr>
+<td>lowercase</td>
+<td>将所有字符变成小写</td>
+</tr>
+<tr>
+<td>token_pattern</td>
+<td>过滤规则，表示token的正则表达式，需要设置analyzer == ‘word’，默认的正则表达式选择2个及以上的字母或数字作为token，标点符号默认当作token分隔符，而不会被当作token</td>
+</tr>
+<tr>
+<td>max_df</td>
+<td>可以设置为范围在[0.0 1.0]的float，也可以设置为没有范围限制的int，默认为1.0。这个参数的作用是作为一个阈值，当构造语料库的关键词集的时候，如果某个词的document frequence大于max_df，这个词不会被当作关键词。如果这个参数是float，则表示词出现的次数与语料库文档数的百分比，如果是int，则表示词出现的次数。如果参数中已经给定了vocabulary，则这个参数无效</td>
+</tr>
+<tr>
+<td>min_df</td>
+<td>类似于max_df，不同之处在于如果某个词的document frequence小于min_df，则这个词不会被当作关键词</td>
+</tr>
+<tr>
+<td>max_features</td>
+<td>默认为None，可设为int，对所有关键词的term frequency进行降序排序，只取前max_features个作为关键词集</td>
+</tr>
+<tr>
+<td>vocabulary</td>
+<td>默认为None，自动从输入文档中构建关键词集，也可以是一个字典或可迭代对象</td>
+</tr>
+<tr>
+<td>binary</td>
+<td>默认为False，一个关键词在一篇文档中可能出现n次，如果binary=True，非零的n将全部置为1，这对需要布尔值输入的离散概率模型的有用的</td>
+</tr>
+<tr>
+<td>dtype</td>
+<td>使用CountVectorizer类的fit_transform()或transform()将得到一个文档词频矩阵，dtype可以设置这个矩阵的数值类型</td>
+</tr>
+</tbody></table>
+<p>硬要总结一下词袋模型的话可总结为三部曲：<strong>分词（tokenizing），统计修订词特征值（counting）与标准化（normalizing）</strong>。</p>
+<h2 id="tf-idf"><a href="#tf-idf" class="headerlink" title="tf-idf"></a>tf-idf</h2><p>转换的结果正是如上面我们人工转换的那样，但正如你现在想到的，有些字比如“的”，“我”等在每篇文章中出现频率很高，但不能体现更多的文章特征，因此我们会对每篇文章中出现次数较高的单词执行降权操作，想要了解的更具体可以参看我的另一篇<a href="https://chenk.tech/posts/dcf8c6f9.html" target="_blank" rel="noopener">学习笔记</a>，这篇文章提到了比较多NLP领域的基础概念，这里简单将其中关于tf-idf的介绍复制过来：</p>
+<blockquote>
+<p>tf-idf：核心方法论为<strong>单词并不是出现的越多就越重要，并不是出现的越少就越不重要</strong>。计算公式为$tfidf(w)=tf(d,w)*idf(w)$，其中$tf(d,w)$为文档$d$中$w$的词频，$idf(w)=\text{log}\frac{N}{N(w)}$，$N$为语料库中的文档总数，$N(w)$为词语$w$ 出现在多少个文档。 也就是一个单词如果每个文档都出现了，tfidf值会很低，相反一个单词只出现少数几个文档中，在这里个文档中这些个单词的重要性一定是比较高的。</p>
+</blockquote>
+<h2 id="比较词袋模型与tf-idf"><a href="#比较词袋模型与tf-idf" class="headerlink" title="比较词袋模型与tf-idf"></a>比较词袋模型与tf-idf</h2><p>接下来我们将对比不同文本表示算法的精度，通过本地构建验证集计算F1得分。</p>
+<p>首先是词袋模型，部分代码旁边标有注释</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> CountVectorizer						<span class="comment"># 构建词袋模型的库</span></span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> RidgeClassifier								<span class="comment"># 岭回归分类器</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> f1_score											<span class="comment"># 导入计算F1值的库</span></span><br><span class="line"></span><br><span class="line">train_df = pd.read_csv(<span class="string">'train_set.csv'</span>, sep=<span class="string">'\t'</span>, nrows=<span class="number">15000</span>)					<span class="comment"># 读取前15000行数据</span></span><br><span class="line"></span><br><span class="line">vectorizer = CountVectorizer(max_features=<span class="number">3000</span>)									<span class="comment"># 取前max_features个作为关键词</span></span><br><span class="line">train_test = vectorizer.fit_transform(train_df[<span class="string">'text'</span>])							<span class="comment"># 转化为one-hot向量</span></span><br><span class="line"></span><br><span class="line">clf = RidgeClassifier()															</span><br><span class="line">clf.fit(train_test[:<span class="number">10000</span>], train_df[<span class="string">'label'</span>].values[:<span class="number">10000</span>])					<span class="comment"># 对前10000个学习，后5000个验证</span></span><br><span class="line"></span><br><span class="line">val_pred = clf.predict(train_test[<span class="number">10000</span>:])										<span class="comment"># 对验证集进行预测</span></span><br><span class="line">print(f1_score(train_df[<span class="string">'label'</span>].values[<span class="number">10000</span>:], val_pred, average=<span class="string">'macro'</span>))</span><br></pre></td></tr></table></figure>
+
+<p>其F1得分为0.7416952793751392。</p>
+<p>然后我们看tf-idf，代码与前面几乎一样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> TfidfVectorizer</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> RidgeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> f1_score</span><br><span class="line"></span><br><span class="line">train_df = pd.read_csv(<span class="string">'../input/train_set.csv'</span>, sep=<span class="string">'\t'</span>, nrows=<span class="number">15000</span>)</span><br><span class="line"></span><br><span class="line">tfidf = TfidfVectorizer(ngram_range=(<span class="number">1</span>,<span class="number">3</span>), max_features=<span class="number">3000</span>)</span><br><span class="line">train_test = tfidf.fit_transform(train_df[<span class="string">'text'</span>])</span><br><span class="line"></span><br><span class="line">clf = RidgeClassifier()</span><br><span class="line">clf.fit(train_test[:<span class="number">10000</span>], train_df[<span class="string">'label'</span>].values[:<span class="number">10000</span>])</span><br><span class="line"></span><br><span class="line">val_pred = clf.predict(train_test[<span class="number">10000</span>:])</span><br><span class="line">print(f1_score(train_df[<span class="string">'label'</span>].values[<span class="number">10000</span>:], val_pred, average=<span class="string">'macro'</span>))</span><br></pre></td></tr></table></figure>
+
+<p>其F1得分为0.8721598830546126，明显优于词袋模型。上面的代码需要注意的是ngram_range=(1,3)表示考虑单个编码单词组成的词语的长度，官方解释为：</p>
+<blockquote>
+<p><strong>ngram_range</strong>tuple (min_n, max_n), default=(1, 1)</p>
+<p>The lower and upper boundary of the range of n-values for different n-grams to be extracted. All values of n such that min_n &lt;= n &lt;= max_n will be used. For example an <code>ngram_range</code> of <code>(1, 1)</code> means only unigrams, <code>(1, 2)</code> means unigrams and bigrams, and <code>(2, 2)</code> means only bigrams. Only applies if <code>analyzer is not callable</code>.</p>
+</blockquote>
+<p>我们还可以尝试其他<a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.feature_extraction.text" target="_blank" rel="noopener">sklearn库中的文本分类</a>方法：</p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/sklearn.png" alt=""></p>
+<p>呃好像只剩下一个HashingVectorizer，这正是我们接下来要介绍的。</p>
+<h2 id="用哈希技巧向量化大文本向量"><a href="#用哈希技巧向量化大文本向量" class="headerlink" title="用哈希技巧向量化大文本向量"></a>用哈希技巧向量化大文本向量</h2><p>以上的向量化情景很简单，但是，事实上这种方式从字符标记到整型特征的目录（vocabulary_属性）的映射都是在内存中进行，在处理大数据集时会出现一些问题：</p>
+<ul>
+<li>语料库越大，词表就会越大，因此使用的内存也越大</li>
+<li>拟合（fitting）需要根据原始数据集的大小等比例分配中间数据结构的大小，构建词映射需要完整的传递数据集，因此不可能以严格在线的方式拟合文本分类器。</li>
+<li>pickling和un-pickling vocabulary很大的向量器会非常慢</li>
+<li>将向量化任务分隔成并行的子任务很不容易实现，因为vocabulary属性要共享状态有一个细颗粒度的同步障碍：从标记字符串中映射特征索引与每个标记的首次出现顺序是独立的，因此应该被共享，在这点上并行worker的性能收到了损害，使他们比串行更慢。</li>
+</ul>
+<p>通过同时使用由sklearn.feature_extraction.FeatureHasher类实施的“哈希技巧”（特征哈希）、文本预处理和CountVectorizer的标记特征有可能克服这些限制。简而言之，Hash Trick可以做特征的降维，具体的做法是：假设哈希函数$h$使第$i$个特征哈希到位置$j$即$h(i)=j$，则第$i$个原始特征的词频数值$\phi(i)$将累加到哈希后的第$j$个特征的词频数值$\bar\phi$上：</p>
+<p>$$\bar \phi(j) = \sum_{i \text{ in } \mathbb{J};h(i)=j}\phi(i)$$</p>
+<p>其中$\mathbb{J}$是原始特征的维度。但是上面的方法有一个问题，有可能两个原始特征的哈希后位置在一起导致词频累加特征值突然变大，为了解决这个问题，出现了hash Trick的变种signed hash trick,此时除了哈希函数<em>h</em>,我们多了一个一个哈希函数：</p>
+<p>$$\eta:\mathbb{N}\rightarrow \pm1$$</p>
+<p>$$\bar \phi(j) = \sum_{i \text{ in } \mathbb{J};h(i)=j}\eta(i)\phi(i)$$</p>
+<p>这样做的好处是，哈希后的特征仍然是一个无偏的估计，不会导致某些哈希位置的值过大。</p>
+<p>当然，大家会有疑惑，这种方法来处理特征，哈希后的特征是否能够很好的代表哈希前的特征呢？从实际应用中说，由于文本特征的高稀疏性，这么做是可行的。如果大家对理论上为何这种方法有效，建议参考论文：<a href="http://alex.smola.org/papers/2009/Weinbergeretal09.pdf" target="_blank" rel="noopener">Feature hashing for large scale multitask learning</a>.这里就不多说了。</p>
+<p>在scikit-learn的HashingVectorizer类中，实现了基于signed hash  trick的算法，这里我们就用HashingVectorizer来实践一下Hash  Trick，我们直接用前面的文本数据做分类看看结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> HashingVectorizer</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> RidgeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> f1_score</span><br><span class="line"></span><br><span class="line">hashVec = HashingVectorizer(ngram_range=(<span class="number">1</span>,<span class="number">3</span>))</span><br><span class="line">train_test = hashVec.fit_transform(train_df[<span class="string">'text'</span>])</span><br><span class="line"></span><br><span class="line">clf = RidgeClassifier()</span><br><span class="line">clf.fit(train_test[:<span class="number">10000</span>], train_df[<span class="string">'label'</span>].values[:<span class="number">10000</span>])</span><br><span class="line"></span><br><span class="line">val_pred = clf.predict(train_test[<span class="number">10000</span>:])</span><br><span class="line">print(f1_score(train_df[<span class="string">'label'</span>].values[<span class="number">10000</span>:], val_pred, average=<span class="string">'macro'</span>))</span><br></pre></td></tr></table></figure>
+
+<p>这里没有传入max_features参数，因为我们知道哈希技巧本身就是一个降维的算法，计算出来的F1值为0.8891893925390113，明显优于另外两个算法，经过一些调参之后算法准确度还可以提高一些。</p>
+<p>这里我们看到虽然我们只用了简单地机器学习算法，但已经取得了挺不错的分类率了，接下来我们将尝试基于深度学习的分类，事实上我们的比赛也从这里才正式开始！</p>
+<h1 id="基于深度学习的文本分类"><a href="#基于深度学习的文本分类" class="headerlink" title="基于深度学习的文本分类"></a>基于深度学习的文本分类</h1><h2 id="FastText"><a href="#FastText" class="headerlink" title="FastText"></a>FastText</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>我们先看看<a href="https://github.com/facebookresearch/fastText/tree/master/python" target="_blank" rel="noopener">gituhub官方文档</a>对FastText的定义 ：</p>
+<blockquote>
+<p><a href="https://fasttext.cc/" target="_blank" rel="noopener">fastText</a> is a library for efficient learning of word representations and sentence classification.</p>
+</blockquote>
+<p>我们先使用fastText，随后再对其进行详细解析，第一步我们需要安装 fastText库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip instal fastText</span><br></pre></td></tr></table></figure>
+
+<p>或者手动从github下载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https:&#x2F;&#x2F;github.com&#x2F;facebookresearch&#x2F;fastText.git</span><br><span class="line">$ cd fastText</span><br><span class="line">$ sudo pip install .</span><br><span class="line">$ # or :</span><br><span class="line">$ sudo python setup.py install</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>我们直接使用fastText来实现我们的文本分类，代码一共只有寥寥几行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">!pip install fasttext</span><br><span class="line"><span class="keyword">import</span> fasttext</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> f1_score</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为FastText需要的格式</span></span><br><span class="line">train_df = pd.read_csv(<span class="string">"train_set.csv"</span>, sep=<span class="string">"\t"</span>, nrows=<span class="number">15000</span>)</span><br><span class="line">train_df[<span class="string">"label_ft"</span>] = <span class="string">"__label__"</span> + train_df[<span class="string">"label"</span>].astype(str)</span><br><span class="line">train_df[[<span class="string">"text"</span>, <span class="string">"label_ft"</span>]].iloc[:<span class="number">-5000</span>].to_csv(<span class="string">"train.csv"</span>, index=<span class="literal">None</span>, header=<span class="literal">None</span>, sep=<span class="string">"\t"</span>)</span><br><span class="line"></span><br><span class="line">model = fasttext.train_supervised(<span class="string">"train.csv"</span>, lr=<span class="number">1.0</span>, wordNgrams=<span class="number">2</span>, verbose=<span class="number">2</span>, minCount=<span class="number">1</span>, epoch=<span class="number">25</span>, loss=<span class="string">"hs"</span>)</span><br><span class="line"></span><br><span class="line">val_pred = [model.predict(x)[<span class="number">0</span>][<span class="number">0</span>].split(<span class="string">"__"</span>)[<span class="number">-1</span>] <span class="keyword">for</span> x <span class="keyword">in</span> train_df.iloc[<span class="number">-5000</span>:][<span class="string">"text"</span>]]</span><br><span class="line">print(f1_score(train_df[<span class="string">"label"</span>].values[<span class="number">-5000</span>:].astype(str), val_pred, average=<span class="string">"macro"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>结果很快就输出出来了（比前面的机器学习模型还快），结果为0.8260812453351833，但人不可貌相，我们可以对这个结果做很多优化，比如增加训练集数量，调整参数等。下面先对上面部分参数做了个简单的循环用于查看粗略的训练效果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 粗略调参</span></span><br><span class="line"><span class="keyword">import</span> fasttext</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> f1_score</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为FastText需要的格式</span></span><br><span class="line">train_df = pd.read_csv(<span class="string">"train_set.csv"</span>, sep=<span class="string">"\t"</span>, nrows=<span class="number">15000</span>)</span><br><span class="line">train_df[<span class="string">"label_ft"</span>] = <span class="string">"__label__"</span> + train_df[<span class="string">"label"</span>].astype(str)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> val_set <span class="keyword">in</span> [<span class="number">2000</span>, <span class="number">3000</span>, <span class="number">4000</span>, <span class="number">5000</span>]:</span><br><span class="line">    print(<span class="string">"The validation set is:"</span>, val_set)</span><br><span class="line">    train_df[[<span class="string">"text"</span>, <span class="string">"label_ft"</span>]].iloc[:-val_set].to_csv(<span class="string">"train.csv"</span>, index=<span class="literal">None</span>, header=<span class="literal">None</span>, sep=<span class="string">"\t"</span>)</span><br><span class="line">    <span class="keyword">for</span> lr_ <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">10</span>, <span class="number">2</span>):</span><br><span class="line">        print(<span class="string">"Learning rate is:"</span>, lr_/<span class="number">10</span>)</span><br><span class="line">        <span class="keyword">for</span> wordGram <span class="keyword">in</span> [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]:</span><br><span class="line">            print(<span class="string">"wordNgrams is:"</span>, wordGram)</span><br><span class="line">            model = fasttext.train_supervised(<span class="string">"train.csv"</span>, lr=lr_/<span class="number">10</span>, wordNgrams=wordGram, verbose=<span class="number">2</span>, minCount=<span class="number">1</span>, epoch=<span class="number">25</span>, loss=<span class="string">"hs"</span>)</span><br><span class="line">            val_pred = [model.predict(x)[<span class="number">0</span>][<span class="number">0</span>].split(<span class="string">"__"</span>)[<span class="number">-1</span>] <span class="keyword">for</span> x <span class="keyword">in</span> train_df.iloc[-val_set:][<span class="string">"text"</span>]]</span><br><span class="line">            print(<span class="string">"f1_score is:"</span>, f1_score(train_df[<span class="string">"label"</span>].values[-val_set:].astype(str), val_pred, average=<span class="string">"macro"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>为什么说这是粗略的呢，因为验证集与测试集的划分比较随意，就取了前一部分作为训练集后一部分作为验证集，没有多次独立重复实验取平均值之类的操作，因此实验结果带有较大的偶然性，但这样粗略的实验有助于我们对整体参数有个大概的估计，我们后面的实验可以在更精细的参数范围内做调参等工作。根据上面的粗调参结果我们可以看到几个显然的结论（以下对参数的讨论均限制在上述实验所取范围）：</p>
+<ul>
+<li>验证集越小效果越好</li>
+<li>学习率越高越好</li>
+<li>学习率较高（约0.7以上）时，wordNgrams参数为3时效果较好，学习率较低时wordNgrams参数为2时效果较好</li>
+<li>最最重要的是，训练数据全加进来效果当然会好很多</li>
+</ul>
+<p>由于学习率未达到峰值，我们往1的右边继续调高学习率进行实验，最终我们将参数的取值范围大致定在以下范围内，我们后续将对这个范围内的参数做进一步调参：</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>learning_rate</th>
+<th>wordNgrams</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>取值范围</strong></td>
+<td>(1.2, 1.4)</td>
+<td>3</td>
+</tr>
+</tbody></table>
+<p>在精确的参数估计中，我们使用10折交叉验证，每折使用9/10的数据进行训练，剩余1/10作为验证集检验模型的效果。这里需要注意每折的划分必须保证标签的分布与整个数据集的分布一致，划分代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">label2id &#x3D; &#123;&#125;</span><br><span class="line">for i in range(total):</span><br><span class="line">    label &#x3D; str(all_labels[i])</span><br><span class="line">    if label not in label2id:</span><br><span class="line">        label2id[label] &#x3D; [i]</span><br><span class="line">    else:</span><br><span class="line">        label2id[label].append(i)</span><br></pre></td></tr></table></figure>
+
+<p>通过10折划分，我们一共得到了10份分布一致的数据，索引分别为0到9，每次通过将一份数据作为验证集，剩余数据作为训练集，获得了所有数据的10种分割。不失一般性，我们选择最后一份完成剩余的实验，即索引为9的一份做为验证集，索引为1-8的作为训练集，然后基于验证集的结果调整超参数，使得模型性能更优。嗯想了想前面的HashingVectorizer，不用累死累活去调参就有0.889的准确率（甭跟我扯训练数据的事，两个方法的训练数据都是10000），真是心累阿，不准备接着调参了反正也不是很高，就大概0.85左右这个样，重点还是后面两个方法。</p>
+<h3 id="fastText介绍"><a href="#fastText介绍" class="headerlink" title="fastText介绍"></a>fastText介绍</h3><h4 id="fastText模型架构"><a href="#fastText模型架构" class="headerlink" title="fastText模型架构"></a>fastText模型架构</h4><p>fastText是一个快速文本分类算法，与基于神经网络的分类算法相比有两大优点：</p>
+<ol>
+<li>fastText在保持高精度的情况下加快了训练速度和测试速度</li>
+<li>fastText不需要预训练好的词向量，fastText会自己训练词向量</li>
+<li>fastText两个重要的优化：<strong>Hierarchical Softmax、N-gram</strong></li>
+</ol>
+<p>fastText模型架构和word2vec中的CBOW很相似， 不同之处是fastText预测标签而CBOW预测的是中间词，即模型架构类似但是模型的任务不同。word2vec将上下文关系转化为多分类任务，进而训练逻辑回归模型，这里的类别数量$|V|$词库大小。通常的文本数据中，词库少则数万，多则百万，在训练中直接训练多分类逻辑回归并不现实。word2vec中提供了两种针对大规模多分类问题的优化手段， negative sampling 和hierarchical softmax。在优化中，negative sampling 只更新少量负面类，从而减轻了计算量。hierarchical softmax 将词库表示成前缀树，从树根到叶子的路径可以表示为一系列二分类器，一次多分类计算的复杂度从$|V|$降低到了树的高度</p>
+<p>fastText模型架构:其中$x_1,x_2,…,x_{N−1},x_N$表示一个文本中的n-gram向量，每个特征是词向量的平均值。这和前文中提到的CBOW相似，<strong>CBOW用上下文去预测中心词，而此处用全部的n-gram去预测指定类别</strong>。</p>
+<h4 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h4><h4 id="N-gram特征"><a href="#N-gram特征" class="headerlink" title="N-gram特征"></a>N-gram特征</h4><p>n-gram是基于语言模型的算法，基本思想是将文本内容按照子节顺序进行大小为N的窗口滑动操作，最终形成窗口为N的字节片段序列。而且需要额外注意一点是n-gram可以根据粒度不同有不同的含义，有字粒度的n-gram和词粒度的n-gram，正如前面调参时的2-gram和3-gram。</p>
+<p>对于文本句子的n-gram来说，如上面所说可以是字粒度或者是词粒度，同时n-gram也可以在字符级别工作，例如对单个单词matter来说，假设采用3-gram特征，那么matter可以表示成图中五个3-gram特征，这五个特征都有各自的词向量，五个特征的词向量和即为matter这个词的向其中“&lt;”和“&gt;”是作为边界符号被添加，来将一个单词的ngrams与单词本身区分开来：<br><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/28.png" alt=""></p>
+<p>从上面来看，使用n-gram有如下优点<br>1、为罕见的单词生成更好的单词向量：根据上面的字符级别的n-gram来说，即是这个单词出现的次数很少，但是组成单词的字符和其他单词有共享的部分，因此这一点可以优化生成的单词向量<br>2、在词汇单词中，即使单词没有出现在训练语料库中，仍然可以从字符级n-gram中构造单词的词向量<br>3、n-gram可以让模型学习到局部单词顺序的部分信息, 如果不考虑n-gram则便是取每个单词，这样无法考虑到词序所包含的信息，即也可理解为上下文信息，因此通过n-gram的方式关联相邻的几个词，这样会让模型在训练的时候保持词序信息</p>
+<h4 id="其他解决方案"><a href="#其他解决方案" class="headerlink" title="其他解决方案"></a>其他解决方案</h4><p>但正如上面提到过，随着语料库的增加，内存需求也会不断增加，严重影响模型构建速度，针对这个有以下几种解决方案：<br>1、过滤掉出现次数少的单词<br>2、使用hash存储<br>3、由采用字粒度变化为采用词粒度</p>
+<h2 id="Word2Vec"><a href="#Word2Vec" class="headerlink" title="Word2Vec"></a>Word2Vec</h2><h2 id="Bert"><a href="#Bert" class="headerlink" title="Bert"></a>Bert</h2><p>参考链接：</p>
+<ul>
+<li><a href="https://github.com/datawhalechina/team-learning-nlp/blob/master/NewsTextClassification" target="_blank" rel="noopener">https://github.com/datawhalechina/team-learning-nlp/blob/master/NewsTextClassification</a></li>
+<li><a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.feature_extraction.text" target="_blank" rel="noopener">https://scikit-learn.org/stable/modules/classes.html#module-sklearn.feature_extraction.text</a></li>
+<li><a href="https://www.cnblogs.com/pinard/p/6688348.html" target="_blank" rel="noopener">https://www.cnblogs.com/pinard/p/6688348.html</a></li>
+<li><a href="https://blog.csdn.net/zhangbaoanhadoop/article/details/79570128" target="_blank" rel="noopener">https://blog.csdn.net/zhangbaoanhadoop/article/details/79570128</a></li>
+<li><a href="https://blog.csdn.net/feilong_csdn/article/details/88655927" target="_blank" rel="noopener">https://blog.csdn.net/feilong_csdn/article/details/88655927</a></li>
+<li>A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, <a href="https://arxiv.org/abs/1607.01759" target="_blank" rel="noopener"><em>Bag of Tricks for Efficient Text Classification</em></a></li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/eb79fc5f.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/f019e32d.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            算法复现（一）—— 快速排序算法
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/c100533b.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">数理统计笔记_参数估计</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

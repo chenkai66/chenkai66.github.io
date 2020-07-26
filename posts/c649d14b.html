@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    头疼的Borel |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-头疼的Borel"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  头疼的Borel
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/c649d14b.html" class="article-date">
+  <time datetime="2020-07-26T11:10:26.516Z" itemprop="datePublished">2020-07-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mathematics/">Mathematics</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">4.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">18 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>本文将从实变函数回顾（集合与点集、Lebesgue测度、可测函数、Lebesgue积分）入手，结合概率论中的一些定理和概念研究其与概率论的联系。</p>
+<h1 id="实变函数回顾"><a href="#实变函数回顾" class="headerlink" title="实变函数回顾"></a>实变函数回顾</h1><p>我们知道Riemann积分有很多不完备的地方，比如Riemann可积函数类对极限运算不封闭，也即是Riemann可积函数类是不完备的，我们希望改造Riemann积分，使可积函数类对极限的运算封闭，也即：</p>
+<ol>
+<li><p>原来$[a,b]$上Riemann可积的函数按新的积分定义也是可积的；</p>
+</li>
+<li><p>如果按新的积分定义是可积的函数列$f_k(x)$，且存在极限：</p>
+<p>$$f(x)=\lim\limits_{k\rightarrow\infty}f_k(x)$$</p>
+<p>则按新的积分定义的$f(x)$的积分也存在，且有积分号下取极限成立，即：</p>
+<p>$$\lim\limits_{k\rightarrow\infty}\int_a^bf_k(x)\text{d}x=\int_a^bf(x)\text{d}x$$</p>
+</li>
+</ol>
+<p>这个新的积分就是我们将要介绍的Lebesgue积分。</p>
+<h2 id="集合与测度"><a href="#集合与测度" class="headerlink" title="集合与测度"></a>集合与测度</h2><p>首先我们回忆一个很著名的悖论——芝诺悖论：一支飞驰的箭，在每一个确定的时刻都静止在一个确定的位置上，为什么经过一段时间后会移动一段距离？我们在测度这一节会解答这个问题。</p>
+<h3 id="测度概念的引入"><a href="#测度概念的引入" class="headerlink" title="测度概念的引入"></a>测度概念的引入</h3><p>我们要想定义Lebesgue积分首先需要有测度的概念，为什么需要有这个概念呢？因为当我们想要计算定义域上取某个函数值在指定的很小范围内波对的长度总和时，正如Riemann积分中表现出的那样，具有良好性质的长度已经不能满足我们的需求了，由此我们定义了测度的概念。测度的侧重点是对离散的点给出长度的定义，举个例子，当我们考虑实数集中有理数和无理数全体，因为他们都是离散的点，我们很难给出一个简单的直接判别其长度的方法，而由于离散的点是可以看成集合中的元素，我们可以通过研究集合中元素的性质，将集合内的点集做分类，由此引出了可数集与不可数集。</p>
+<p>而19世纪已经对测度的概念有一些雏形了，最早引入并推广了测度的概念的人是意大利数学家Peano，为了使积分定义摆脱极限的概念，Peano将Riemann积分定义为Riemann和当其最小上界等于最大下界时所取的公共值；随后Jordan、Cantor、Borel也相继发展了测度理论，Borel测度实际上就是Lebesgue测度限制在Borel集上定义出来的测度，我们在下面会专门谈论这个话题。总而言之19世纪对测度理论的发展尚不是特别完善，比如Borel提出的测度概念是具有有限可加性的，也就是对两两不交的有限个集合的测度之和等于这些集合并的测度。但这个定义早已不够用，他的学生Lebesgue在Borel测度的基础上发展出了具有可数可加性的Lebesgue测度。</p>
+<h3 id="Lebesgue测度的诞生"><a href="#Lebesgue测度的诞生" class="headerlink" title="Lebesgue测度的诞生"></a>Lebesgue测度的诞生</h3><p>我们首先定义测度的概念：</p>
+<ol>
+<li>空集的测度是0</li>
+<li>测度在定义的集合上是可数可加的</li>
+<li>任何集合的测度非负</li>
+</ol>
+<p>而如果我们希望它满足“长度”的性质（强行符合我们过往熟知的概念），我们可以为测度增加一个性质，也就是</p>
+<ol start="4">
+<li>实数轴上从a到b的线段的测度应等于b-a</li>
+</ol>
+<p>只要有了以上四条性质，我们可以很自然地得出唯一满足这四条性质的测度——Lebesgue测度，我们需要注意的是，并不是直线上所有点集我们都可以定义测度，而是只有在Lebesgue可测集上我们才能做如上定义，而如果我们不加入第四条性质，我们同样是可以定义出许许多多种测度，不过这些测度的性质与我们熟知的长度的概念不同，而且单点集的长度也未必是0，仅此而已，但他们同样可以在许许多多其他领域发挥作用，比如我们将要讨论的概率论正是直接在博雷尔测度上发展的。</p>
+<p>根据Lebesgue测度的定义，我们很容易可以推导出单点集的测度是0，但按我们通俗的理解，直线不就是由单点集组合而成的吗，为何单点集的测度是0而直线的测度却不为0。事实上我们定义测度时有一条性质：可数可加性已经确保了我们并不能简单地将所有点加起来就构成了直线，我们通过对$[0,1]$区间基数的探讨我们可以知道这个区间，或者说某个线段乃至直线都是不可数的，因此我们知道直线集的测度不能通过直接对单点集的测度相加得到。</p>
+<p>那么我们为何要定义可数可加性，为何不定义一个对任何集合都可加的可加性？这正是因为我们定义加法时是通过定义一个数加一个数迭代进行定义的，因此我们考虑加法时是默认带有可数的条件的。由此我们可以解决前面提出的芝诺悖论：一整段时间内飞矢的移动状态根本不是每个时间点飞矢的移动状态直接相加，这不满足测度中的可数可加性的定义。</p>
+<h3 id="Borel集与Borel测度"><a href="#Borel集与Borel测度" class="headerlink" title="Borel集与Borel测度"></a>Borel集与Borel测度</h3><p>其实按照时间先后关系，我们应该首先谈论Borel集随后才谈论Lebesgue测度，但由于我们的重点在于Lebesgue积分，我们仅简要介绍Borel集与Lebesgue的关系</p>
+<p>Borel集的定义是可以用开集或闭集的可数次交与并运算表示的点集，或称为由所有开集生成的最小$\sigma$代数，这个定义不再深究，而Lebesgue可测集是Borel集的完备化(completion)，也就是由所有开集和零测集生成的$\sigma$代数，也就是说Borel可测集类完全被Lebesgue可测集类包含。实际上任何一个Lebesgue可测集都可以表示为Borel集合和一个零测集的并集，或是一个Borel集减去一个零测集，因此Lebesgue测度是Borel测度的完备化。</p>
+<p>Borel测度的定义相对于Lebesgue测度简单多了：任何定义在Borel集上的测度都是Borel测度，Lebesgue测度是由外侧度定义（以“长度”为度量标准），因此作用在Lebesgue可测集上的Lebesgue测度必然作用在该Lebesgue可测集内部的Borel集上，因此可以说$R^n$上的Lebesgue测度是一种Borel测度（以“长度”为度量标准的测度），这里我们也可以看见，Borel测度其实并不唯一，因为只需要满足在Borel集上有定义的测度都可以成为Borel测度，Lebesgue测度在Borel集上自然也成为Borel测度。</p>
+<h2 id="Lebesgue可测函数及其积分"><a href="#Lebesgue可测函数及其积分" class="headerlink" title="Lebesgue可测函数及其积分"></a>Lebesgue可测函数及其积分</h2><h3 id="Lebesgue可测函数"><a href="#Lebesgue可测函数" class="headerlink" title="Lebesgue可测函数"></a>Lebesgue可测函数</h3><p>教材中开篇说到了Lebesgue可测函数的定义：</p>
+<blockquote>
+<p>设$E\subset \text{R}^n$可测，$f$是定义于$E$上的广义实值函数。若对于任意实数a，点集${x|x\in E,f(x)&gt;a}$是$\text{R}^n$内的可测集，则$f$称为$E$上的Lebesgue可测函数，简称$f$是$E$上的可测函数，或$f$在$E$上可测。</p>
+</blockquote>
+<p>但这个定义与Rudin的《Real and Complex Analysis》中可测函数的定义有所不同:</p>
+<blockquote>
+<p>If $X$ is a measurable space, $Y$ is topological space, and $f$ is a mapping of $X$ into $Y$, then $f$ is said to be measurable provided that $f^{-1}(V)$ is a measurable set in $X$ for every open set $V$ in $Y$.</p>
+</blockquote>
+<p>翻译过来就是可测空间到一个拓扑空间上定义了一个函数，这个函数下，开集的原象是可测集。勒贝格可测函数是在$R^n$中考虑，按照一般的拓扑作为拓扑，将由所有普通的开集生成的$\sigma$代数做成一个可测空间得到Borel可测集最后在完备化成Lebesgue可测集，以开集的原象是勒贝格可测集来定义勒贝格可测函数，为此只需$(a,\infty)$的原象是勒贝格可测集即可。因此Rudin的定义是一种一般的抽象化的定义，而Lebesgue可测函数的定义则比Rudin的可测函数的定义更具体。</p>
+<p>Lebesgue可测函数有两个主要性质，也即Littlewood三原则的后两条：</p>
+<ul>
+<li>每个可测函数近于连续函数</li>
+<li>每个收敛的可测函数序列近于一致收敛</li>
+</ul>
+<p>这两条原则分别对应的是Egorov定理与Lusin定理，这里就不再重复了。</p>
+<h3 id="Lebesgue积分"><a href="#Lebesgue积分" class="headerlink" title="Lebesgue积分"></a>Lebesgue积分</h3><p><strong>Lebesgue积分的定义</strong>：对于可测集$E\subset \mathbb{R}^n$上的非负可测函数$\phi$，若其标准式为</p>
+<p>$$\phi(x)=\sum_{i=1}^k c_i\chi_{E_i}(x),\quad (x\in E = \bigcup_{i=1}^kE_i)$$</p>
+<p>其中$c_i$为非负实数，$E_i$为可测集，当$i\neq j$时有$E_i\bigcap E_j=\emptyset$，称广义实数$\sum_{i=1}^kc_imE_i$为$\phi$在$E$上的Lebesgue积分，记为$\int_E\phi(x)\text{d}x$</p>
+<p>Lebesgue积分中最重要的三条定理是Levi引理、Fatou引理、控制收敛定理，这三者相互等价且可相互证明。</p>
+<p><strong>Levi引理</strong>：设${f_k}$是$E$上的非负可测函数的递增列，记$f(x)=\lim\limits_{k\rightarrow\infty}f_k(x)(x\in E)$，则$\int_Ef(x)\text{d}x=\lim\limits_{k\rightarrow\infty}\int_Ef_k(x)$</p>
+<p><strong>Fatou引理</strong>：设${f_k}$是$E$上的非负可测函数列，则$\int_E \lim\limits_{\substack{- \k\to\infty } }f_k(x)\text{d}x\leq \lim\limits_{\substack{- \k\to\infty } }\int_Ef_k(x)\text{d}x$</p>
+<p><strong>Lebesgue控制收敛定理</strong>：设${f_k}$是$E\subset \mathbb{R}^n$上几乎处处收敛地可测函数列，$\lim\limits_{k\rightarrow\infty}f_k(x)=f(x)$，若存在非负函数$F$使得$F\in L(E)$并且$|f_k(x)|\leq F(x)\quad (x\in E,k=1,2,…)$，则函数$f$及所有的$f_k$都在$E$上可积，且$\lim\limits_{k\rightarrow \infty}\int_E f_k(x)\text{d}x$存在并等于$\int_Ef(x)\text{d}x$.</p>
+<p>借助最后提到的期望的单调连续性定理我们可以很容易地分别证出Levi引理和Fatou引理。</p>
+<h3 id="Lebesgue积分与Riemann积分的比较"><a href="#Lebesgue积分与Riemann积分的比较" class="headerlink" title="Lebesgue积分与Riemann积分的比较"></a>Lebesgue积分与Riemann积分的比较</h3><p>直观上比较Lebesgue积分与Riemann积分，我们可以看出Riemann积分主要是针对连续函数的，而Lebesgue积分和连续函数关系不大。</p>
+<ul>
+<li><p>比Riemann定义的可积函数更多：一个函数是Riemann可积的，则其一定是Lebesgue可积的</p>
+</li>
+<li><p>更统一的理论：Riemann积分需要考虑正常积分与瑕积分，其中瑕积分还分为定义域为无穷以及值域为无穷的考量。而Lebesgue积分则不需要进行如此分类，而且用集合取代了Riemann积分中的区间</p>
+</li>
+<li><p>在Riemann积分中，若$f_n\rightarrow f$在$[a,b]$上点态收敛，$f_n,f$是Riemann可积的，再增加额外的条件（例如函数列$f_n$有界）可导出$\int_a^bf_n\rightarrow\int_0^1f$，而在Lebesgue积分中可以将条件稍微放宽一些，可以将$f_n,f$是Riemann可积的条件减弱为$f_n$是Lebesgue可积的即可，且$f_n$有界也可以放宽为$f_n$可由一个可测函数控制。</p>
+</li>
+<li><p>微积分基本定理</p>
+<ul>
+<li><p>Riemann积分下微积分基本定理的形式：</p>
+<ul>
+<li>若$f$在$[a,b]$可积，即在$[a,b]$上$F(x)=\int_a^xf(t)\text{d}t$，<strong>且$f$在$x_0$连续</strong>，则$f(x_0)$的原函数值存在为$F^(x_0)$</li>
+<li>$g^<code>$定义在$[a,b]$上且 $g</code>$在$[a,b]$可积，则$\int_a^bg^`(x)\text{d}x=g(b)-g(a)$</li>
+</ul>
+<p>也就是说Riemann积分的定义是与其微分挂钩紧密的，原函数需要可微分被积函数才可做积分。</p>
+</li>
+<li><p>Lebesgue积分下微积分基本定理的形式：</p>
+<ul>
+<li>$f$在$[a,b]$上可积且$F(x)=\int_a^xf(t)\text{d}t$，则$F^<code>(x)$存在且$F^</code>=f \quad a.e.$</li>
+<li>$g^<code>$定义在$[a,b]$上且 $g</code>$在$[a,b]$有界，则$g^<code>$在$[a,b]$上可积且$\int_a^bg^</code>(x)\text{d}x=g(b)-g(a)$</li>
+</ul>
+<p>我们可以看到Lebesgue积分下微积分基本定理的第一条相比起Riemann积分的情形可以去掉连续的条件，只需要$F^<code>$存在，则$F^</code>=f \quad a.e.$，第二条则将可积的条件减弱为有界。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="实变函数与概率论"><a href="#实变函数与概率论" class="headerlink" title="实变函数与概率论"></a>实变函数与概率论</h1><h2 id="概率空间"><a href="#概率空间" class="headerlink" title="概率空间"></a>概率空间</h2><p>概率要度量的是“事件发生可能性的大小”，而事件的抽象就是集合，也就是说我们需要在一个拥有一定性质的度量空间下给出事件这个集合的测度。我们希望的概率测度有以下性质：</p>
+<ol>
+<li>$0\leq P(E)\leq 1$</li>
+<li>如果$E_1,E_2,…,E_i$是互斥事件，那么$P(\bigcup_{i=1}^\infty E_i) = \sum_{i=1}^\infty P(E_i)$</li>
+<li>$P(\Omega)=1,\Omega$为全集</li>
+</ol>
+<p>我们可以看到概率测度实际上就是一个特殊的测度，那么我们还需要解决的问题是什么样的集合是可测集？事实上我们只需要集合系是$\sigma$代数（$\sigma$域）即可，$\sigma$代数的定义如下：</p>
+<ol>
+<li>全集在集合系中</li>
+<li>集合系中每个集合的余集在其中</li>
+<li>任意可列个集合的并集在其中</li>
+</ol>
+<p>我们翻译一下就得到事件$F$的定义：</p>
+<ol>
+<li>$\emptyset\in F$，即必须包含不可能事件</li>
+<li>如果$E\in F$，则$E^c\in F$</li>
+<li>如果$E_1,E_2,…,E_i\in F$，则$\bigcup_{i=1}^\infty E_i \in F$</li>
+</ol>
+<p>我们可以看到事件域$F$的定义与概率空间中的$P$的定义几乎一一对应，但我们有了事件域还不够，因为事实上我们现实世界中的事件是五花八门的，我们需要建立一个从样本空间（基本事件全体）到实数轴的一一对应（实数集$\R$相对于普通集合的优势在于它上面的元素可以做精彩的运算），而这个映射我们定义为随机变量。将上述叙述顺过来说即：集合$X$+该集合上的一个$\sigma$代数$F$就定义了一个可测空间$(X,F)$，($F$中任一集合都可以定义其测度），再在这个可测空间上定义一个测度$\mu$，那么$(X,F,\mu)$就是一个测度空间，其中概率测度就是满足$P(\Omega)=1$的测度，因此$(\Omega,F,P)$就是一个概率测度空间。</p>
+<p>由于我们前面已经定义了随机事件${\omega\in\Omega:x(\omega)\in B}\subset F$，因此可以定义随机事件的概率为$P{\omega\in\Omega:x(\omega)\in B}=P(X\in B)$，我们可以由此推出概率密度函数的定义，令$B=(-\infty,x)$：$P(X\in B)=P(X\leq x)=F(x)$，同理很容易得到：$P(X\in (a,b])=F(b)-F(a)$，因此由这样定义的区间（集合）的可数次交并补运算都可以通过$F(x)$给出其概率。</p>
+<h2 id="随机变量与期望"><a href="#随机变量与期望" class="headerlink" title="随机变量与期望"></a>随机变量与期望</h2><h4 id="随机变量"><a href="#随机变量" class="headerlink" title="随机变量"></a>随机变量</h4><p>前面说明了随机变量是样本空间到实数轴的一一对应，下面我们根据可测函数的定义给出随机变量的严格定义：</p>
+<ul>
+<li>由$(\Omega,\mathbb{F})$到$(\mathbb{R},\mathbb{B})$的可测映照称为<strong>可测函数</strong>，特别，当$(\Omega,\mathbb{F})$为概率可测空间时，  $(\Omega,\mathbb{F})$到 $(\mathbb{R},\mathbb{B})$的可测映照 $X$称为(有限值)<strong>随机变量</strong>(或广义实值随机变量)，也记为$X\in \mathbb{F}$.</li>
+</ul>
+<p>我们如何检验一个变量是随机变量呢？我们有验证随机变量定理：</p>
+<ul>
+<li><strong>验证随机变量定理</strong>：$X$是一个$(\Omega,\mathbb{F})$到$(\mathbb{R},\mathbb{B})$的随机变量$\leftrightarrow {X\leq a}=X^{-1}((-\infty,a])\in \mathbb{F}$</li>
+</ul>
+<p>在此不罗列随机变量的其他结论，我们可以将随机变量推广至$n$维形式：</p>
+<ul>
+<li>定义（$n$维随机变量）：若$X_1,X_2,…,X_n$为$n$个随机变量，则$X=(X_1,X_2,…,X_n)$称为$n$维随机变量，也叫随机向量。</li>
+</ul>
+<p>类比验证随机变量定理，我们可以作出验证随机向量定理：</p>
+<ul>
+<li><strong>验证随机向量定理</strong>：$X=(X_1,X_2,…,X_n)$为$n$维随机向量的充要条件是$X$为$(\Omega,\mathbb{F})$到$(\mathbb{R}^n,\mathbb{B}^n)$的可测映射，且$\sigma(X) = \sigma(X_i,1\leq  i\leq n)$</li>
+</ul>
+<h4 id="期望"><a href="#期望" class="headerlink" title="期望"></a>期望</h4><p>由于初等概率论中随机变量的期望我们常常需要根据随机变量是连续型或是离散型对期望的公式进行区分，现在我们给随机变量一个统一形式：</p>
+<ul>
+<li>定义：若$X(\omega)=\sum_i x_iI_{A_i}(\omega)$为简单随机变量（阶梯随机变量），定义一个正线性泛函$EX=\sum_ix_iP(A_i)$称为$X$的期望或$X$关于$P$的积分，记为$EX$或$\int_{\Omega}X\text{d}P$或$\int_{\Omega}X(\omega)P(\text{d}\omega)$.</li>
+</ul>
+<p>定义了随机变量的期望，我们自然地拥有了之前概率论中的以下性质：</p>
+<p>设$X,Y$是简单随机变量，则：</p>
+<ol>
+<li>$EC=C,C$是常数</li>
+<li>$EI_A=P(A)$</li>
+<li>$E(aX+bY) = aEX+bEY$</li>
+<li>$X\geq0\rightarrow EX\geq0$</li>
+<li>$X\geq Y\rightarrow EX\geq EY$</li>
+</ol>
+<p>最后我们以证明期望的单调连续性作为结束：</p>
+<p><strong>期望的单调连续性：</strong>$\left{X_{n}, n \geq 1\right}$ 是非负递增的简单随机变量序列, 则 $\lim <em>{n} X</em>{n}=X$ 是非负随机变量，且<br>$$E \lim <em>{n} X</em>{n}=\lim <em>{n} E X</em>{n}$$<br>证明：若对每个 $m,$ 当 $n \rightarrow \infty$ 时, $Y_{m n} \uparrow X_{m}$, 其中 $Y_{m n}$ 是非负简单随机变量, 令$Z_{n}=\sup <em>{m \leq n} Y</em>{m n},$ 则 $Z_{n}$ 也是非负简单随机变量, $\quad\left{Z_{n}, n \geq 1\right}$ 是递增的。我们有<br>$$Y_{m n} \leq Z_{n} \leq X_{n}, m \leq n$$</p>
+<p>进而有：</p>
+<p>$$E Y_{m n} \leq E Z_{n} \leq E X_{n}, m \leq n$$<br>接下来对第一个公式先令 $n \rightarrow \infty,$ 得到 $X_{m} \leq \lim <em>{n \rightarrow \infty} Z</em>{n} \leq \lim <em>{n \rightarrow \infty} X</em>{n},$ 再令 $m \rightarrow \infty,$ 得到<br>$$\lim <em>{m \rightarrow \infty} X</em>{m} \leq \lim <em>{n \rightarrow \infty} Z</em>{n} \leq \lim <em>{n \rightarrow \infty} X</em>{n}$$</p>
+<p>即$\lim <em>{n \rightarrow \infty} X</em>{n}=\lim <em>{n \rightarrow \infty} Z</em>{n}$<br>同样的方式处理第二个公式，得到 $\lim <em>{n \rightarrow \infty} E X</em>{n}=\lim <em>{n \rightarrow \infty} E Z</em>{n}$<br>上式中的 $\lim <em>{n \rightarrow \infty} E Z</em>{n}$ 可以写成 $E \lim <em>{n \rightarrow \infty} Z</em>{n},$ 进而我们得到了<br>$$\lim <em>{n \rightarrow \infty} E X</em>{n}=\lim <em>{n \rightarrow \infty} E Z</em>{n}=E \lim <em>{n \rightarrow \infty} Z</em>{n}=E \lim <em>{n \rightarrow \infty} X</em>{n}$$</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/c649d14b.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/b57883cc.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            数据结构之排序技术（五）—— 分配排序
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/67d22044.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">区块链入门（二） —— web3js</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/%20!!%20th">分类</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>
