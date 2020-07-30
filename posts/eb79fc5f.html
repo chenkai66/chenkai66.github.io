@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">8.4k</span>
+            <span class="post-count">9k</span>
         </span>
     </span>
 
@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">33 分钟</span>
+            <span class="post-count">36 分钟</span>
         </span>
     </span>
 </div>
@@ -399,7 +399,31 @@
 <li><p><strong>影响模型准确率的因素</strong>：语料的大小，文档的数量，越多越高；文档的相似性，越相似越好。</p>
 </li>
 </ul>
-<p>下面我们动手实现一下Doc2Vec：</p>
+<p>下面我们动手实现一下Doc2Vec（具体参考<a href="https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html#sphx-glr-auto-examples-tutorials-run-doc2vec-lee-py" target="_blank" rel="noopener">文档</a>）结果可能会让你大吃一惊（哭笑）：</p>
+<p>首先还是一样导入相关的包：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> gensim.models <span class="keyword">import</span> Doc2Vec</span><br><span class="line"><span class="keyword">import</span> gensim</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然后读取文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_all = pd.read_csv(<span class="string">"train.csv"</span>, sep=<span class="string">"\t"</span>, nrows=<span class="number">15000</span>)</span><br><span class="line">data_all.head()</span><br></pre></td></tr></table></figure>
+
+<p>用后3000条做验证集（当然也可以搞个N折交叉验证严谨点），这里需要注意的是一定要重置索引，哎说多都是泪：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data_all_train = data_all.head(<span class="number">12000</span>)</span><br><span class="line">data_all_val = data_all.tail(<span class="number">3000</span>)</span><br><span class="line">data_all_val = data_all_val.reset_index(drop=<span class="literal">True</span>)</span><br><span class="line">data_all_train.head()</span><br></pre></td></tr></table></figure>
+
+<p>然后按格式读进数据，这里定义了一个read_corpus，是根据官方文档进行的修改，读者也可以根据自己的需要对其进行修改：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_corpus</span><span class="params">(data_all, tokens_only=False)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_all)):</span><br><span class="line">        tokens = data_all[<span class="string">"text"</span>][i].split(<span class="string">" "</span>)</span><br><span class="line">        <span class="keyword">if</span> tokens_only:</span><br><span class="line">            <span class="keyword">yield</span> tokens</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">yield</span> gensim.models.doc2vec.TaggedDocument(tokens, [data_all[<span class="string">'label'</span>][i]])</span><br><span class="line">    </span><br><span class="line">train_corpus = list(read_corpus(data_all_train))</span><br><span class="line">val_corpus = list(read_corpus(data_all_val, tokens_only=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+
+<p>随后定义模型，可以开始训练啦：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">model = gensim.models.doc2vec.Doc2Vec(vector_size=<span class="number">50</span>, min_count=<span class="number">2</span>, epochs=<span class="number">40</span>)</span><br><span class="line">model.build_vocab(train_corpus)</span><br><span class="line">model.train(train_corpus, total_examples=model.corpus_count, epochs=model.epochs)</span><br><span class="line">vector_train_1 = model.infer_vector(train_corpus[<span class="number">1</span>].words)</span><br><span class="line">print(vector_train_1)</span><br><span class="line">tag_train_1 = train_corpus[<span class="number">1</span>].tags</span><br><span class="line">print(tag_train_1)</span><br></pre></td></tr></table></figure>
+
+<p>打印出训练得到的编码，看起来挺人模人样的：</p>
+<p><img src="/Pic/NLP/33.png" alt=""></p>
+<p>然后我们就把模型套进我们的文本中，将训练集和测试集顺便划分好：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">train_X = []</span><br><span class="line">train_y = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(train_corpus)):</span><br><span class="line">    train_X.append(list(model.infer_vector(train_corpus[i].words)))</span><br><span class="line">    train_y.append(train_corpus[i].tags)</span><br><span class="line">    <span class="keyword">if</span>(i%<span class="number">3000</span>==<span class="number">0</span>):</span><br><span class="line">        print(<span class="string">"Processing train set"</span>, i)</span><br><span class="line">val_X = []</span><br><span class="line">val_y = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(val_corpus)):</span><br><span class="line">    val_X.append(list(model.infer_vector(val_corpus[i])))</span><br><span class="line">    val_y.append([data_all[<span class="string">"label"</span>][i]])</span><br><span class="line">    </span><br><span class="line">train_X = np.array(train_X)</span><br><span class="line">train_y = np.array(train_y)</span><br><span class="line">val_X = np.array(val_X)</span><br><span class="line">val_y = np.array(val_y)</span><br></pre></td></tr></table></figure>
+
+<p>好这一切准备就绪了，我们就套一个逻辑回归吧，咱也甭求多高准确度，百分之八九十就好啦再慢慢调参吧：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line">logistic_model = LogisticRegression()</span><br><span class="line">logistic_model.fit(train_X, train_y)</span><br><span class="line">logistic_model.score(val_X, val_y)</span><br></pre></td></tr></table></figure>
+
+<p>看看结果：0.12666666，雾草？？？我不信邪试了试其他的回归模型也差不多这个数，emmm网上搜了搜确实有遇到Doc2Vec效果不稳定的情况，但看原理不是和Word2Vec差不多吗，别以为我是埋伏笔，俺也不知道啊大家清楚的下面留言咯，看看是我代码的问题还是确实如此，又或者是数据集的特点决定的~</p>
 <h2 id="Bert"><a href="#Bert" class="headerlink" title="Bert"></a>Bert</h2><p>参考链接：</p>
 <ul>
 <li><a href="https://github.com/datawhalechina/team-learning-nlp/blob/master/NewsTextClassification" target="_blank" rel="noopener">https://github.com/datawhalechina/team-learning-nlp/blob/master/NewsTextClassification</a></li>
