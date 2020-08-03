@@ -102,7 +102,7 @@
     <div class="article-entry" itemprop="articleBody">
        
   <p>首先展示以下实例原图像给大家萌一萌：</p>
-<p><img src="/posts/f4ba5069/CV/animal.jpg" alt></p>
+<p><img src="/posts/CV/animal.jpg" alt></p>
 <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>下面直接列举需要搭建的环境：</p>
 <ol>
 <li>Anaconda+python大环境（相信大家都早已安装好了，若没有请前往百度搜索自行安装）</li>
@@ -130,7 +130,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cv_show</span><span class="params">(name, img)</span>:</span></span><br><span class="line">    cv2.imshow(name, img)</span><br><span class="line">    cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">    cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>可以通过img.shape显示图像形状：</p>
-<p><img src="/posts/f4ba5069/CV/shape.png" alt></p>
+<p><img src="/posts/CV/shape.png" alt></p>
 <p>正如前例所述，图像转换的命令为：</p>
 <ul>
 <li><p>cv2.IMREAD_COLOR:彩色图像</p>
@@ -155,15 +155,15 @@
 
 <p>这其中需要注意的是，通道的顺序并不是RGB，而是BGR！</p>
 <p>我们切分完之后，若希望看各个通道的图像，可以通过下面三块代码实现：</p>
-<p><img src="/posts/f4ba5069/CV/rgb.png" alt></p>
+<p><img src="/posts/CV/rgb.png" alt></p>
 <p>其中红图的结果如下：</p>
-<p><img src="/posts/f4ba5069/CV/B.png" alt></p>
+<p><img src="/posts/CV/B.png" alt></p>
 <p>若想要重新将bgr通道组合在一起，可以通过merge函数实现：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.merge((b, g, r))</span><br><span class="line">img.shape</span><br></pre></td></tr></table></figure>
 
 <h2 id="边界填充"><a href="#边界填充" class="headerlink" title="边界填充"></a>边界填充</h2><p>我们做卷积时，常常会给图像做一个边界的填充，具体实现方式及效果如下：</p>
-<p><img src="/posts/f4ba5069/CV/border1.png" alt></p>
-<p><img src="/posts/f4ba5069/CV/border2.png" alt></p>
+<p><img src="/posts/CV/border1.png" alt></p>
+<p><img src="/posts/CV/border2.png" alt></p>
 <p>具体代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">top_size, bottom_size, left_size, right_size = (<span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>)</span><br><span class="line"></span><br><span class="line">replicate = cv2.copyMakeBorder(img, top_size, bottom_size, left_size, right_size, borderType=cv2.BORDER_REPLICATE)</span><br><span class="line">reflect = cv2.copyMakeBorder(img, top_size, bottom_size, left_size, right_size, borderType=cv2.BORDER_REFLECT)</span><br><span class="line">reflect101 = cv2.copyMakeBorder(img, top_size, bottom_size, left_size, right_size, borderType=cv2.BORDER_REFLECT_101)</span><br><span class="line">wrap = cv2.copyMakeBorder(img, top_size, bottom_size, left_size, right_size, borderType=cv2.BORDER_WRAP)</span><br><span class="line">constant = cv2.copyMakeBorder(img, top_size, bottom_size, left_size, right_size, borderType=cv2.BORDER_CONSTANT, value=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.subplot(<span class="number">231</span>), plt.imshow(img, <span class="string">"gray"</span>), plt.title(<span class="string">"ORIGINAL"</span>)</span><br><span class="line">plt.subplot(<span class="number">232</span>), plt.imshow(replicate, <span class="string">"gray"</span>), plt.title(<span class="string">"REPLICATE"</span>)</span><br><span class="line">plt.subplot(<span class="number">233</span>), plt.imshow(reflect, <span class="string">"gray"</span>), plt.title(<span class="string">"REFLECT"</span>)</span><br><span class="line">plt.subplot(<span class="number">234</span>), plt.imshow(reflect101, <span class="string">"gray"</span>), plt.title(<span class="string">"REFLECT_101"</span>)</span><br><span class="line">plt.subplot(<span class="number">235</span>), plt.imshow(wrap, <span class="string">"gray"</span>), plt.title(<span class="string">"WRAP"</span>)</span><br><span class="line">plt.subplot(<span class="number">236</span>), plt.imshow(constant, <span class="string">"gray"</span>), plt.title(<span class="string">"CONSTANT"</span>)</span><br><span class="line">plt.savefig(<span class="string">"border2.png"</span>)</span><br></pre></td></tr></table></figure>
 
@@ -176,23 +176,23 @@
 <li>第五个为常量法，使用常数值填充（在图中很明显为黑色边框）</li>
 </ul>
 <h2 id="数值计算"><a href="#数值计算" class="headerlink" title="数值计算"></a>数值计算</h2><p>我们可以直接把图片所有像素点做同一运算：比如下图所示的给所有像素加10：</p>
-<p><img src="/posts/f4ba5069/CV/add.png" alt></p>
+<p><img src="/posts/CV/add.png" alt></p>
 <p>若两图像维度一致也可以直接相加：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">img_1 = img_ + img</span><br><span class="line">cv2.imwrite(<span class="string">"add.png"</span>, img_1)</span><br><span class="line">cv_show(<span class="string">"Add"</span>, img_1)</span><br></pre></td></tr></table></figure>
 
 <p>得到的图像也挺有趣的：</p>
-<p><img src="/posts/f4ba5069/CV/add1.png" alt></p>
+<p><img src="/posts/CV/add1.png" alt></p>
 <p>我们可以感觉到有些像素点变化有些大，这是由于当两个图像的像素点直接相加时，由于像素最高为256，若越界就会自动对256取余，因此图像有些部分比较怪异。</p>
 <h2 id="图像融合"><a href="#图像融合" class="headerlink" title="图像融合"></a>图像融合</h2><p>我们可以将两张同大小的图片按比例融合到一张图片中，当我们发现这两张图片大小不一致，我们需要将图片resize成大小一致的图片方能进行融合，操作如下：</p>
-<p><img src="/posts/f4ba5069/CV/merge.png" alt></p>
+<p><img src="/posts/CV/merge.png" alt></p>
 <p>结果如下：</p>
-<p><img src="/posts/f4ba5069/CV/merge1.png" alt></p>
+<p><img src="/posts/CV/merge1.png" alt></p>
 <p>具体操作为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">res = cv2.addWeighted(img1, <span class="number">0.4</span>, img3, <span class="number">0.6</span>, <span class="number">0</span>)</span><br></pre></td></tr></table></figure>
 
 <p>其中0.4与0.6分别为这两张图片的权重，最后的0为偏置项，可以设置为其他值调节亮度。</p>
 <p>另外，resize操作还可以不指定数值，而只是写出图像倍数关系，比如 ：</p>
-<p><img src="/posts/f4ba5069/CV/resize1.png" alt></p>
+<p><img src="/posts/CV/resize1.png" alt></p>
 <p>具体操作如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">res1 = cv2.resize(res, (<span class="number">0</span>, <span class="number">0</span>), fx=<span class="number">3</span>,fy=<span class="number">1</span>)</span><br><span class="line">plt.imshow(res1)</span><br></pre></td></tr></table></figure> 
       <!-- reward -->

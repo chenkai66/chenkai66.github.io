@@ -102,27 +102,27 @@
     <div class="article-entry" itemprop="articleBody">
        
   <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><h2 id="语音学"><a href="#语音学" class="headerlink" title="语音学"></a>语音学</h2><p>Phonology假定了一组或多组独特的分类单元：音素（作为独特的特征存在）。声音本身在语言中没有意义，Subword是音素的下一级的形态学，是具有意义的最低级别</p>
-<p><img src="/posts/44cf3868/NLP/15.png" alt></p>
+<p><img src="/posts/NLP/15.png" alt></p>
 <p>传统上，（morphemes）词素是最小的语义单位（semantic unit），长得像下面这样：</p>
 <p>$$\left[\left[\text {un}\left[[\text { fortun }(\mathrm{e})]<em>{\text { Root }} \text { ate }\right]</em>{\text { STEM }}\right]<em>{\text { STEM }} \text {ly}\right]</em>{\text { WORD }}$$</p>
 <h2 id="进击的词汇处理"><a href="#进击的词汇处理" class="headerlink" title="进击的词汇处理"></a>进击的词汇处理</h2><p><strong>深度学习</strong>中的递归神经网络是一种尝试处理更大词汇量的一种方法，更大的词汇量比如一些网络词汇，或者是字符与数字的组合（火星文），例如下面这样：</p>
-<p><img src="/posts/44cf3868/NLP/16.png" alt></p>
+<p><img src="/posts/NLP/16.png" alt></p>
 <p><strong>Character-Level Models</strong>：我们可以拓展词嵌入为字符嵌入，这样我们可以为未知单词生成词嵌入，相似的拼写单词将共享相似的词嵌入，同时能够解决OOV问题。也就是说：连续语言可以作为字符来处理，我们将所有的语言处理均建立在字符序列上，不考虑 word-level。上面两种方法事实上都是可行的（深度学习方法与字符嵌入方法）。</p>
 <p>下面是一个简单地Character-Level Model:</p>
-<p><img src="/posts/44cf3868/NLP/17.png" alt></p>
+<p><img src="/posts/NLP/17.png" alt></p>
 <p>从上图可以看出，字符级别的机器翻译效果较单词级别的效果有所提升，但是其有一个很显著的问题是随着模型层数的增大，其运行时间较单词级别的模型增长要快得多，如下图所示：</p>
-<p><img src="/posts/44cf3868/NLP/18.png" alt></p>
+<p><img src="/posts/NLP/18.png" alt></p>
 <h1 id="Character-Level-model"><a href="#Character-Level-model" class="headerlink" title="Character-Level model"></a>Character-Level model</h1><p>Character-Level model大体可以分为两个趋势：<strong>一种是与word-level model完全相同，只不过是输入不同，另一种是hybrid模型，其输入主要为word，需要时再用character。</strong>下面分别介绍这两个方向：</p>
 <h2 id="Byte-Pair-Encoding（BPE）"><a href="#Byte-Pair-Encoding（BPE）" class="headerlink" title="Byte Pair Encoding（BPE）"></a>Byte Pair Encoding（BPE）</h2><p>BPE可以看作是pure Character-Level model，属于上述两种趋势的第一种，其核心思想是将经常出现的Byte pair作为一个新的Byte并加入到字典中。它先将文本中所有的character加入字典，然后将经常出现的character对添加到字典中，下面是一个例子：</p>
-<p><img src="/posts/44cf3868/NLP/19.png" alt></p>
+<p><img src="/posts/NLP/19.png" alt></p>
 <p>该模型事先设定好了character对的大小以及字典的大小，当字典达到数量后便停止。另外一个基于character的模型是Character-based LSTM，其整体结构如下：</p>
-<p><img src="/posts/44cf3868/NLP/20.png" alt></p>
+<p><img src="/posts/NLP/20.png" alt></p>
 <p>该结构表明，基于character-level的CNNs + Highway Network能更好地提取语意和结构信息，从而帮助提升机器翻译的效果。</p>
 <h2 id="Hybrid-NMT"><a href="#Hybrid-NMT" class="headerlink" title="Hybrid NMT"></a>Hybrid NMT</h2><p>第二种趋势是混合模型，其核心思想是大部分情况用word-level，只在需要时，如出现字典外的词时才使用character-level。如下面这个模型：</p>
-<p><img src="/posts/44cf3868/NLP/21.png" alt></p>
+<p><img src="/posts/NLP/21.png" alt></p>
 <p>该模型当遇到OOV（out of vocabulary）词时，采用vocabulary-level的beam search，寻找最适合的结果。实验结果表明，该模型可以提高机器翻译的效果，尤其是对于一些字典之外的词或者需要音译的词。</p>
 <h2 id="FastText-embeddings"><a href="#FastText-embeddings" class="headerlink" title="FastText embeddings"></a>FastText embeddings</h2><p>FastText embeddings的目的在于采用类似于word2vec的模型去生成character-level的词向量，这些词向量对于生僻词或者拥有复杂语法的语言有很好的适应能力。其思路是将一个词拆分成若干个N-grams，经过训练后将这些N-gram的词向量和这个词的词向量进行平均作为最终这个词的词向量，比如where可以拆分成：</p>
-<p><img src="/posts/44cf3868/NLP/22.png" alt></p>
+<p><img src="/posts/NLP/22.png" alt></p>
 <p>最终实验表明，该模型的Word similarity效果要好于原始的word2vec，而且对于一些生僻词有更好的处理能力。</p>
 <h1 id="缺点分析"><a href="#缺点分析" class="headerlink" title="缺点分析"></a>缺点分析</h1><ol>
 <li>语义上理解可能没那么好</li>

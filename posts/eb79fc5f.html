@@ -102,16 +102,16 @@
     <div class="article-entry" itemprop="articleBody">
        
   <h1 id="赛题理解及思考"><a href="#赛题理解及思考" class="headerlink" title="赛题理解及思考"></a>赛题理解及思考</h1><h2 id="获取数据"><a href="#获取数据" class="headerlink" title="获取数据"></a>获取数据</h2><p>我们直接打开天池大赛找到<a href="https://tianchi.aliyun.com/competition/entrance/531810/information" target="_blank" rel="noopener">零基础入门NLP比赛</a>，看到的是这样一个页面：</p>
-<p><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/25.png" alt></p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/25.png" alt></p>
 <p>接着就三步走：注册报名下载数据，查看数据前五行可以看到我们获得的数据如下：</p>
-<p><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/26.png" alt></p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/26.png" alt></p>
 <p>其中左边的label是数据集文本对应的标签，而右边的text则是编码后的文本，文本对应的标签列举如下：</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;'科技': 0, '股票': 1, '体育': 2, '娱乐': 3, '时政': 4, '社会': 5, '教育': 6, '财经': 7, '家居': 8, '游戏': 9, '房产': 10, '时尚': 11, '彩票': 12, '星座': 13&#125;</span><br></pre></td></tr></table></figure>
 
 <p>根据官方描述：赛题以匿名处理后的新闻数据为赛题数据，数据集报名后可见并可下载。赛题数据为新闻文本，并按照字符级别进行匿名处理。整合划分出14个候选分类类别：财经、彩票、房产、股票、家居、教育、科技、社会、时尚、时政、体育、星座、游戏、娱乐的文本数据。</p>
 <p>赛题数据由以下几个部分构成：训练集20w条样本，测试集A包括5w条样本，测试集B包括5w条样本。为了预防选手人工标注测试集的情况，我们将比赛数据的文本按照字符级别进行了匿名处理。</p>
 <p>同时我们还应该注意到官网有给出结果评价指标，我们也需要根据这个评价指标衡量我们的验证集数据误差：</p>
-<p><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/27.png" alt></p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/27.png" alt></p>
 <p>既然该拿到的我们都拿到了，我们接下来就开始构思我们都应该使用哪些思路来完成我们的预测。</p>
 <h2 id="赛题构思"><a href="#赛题构思" class="headerlink" title="赛题构思"></a>赛题构思</h2><p>由于赛题给出的数据是匿名化的，因此我们无法使用分词等操作提取关键词来简单预测，我们可以使用的是对文本提取特征的分类器或者是深度学习分类器，综合我们有如下思路：</p>
 <ul>
@@ -132,10 +132,10 @@
 <h3 id="统计文章词数"><a href="#统计文章词数" class="headerlink" title="统计文章词数"></a>统计文章词数</h3><p>统计每篇文章的词数并绘制直方图：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line">train_df[<span class="string">"text_len"</span>] = train_df[<span class="string">"text"</span>].apply(<span class="keyword">lambda</span> x:len(x.split(<span class="string">" "</span>)))</span><br><span class="line">print(train_df[<span class="string">"text_len"</span>].describe())</span><br><span class="line">_ = plt.hist(train_df[<span class="string">'text_len'</span>], bins=<span class="number">200</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Text char count'</span>)</span><br><span class="line">plt.title(<span class="string">"Histogram of char count"</span>)</span><br></pre></td></tr></table></figure>
 
-<p><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/charCount-1595154665274.jpg" alt="charCount"></p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/charCount-1595154665274.jpg" alt="charCount"></p>
 <h3 id="统计不同种类新闻数量"><a href="#统计不同种类新闻数量" class="headerlink" title="统计不同种类新闻数量"></a>统计不同种类新闻数量</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">train_df[<span class="string">"label"</span>].value_counts().plot(kind=<span class="string">"bar"</span>)</span><br><span class="line">plt.title(<span class="string">'News class count'</span>)</span><br><span class="line">plt.xlabel(<span class="string">"category"</span>)</span><br></pre></td></tr></table></figure>
 
-<p><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/classCount.jpg" alt></p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/classCount.jpg" alt></p>
 <h3 id="统计单词频率"><a href="#统计单词频率" class="headerlink" title="统计单词频率"></a>统计单词频率</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line">all_lines = <span class="string">" "</span>.join(list(train_df[<span class="string">"text"</span>]))</span><br><span class="line">word_count = Counter(all_lines.split(<span class="string">" "</span>))</span><br><span class="line">word_count = sorted(word_count.items(), key=<span class="keyword">lambda</span> d:d[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line">print(len(word_count))</span><br><span class="line">print(word_count[<span class="number">-1</span>])</span><br><span class="line">print(word_count[<span class="number">0</span>])</span><br><span class="line">print(word_count[<span class="number">1</span>])</span><br><span class="line">print(word_count[<span class="number">2</span>])</span><br></pre></td></tr></table></figure>
 
 <p>打印结果为编码”3750”，”648”，”900”为出现次数最多的字符且每篇文章中出现率均很高，我们有理由猜测这三个（或其中一两个）字符是标点符号，由此我们可以试着统计文章句子长度(假设这三个字符为标点符号)。</p>
@@ -252,7 +252,7 @@
 <p>The lower and upper boundary of the range of n-values for different n-grams to be extracted. All values of n such that min_n &lt;= n &lt;= max_n will be used. For example an <code>ngram_range</code> of <code>(1, 1)</code> means only unigrams, <code>(1, 2)</code> means unigrams and bigrams, and <code>(2, 2)</code> means only bigrams. Only applies if <code>analyzer is not callable</code>.</p>
 </blockquote>
 <p>我们还可以尝试其他<a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.feature_extraction.text" target="_blank" rel="noopener">sklearn库中的文本分类</a>方法：</p>
-<p><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/sklearn.png" alt></p>
+<p><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/sklearn.png" alt></p>
 <p>呃好像只剩下一个HashingVectorizer，这正是我们接下来要介绍的。</p>
 <h2 id="用哈希技巧向量化大文本向量"><a href="#用哈希技巧向量化大文本向量" class="headerlink" title="用哈希技巧向量化大文本向量"></a>用哈希技巧向量化大文本向量</h2><p>以上的向量化情景很简单，但是，事实上这种方式从字符标记到整型特征的目录（vocabulary_属性）的映射都是在内存中进行，在处理大数据集时会出现一些问题：</p>
 <ul>
@@ -282,7 +282,7 @@
 <p>fastText模型架构和word2vec中的CBOW很相似， 不同之处是fastText预测标签而CBOW预测的是中间词，即模型架构类似但是模型的任务不同。word2vec将上下文关系转化为多分类任务，进而训练逻辑回归模型，这里的类别数量$|V|$词库大小。通常的文本数据中，词库少则数万，多则百万，在训练中直接训练多分类逻辑回归并不现实。word2vec中提供了两种针对大规模多分类问题的优化手段， negative sampling 和hierarchical softmax。在优化中，negative sampling 只更新少量负面类，从而减轻了计算量。hierarchical softmax 将词库表示成前缀树，从树根到叶子的路径可以表示为一系列二分类器，一次多分类计算的复杂度从$|V|$降低到了树的高度</p>
 <p>fastText模型架构:其中$x_1,x_2,…,x_{N−1},x_N$表示一个文本中的n-gram向量，每个特征是词向量的平均值。这和前文中提到的CBOW相似，<strong>CBOW用上下文去预测中心词，而此处用全部的n-gram去预测指定类别</strong>。</p>
 <h4 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h4><p>softmax函数常在神经网络输出层充当激活函数，目的就是将输出层的值归一化到</p>
-<p>$0-1$区间，将神经元输出构造成概率分布，主要就是起到将神经元输出值进行归一化的作用。在标准的softmax中，计算一个类别的softmax概率时，我们需要对所有类别概率做归一化，在这类别很大情况下非常耗时，因此提出了分层softmax(Hierarchical Softmax),思想是根据类别的频率构造霍夫曼树来代替标准softmax，通过分层softmax可以将复杂度从$N$降低到$logN$，下图给出分层softmax示例：<br><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/huffman.png"></p>
+<p>$0-1$区间，将神经元输出构造成概率分布，主要就是起到将神经元输出值进行归一化的作用。在标准的softmax中，计算一个类别的softmax概率时，我们需要对所有类别概率做归一化，在这类别很大情况下非常耗时，因此提出了分层softmax(Hierarchical Softmax),思想是根据类别的频率构造霍夫曼树来代替标准softmax，通过分层softmax可以将复杂度从$N$降低到$logN$，下图给出分层softmax示例：<br><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/huffman.png"></p>
 <p>在层次softmax模型中，叶子结点的词没有直接输出的向量，而非叶子节点都有响应的输在在模型的训练过程中，通过Huffman编码，构造了一颗庞大的Huffman树，同时会给非叶子结点赋予向量。我们要计算的是目标词w的概率，这个概率的具体含义，是指从root结点开始随机走，走到目标词w的概率。因此在途中路过非叶子结点（包括root）时，需要分别知道往左走和往右走的概率。例如到达非叶子节点n的时候往左边走和往右边走的概率分别是：</p>
 <p>$$p(n, left) = \delta(\theta_n^T·h)$$</p>
 <p>$$p(n, right) = 1-\sigma(\theta_n^T·h) = \sigma(-\theta_n^T·h)$$</p>
@@ -297,7 +297,7 @@
 <p>最终得到参数更新公式为：</p>
 <p>$$\theta_i^{(new)} = \theta_j^{(old)}-\eta(\sigma(\theta_j^Th)-t_j)h$$</p>
 <h4 id="N-gram特征"><a href="#N-gram特征" class="headerlink" title="N-gram特征"></a>N-gram特征</h4><p>n-gram是基于语言模型的算法，基本思想是将文本内容按照子节顺序进行大小为N的窗口滑动操作，最终形成窗口为N的字节片段序列。而且需要额外注意一点是n-gram可以根据粒度不同有不同的含义，有字粒度的n-gram和词粒度的n-gram，正如前面调参时的2-gram和3-gram。</p>
-<p>对于文本句子的n-gram来说，如上面所说可以是字粒度或者是词粒度，同时n-gram也可以在字符级别工作，例如对单个单词matter来说，假设采用3-gram特征，那么matter可以表示成图中五个3-gram特征，这五个特征都有各自的词向量，五个特征的词向量和即为matter这个词的向其中“&lt;”和“&gt;”是作为边界符号被添加，来将一个单词的ngrams与单词本身区分开来：<br><img src="/posts/eb79fc5f/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/28.png" alt></p>
+<p>对于文本句子的n-gram来说，如上面所说可以是字粒度或者是词粒度，同时n-gram也可以在字符级别工作，例如对单个单词matter来说，假设采用3-gram特征，那么matter可以表示成图中五个3-gram特征，这五个特征都有各自的词向量，五个特征的词向量和即为matter这个词的向其中“&lt;”和“&gt;”是作为边界符号被添加，来将一个单词的ngrams与单词本身区分开来：<br><img src="/Pic/%E6%96%B0%E9%97%BB%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E5%AE%9E%E6%88%98/28.png" alt></p>
 <p>从上面来看，使用n-gram有如下优点<br>1、为罕见的单词生成更好的单词向量：根据上面的字符级别的n-gram来说，即是这个单词出现的次数很少，但是组成单词的字符和其他单词有共享的部分，因此这一点可以优化生成的单词向量<br>2、在词汇单词中，即使单词没有出现在训练语料库中，仍然可以从字符级n-gram中构造单词的词向量<br>3、n-gram可以让模型学习到局部单词顺序的部分信息, 如果不考虑n-gram则便是取每个单词，这样无法考虑到词序所包含的信息，即也可理解为上下文信息，因此通过n-gram的方式关联相邻的几个词，这样会让模型在训练的时候保持词序信息</p>
 <h4 id="其他解决方案"><a href="#其他解决方案" class="headerlink" title="其他解决方案"></a>其他解决方案</h4><p>但正如上面提到过，随着语料库的增加，内存需求也会不断增加，严重影响模型构建速度，针对这个有以下几种解决方案：<br>1、过滤掉出现次数少的单词<br>2、使用hash存储<br>3、由采用字粒度变化为采用词粒度</p>
 <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>我们先看看<a href="https://github.com/facebookresearch/fastText/tree/master/python" target="_blank" rel="noopener">gituhub官方文档</a>对FastText的定义 ：</p>
@@ -350,7 +350,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_all = pd.read_csv(<span class="string">"train.csv"</span>, sep=<span class="string">"\t"</span>, nrows=<span class="number">15000</span>)</span><br><span class="line">data_all.head()</span><br></pre></td></tr></table></figure>
 
 <p>大概长这样，嗯没错：</p>
-<p><img src="/posts/eb79fc5f/NLP/30.png" alt></p>
+<p><img src="/Pic/NLP/30.png" alt></p>
 <p>我们接下来就要构建我们的词表啦，由于训练时通常是所有文档合并起来一起训练，因此这里就直接将所有的编码词合并起来：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">word_list = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_all)):</span><br><span class="line">    word_list.append(data_all[<span class="string">"text"</span>][i].strip().split(<span class="string">" "</span>))</span><br></pre></td></tr></table></figure>
 
@@ -361,7 +361,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVector</span><span class="params">(text, word2vec_model)</span>:</span></span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    article_vector = np.zeros( word2vec_model.layer1_size )</span><br><span class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> text:</span><br><span class="line">        <span class="keyword">if</span> word <span class="keyword">in</span> word2vec_model:</span><br><span class="line">            article_vector += word2vec_model[word]</span><br><span class="line">            count += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> article_vector / count</span><br><span class="line"></span><br><span class="line">startTime = time.time()</span><br><span class="line">vector_list = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_all)):</span><br><span class="line">    text = data_all[<span class="string">"text"</span>][i].strip().split(<span class="string">" "</span>)</span><br><span class="line">    vector_list.append(getVector(text, word2vec_model))</span><br><span class="line">    <span class="keyword">if</span> i % <span class="number">1000</span> == <span class="number">0</span>:</span><br><span class="line">        print(<span class="string">"前%d个文本生成词向量花费总时间%.2f秒"</span> %(i, time.time()-startTime))</span><br></pre></td></tr></table></figure>
 
 <p>可以看到生成的结果还是蛮快的：</p>
-<p><img src="/posts/eb79fc5f/NLP/31.png" alt></p>
+<p><img src="/Pic/NLP/31.png" alt></p>
 <p>于是我们的文本向量也就构建完成了，接下来我们可以套用我们熟知的各种机器学习模型或深度学习模型啦！</p>
 <h3 id="利用词向量进行分类"><a href="#利用词向量进行分类" class="headerlink" title="利用词向量进行分类"></a>利用词向量进行分类</h3><p>首先最简单的当然是试探一下逻辑回归是否可行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"></span><br><span class="line">X = np.array(vector_list)</span><br><span class="line">y = np.array(data_all[<span class="string">"label"</span>])</span><br><span class="line"></span><br><span class="line">train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=<span class="number">0.2</span>, random_state=<span class="number">0</span>)</span><br><span class="line"> </span><br><span class="line">logistic_model = LogisticRegression()</span><br><span class="line">logistic_model.fit(train_X, train_y)</span><br><span class="line">logistic_model.score(test_X, test_y)</span><br></pre></td></tr></table></figure>
@@ -375,18 +375,18 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">X, y = testWord2Vec(data_all)</span><br><span class="line">testModel(X, y)</span><br></pre></td></tr></table></figure>
 
 <p>本人训练后结果比较好的是逻辑回归、K最近邻、多层感知机和极端梯度提升，没有进行调参的准确率大约0.85左右，部分结果如下。希望有更高的准确率读者自行调参即可：</p>
-<p><img src="/posts/eb79fc5f/NLP/32.png" alt></p>
+<p><img src="/Pic/NLP/32.png" alt></p>
 <h3 id="其他方式（Doc2Vec）"><a href="#其他方式（Doc2Vec）" class="headerlink" title="其他方式（Doc2Vec）"></a>其他方式（Doc2Vec）</h3><p>事实上我们不一定要先构建词向量，再取平均得到句子向量，2013 年 Mikolov 提出了 word2vec 来学习单词的向量表示，主要有两种方法，cbow ( continuous bag of words) 和 skip-gram ， 一个是用语境来预测目标单词，另一个是用中心单词来预测语境。</p>
 <p>既然可以将 word 表示成向量形式，那么句子／段落／文档是否也可以只用一个向量表示？事实上是可以的，主要有两种方式，第一种方式便是我们 前面所做的，先得到 word 的向量表示，然后用一个简单的平均来代表文档。 第二种方式就是 Mikolov 在 2014 提出的Doc2Vec，也有两种方法来实现：</p>
 <p><strong>Distributed Memory Model of Paragraph Vectors(PVDM)</strong></p>
 <p>它不是仅是使用一些单词来预测下一个单词,我们还添加了另一个特征向量，即<strong>文档Id</strong>。</p>
 <p>因此，当训练单词向量W时，也训练文档向量D，并且在训练结束时，它包含了文档的向量化表示。</p>
-<p><img src="/posts/eb79fc5f/NLP/29.jpg" alt></p>
+<p><img src="/Pic/NLP/29.jpg" alt></p>
 <p>调用gensim方式为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model = gensim.models.Doc2Vec(documents,dm = <span class="number">0</span>, alpha=<span class="number">0.1</span>, size= <span class="number">20</span>, min_alpha=<span class="number">0.025</span>)</span><br></pre></td></tr></table></figure>
 
 <p><strong>Distributed Bag of Words version of Paragraph Vector(PV-DBOW)</strong></p>
-<p><img src="/posts/eb79fc5f/NLP/30.jpg" alt></p>
+<p><img src="/Pic/NLP/30.jpg" alt></p>
 <p>调用gensim方式为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model = gensim.models.Doc2Vec(documents,dm = <span class="number">0</span>, alpha=<span class="number">0.1</span>, size= <span class="number">20</span>, min_alpha=<span class="number">0.025</span>)</span><br></pre></td></tr></table></figure>
 
@@ -416,7 +416,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">model = gensim.models.doc2vec.Doc2Vec(vector_size=<span class="number">50</span>, min_count=<span class="number">2</span>, epochs=<span class="number">40</span>)</span><br><span class="line">model.build_vocab(train_corpus)</span><br><span class="line">model.train(train_corpus, total_examples=model.corpus_count, epochs=model.epochs)</span><br><span class="line">vector_train_1 = model.infer_vector(train_corpus[<span class="number">1</span>].words)</span><br><span class="line">print(vector_train_1)</span><br><span class="line">tag_train_1 = train_corpus[<span class="number">1</span>].tags</span><br><span class="line">print(tag_train_1)</span><br></pre></td></tr></table></figure>
 
 <p>打印出训练得到的编码，看起来挺人模人样的：</p>
-<p><img src="/posts/eb79fc5f/NLP/33.png" alt></p>
+<p><img src="/Pic/NLP/33.png" alt></p>
 <p>然后我们就把模型套进我们的文本中，将训练集和测试集顺便划分好：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">train_X = []</span><br><span class="line">train_y = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(train_corpus)):</span><br><span class="line">    train_X.append(list(model.infer_vector(train_corpus[i].words)))</span><br><span class="line">    train_y.append(train_corpus[i].tags)</span><br><span class="line">    <span class="keyword">if</span>(i%<span class="number">3000</span>==<span class="number">0</span>):</span><br><span class="line">        print(<span class="string">"Processing train set"</span>, i)</span><br><span class="line">val_X = []</span><br><span class="line">val_y = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(val_corpus)):</span><br><span class="line">    val_X.append(list(model.infer_vector(val_corpus[i])))</span><br><span class="line">    val_y.append([data_all[<span class="string">"label"</span>][i]])</span><br><span class="line">    </span><br><span class="line">train_X = np.array(train_X)</span><br><span class="line">train_y = np.array(train_y)</span><br><span class="line">val_X = np.array(val_X)</span><br><span class="line">val_y = np.array(val_y)</span><br></pre></td></tr></table></figure>
 

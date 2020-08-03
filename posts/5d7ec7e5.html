@@ -125,42 +125,42 @@
 </li>
 </ul>
 <p>原图像为：</p>
-<p><img src="/posts/5d7ec7e5/CV/cat.jpg" alt></p>
+<p><img src="/posts/CV/cat.jpg" alt></p>
 <p>对上述阈值处理的具体操作如下：</p>
-<p><img src="/posts/5d7ec7e5/CV/tc1.png" alt></p>
+<p><img src="/posts/CV/tc1.png" alt></p>
 <p>代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">ret, thresh1 = cv2.threshold(img_gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_BINARY)</span><br><span class="line">ret, thresh2 = cv2.threshold(img_gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_BINARY_INV)</span><br><span class="line">ret, thresh3 = cv2.threshold(img_gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_TRUNC)</span><br><span class="line">ret, thresh4 = cv2.threshold(img_gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_TOZERO)</span><br><span class="line">ret, thresh5 = cv2.threshold(img_gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_TOZERO_INV)</span><br><span class="line"></span><br><span class="line">titles = [<span class="string">'Original Image'</span>, <span class="string">'BINARY'</span>, <span class="string">'BINARY_INV'</span>, <span class="string">'TRUNC'</span>, <span class="string">'TOZERO'</span>, <span class="string">'TOZERO_INV'</span>]</span><br><span class="line">images = [img, thresh1, thresh2, thresh3, thresh4, thresh5]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">6</span>):</span><br><span class="line">    plt.subplot(<span class="number">2</span>, <span class="number">3</span>, i + <span class="number">1</span>), plt.imshow(images[i], <span class="string">'gray'</span>)</span><br><span class="line">    plt.title(titles[i])</span><br><span class="line">    plt.xticks([]), plt.yticks([])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 <h1 id="图像平滑"><a href="#图像平滑" class="headerlink" title="图像平滑"></a>图像平滑</h1><p>目的是通过滤波等操作尽可能去掉图像上的噪音点。我们首先看一张带有噪声的lena图片：</p>
-<p><img src="/posts/5d7ec7e5/CV/lenaNoise.png" alt></p>
+<p><img src="/posts/CV/lenaNoise.png" alt></p>
 <h2 id="均值滤波"><a href="#均值滤波" class="headerlink" title="均值滤波"></a>均值滤波</h2><p>我们要做平滑处理，就是需要对一定窗口大小的图片矩阵进行变化，我们可以做均值滤波，也就是将窗口内像素点取平均代替原有值，具体实现也十分简单，只需要传入图片以及滤波窗口大小即可：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">blur = cv2.blur(img, (<span class="number">3</span>, <span class="number">3</span>))</span><br><span class="line">cv2.imshow(<span class="string">'blur'</span>, blur)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="/posts/5d7ec7e5/CV/blur.jpg" alt></p>
+<p><img src="/posts/CV/blur.jpg" alt></p>
 <h2 id="方框滤波"><a href="#方框滤波" class="headerlink" title="方框滤波"></a>方框滤波</h2><p>除此之外，我们还可以构建方框滤波，方框滤波和均值滤波几乎相同 ，不过比之多了两个参数，颜色通道是否一致，若希望一致则填入-1，通常都不需要改动；另外还有normalize，也就是是否需要做归一化操作，当不适用normalize时可能会发生越界现象，而当normalize指定为True时方框滤波就与均值滤波完全一样：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">box = cv2.boxFilter(img,<span class="number">-1</span>,(<span class="number">3</span>,<span class="number">3</span>), normalize=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'box'</span>, box)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>若指定normalize=False，显示图像为：</p>
-<p><img src="/posts/5d7ec7e5/CV/blur2.jpg" alt></p>
+<p><img src="/posts/CV/blur2.jpg" alt></p>
 <p>我们看到大多数地方是全白一片，我们可以感觉到，当值之和大于255时，会直接将值定为255，不再如前面所述会取模。</p>
 <h2 id="高斯滤波"><a href="#高斯滤波" class="headerlink" title="高斯滤波"></a>高斯滤波</h2><p>下面是著名的高斯滤波，高斯滤波会对同个窗口的不同位置的值设置不同的权重，最终加权平均取得这个窗口的最终值，对于一个3×3的窗口而言，上下左右离中心的距离最近，会将权重设的稍微高些，而四个角落离得距离较远，因此就会将权重设的稍微低些，比之均值滤波更合理，也就相当于构建权重矩阵进行滤波。</p>
 <p>下面是高斯滤波的调用方式：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 高斯滤波</span></span><br><span class="line"><span class="comment"># 高斯模糊的卷积核里的数值是满足高斯分布，相当于更重视中间的</span></span><br><span class="line">aussian = cv2.GaussianBlur(img, (<span class="number">5</span>, <span class="number">5</span>), <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'aussian'</span>, aussian)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
-<p><img src="/posts/5d7ec7e5/CV/aussian.jpg" alt></p>
+<p><img src="/posts/CV/aussian.jpg" alt></p>
 <p>我们可以看出高斯滤波的噪音点没有那么明显了。</p>
 <h2 id="中值滤波"><a href="#中值滤波" class="headerlink" title="中值滤波"></a>中值滤波</h2><p>中值就是将数从小到大排序取中位数，当我们数据有噪音点时，中值滤波可以立刻去除噪音点。</p>
 <p>具体调用如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 中值滤波</span></span><br><span class="line"><span class="comment"># 相当于用中值代替</span></span><br><span class="line">median = cv2.medianBlur(img, <span class="number">5</span>)  <span class="comment"># 中值滤波</span></span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'median'</span>, median)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>滤波结果如下：</p>
-<p><img src="/posts/5d7ec7e5/CV/median.jpg" alt></p>
+<p><img src="/posts/CV/median.jpg" alt></p>
 <p>最终我们可以通过下面操作将所有图像拼接在一起：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">res = np.hstack((blur,aussian,median))</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'median vs average'</span>, res)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="/posts/5d7ec7e5/CV/concate.jpg" alt></p>
+<p><img src="/posts/CV/concate.jpg" alt></p>
  
       <!-- reward -->
       

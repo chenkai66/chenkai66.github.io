@@ -102,7 +102,7 @@
     <div class="article-entry" itemprop="articleBody">
        
   <h1 id="Word2Vec"><a href="#Word2Vec" class="headerlink" title="Word2Vec"></a>Word2Vec</h1><h2 id="模型训练步骤"><a href="#模型训练步骤" class="headerlink" title="模型训练步骤"></a>模型训练步骤</h2><p>首先我们回顾一下前面说的Word2vec的main idea：</p>
-<p><img src="/posts/73ac7324/NLP/11.png" alt></p>
+<p><img src="/posts/NLP/11.png" alt></p>
 <p>我们训练这个模型的主要方式是以下四步：</p>
 <ol>
 <li>给每个单词一个初始向量</li>
@@ -139,7 +139,7 @@
 <li>I enjoy flying.</li>
 </ul>
 <p>若使用对称的窗函数（左右window length都为1），则共现矩阵表示如下：</p>
-<p><img src="/posts/73ac7324/NLP/12.png" alt></p>
+<p><img src="/posts/NLP/12.png" alt></p>
 <p>解释一下这个表：”I like”出现在第1，2句话中，一共出现2次，所以对应矩阵位置$A[0,1]=2$。对称的窗口指的是，“like I”也是2次，所以对应矩阵位置$A[1,0]=2$</p>
 <p>我们将共现矩阵行(列)作为词向量表示得到上面的表后，可以知道”like”，”enjoy”都是在”I”附近且统计数目大约相等，可以认为他们意思相近。</p>
 <h3 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h3><ul>
@@ -149,7 +149,7 @@
 <p>解决方法：SVD、PCA降维（但是计算量大）</p>
 <h2 id="降维方法"><a href="#降维方法" class="headerlink" title="降维方法"></a>降维方法</h2><h3 id="Method-1-Dimensionality-Reduction-on-X-HW1"><a href="#Method-1-Dimensionality-Reduction-on-X-HW1" class="headerlink" title="Method 1: Dimensionality Reduction on X (HW1)"></a>Method 1: Dimensionality Reduction on X (HW1)</h3><p>使用SVD方法将共现矩阵$X$分解为$U \Sigma V^{\top}, \Sigma$是对角矩阵，对角线上的值是矩阵的奇异值，$U,V$是对应于行和列的正交基。</p>
 <p>为了减少尺度同时尽量保存有效信息，可保留对角矩阵的最大的$k$个值，并将矩阵$U,V$的相应的行列保留。这是经典的线性代数算法，对于大型矩阵而言，计算代价昂贵。</p>
-<p><img src="/posts/73ac7324/NLP/13.png" alt></p>
+<p><img src="/posts/NLP/13.png" alt></p>
 <h3 id="Method-2-Hacks-to-X-several-used-in-Rohde-et-al-2005"><a href="#Method-2-Hacks-to-X-several-used-in-Rohde-et-al-2005" class="headerlink" title="Method 2: Hacks to X (several used in Rohde et al. 2005)"></a>Method 2: Hacks to X (several used in Rohde et al. 2005)</h3><p>有很多高频词比如the, this等是我们不太需要关注的，为了应付这些词汇，我们可以用下面的方法降维：</p>
 <ul>
 <li>对高频词进行缩放<ul>
@@ -206,7 +206,7 @@
 <p>另外一个问题是权值因子$X_i$不能保证是最优的。因此，我们引入更一般化的权值函数，我们可以自由地依赖于上下文单词：</p>
 <p>$$\widehat{J}=\sum_{i=1}^{W}\sum_{j=1}^{W}f(X_{ij})(u_{j}^{T}v_{i}-log; X_{ij})^{2}$$</p>
 <p>或者我们从另一个角度来看这个损失函数公式的结果：</p>
-<p><img src="/posts/73ac7324/NLP/14.jpg" alt></p>
+<p><img src="/posts/NLP/14.jpg" alt></p>
 <p>例如我们想区分热力学上两种不同状态ice冰与蒸汽steam，它们之间的关系可通过与不同的单词$x$的co-occurrence probability的比值来描述，例如对于solid固态，虽然$P(solid|ice)$与$P(solid|stream)$本身很小，不能透露有效的信息，但是它们的比值$\frac{P(solid|ice)}{P(solid|stream)}$却较大，因为solid更常用来描述ice的状态而不是steam的状态，所以在ice的上下文中出现几率较大，对于gas则恰恰相反，而对于water这种描述ice与steam均可或者fashion这种与两者都没什么联系的单词，则比值接近于1。所以相较于单纯的co-occurrence probability，实际上co-occurrence probability的相对比值更有意义。</p>
 <p>基于对于以上概率比值的观察，我们假设模型的函数有如下形式：</p>
 <p>$$F(w_i,w_j,w_k) = \frac{P_{ik}}{P_{jk}}$$</p>
@@ -216,7 +216,7 @@
 <p>我们可以直接通过矢量的点乘将左边化为标量形式</p>
 <p>$$F((w_i-w_j)^T,w_k) = \frac{P_{ik}}{P_{jk}}$$</p>
 <p>在此，作者又对其进行了对称性分析，即对于word-word co-occurrence，将向量划分为center word还是context word的选择是不重要的，即我们在交换 $w\leftrightarrow \bar w$ 与$X\leftrightarrow\bar X$的时候该式仍然成立。如何保证这种对称性呢？</p>
-<p><img src="/posts/73ac7324/NLP/14.png" alt></p>
+<p><img src="/posts/NLP/14.png" alt></p>
 <p>作者最终尝试的比较好的权重参数是：</p>
 <p>$$f(x)=<br>\begin{cases}<br>(x/x_{max})^{\alpha}&amp; \text{if x} \lt \text{}x_{max}\<br>1&amp; \text{otherwise}<br>\end{cases}$$</p>
 <blockquote>

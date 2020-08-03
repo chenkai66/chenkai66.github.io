@@ -102,7 +102,7 @@
     <div class="article-entry" itemprop="articleBody">
        
   <p>SVM有三宝：<strong>间隔，对偶，核技巧</strong>，下面一一阐述：</p>
-<h1 id="间隔"><a href="#间隔" class="headerlink" title="间隔"></a>间隔</h1><h2 id="什么是线性可分"><a href="#什么是线性可分" class="headerlink" title="什么是线性可分"></a>什么是线性可分</h2><p><img src="/posts/d0757ece/Alg/svm_1.jpg" alt></p>
+<h1 id="间隔"><a href="#间隔" class="headerlink" title="间隔"></a>间隔</h1><h2 id="什么是线性可分"><a href="#什么是线性可分" class="headerlink" title="什么是线性可分"></a>什么是线性可分</h2><p><img src="/posts/Alg/svm_1.jpg" alt></p>
 <p>上面的二维界面上，两类点被一条直线完全分开，叫做线性可分。</p>
 <p>严格的数学定义是：$D_0$和$D_1$是$n$维欧氏空间中的两个点集。如果存在$n$维向量$w$和实数$b$，使得所有属于$D_0$的点$x_i$都有$wx_i+b\gt0$，而对于所有属于$D_1$的点$X_i$则有$wx_j+b\lt0$。则我们称$D_0$和$D_1$线性可分。</p>
 <h2 id="什么是超平面"><a href="#什么是超平面" class="headerlink" title="什么是超平面"></a>什么是超平面</h2><p>上面提到的，将$D_0$和$D_1$完全正确地划分开的$wx+b=0$，就是一个超平面。以最大间隔把两类样本分开的超平面是最佳超平面，也称之为最大间隔超平面。<br>特征：</p>
@@ -110,7 +110,7 @@
 <li>两类样本分别分隔在该超平面的两侧</li>
 <li>两侧距离超平面最近的样本点到超平面的距离被最大化了</li>
 </ul>
-<h2 id="什么是支持向量"><a href="#什么是支持向量" class="headerlink" title="什么是支持向量"></a>什么是支持向量</h2><p><img src="/posts/d0757ece/Alg/svm_2.jpg" alt></p>
+<h2 id="什么是支持向量"><a href="#什么是支持向量" class="headerlink" title="什么是支持向量"></a>什么是支持向量</h2><p><img src="/posts/Alg/svm_2.jpg" alt></p>
 <p>在蓝色样本中存在一些距离我们的超平面最近的一些点，这些点叫做支撑向量。</p>
 <h2 id="svm的最优化问题是什么"><a href="#svm的最优化问题是什么" class="headerlink" title="svm的最优化问题是什么"></a>svm的最优化问题是什么</h2><p>首先我们想要最优化的是各类样本点到超平面的距离最远（其实也就是找到最大间隔超平面），任意一个超平面可以用下面这个线性方程来描述：</p>
 <p>$$w^Tx+b = 0$$</p>
@@ -120,9 +120,9 @@
 <p>拓展到$n$维也是同样的，点$x$到直线$w^Tx+b=0$的距离为：</p>
 <p>$$\frac{|w^Tx+b|}{||w||}$$</p>
 <p>其中$||w||=\sqrt{w_i^2+…+w_d^2}$</p>
-<p><img src="/posts/d0757ece/Alg/svm_3.jpg" alt></p>
+<p><img src="/posts/Alg/svm_3.jpg" alt></p>
 <p>支撑向量是样本中离超平面最近的点，所以所有的其他的红色点距离超平面的距离一定大于$d$，那么我们有这样一个公式：</p>
-<p>$$\left{\begin{array}{ll}<br>\frac{w^{T} x_{i}+b}{|w|} \geq d &amp; y_{i}=1 \<br>\frac{w^{T} x_{i}+b}{|w|} \leq-d &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>稍作转化可以得到：<br>$$<br>\left{\begin{array}{ll}<br>\frac{w^{T} x_{i}+b}{|w| d} \geq 1 &amp; y_{i}=1 \<br>\frac{w^{T} x_{i}+b}{|w| d} \leq-1 &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>由于$||w_i||d$为常数，可在所有系数上同时消去之，然后有（仍以原变量名命名）：<br>$$<br>\left{\begin{array}{ll}<br>w^{T} x_{i}+b \geq 1 &amp; y_{i}=1 \<br>w^{T} x_{i}+b \leq-1 &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>对于上面这个方程我们还能简写一下：<br>$$<br>y_{i}\left(w^{T} x_{i}+b\right) \geq 1<br>$$<br>超平面方程为：<br>$$<br>w^{T} x_{i}+b = \pm1<br>$$<br>有下图：<br><img src="/posts/d0757ece/Alg/svm_4.jpg" alt></p>
+<p>$$\left{\begin{array}{ll}<br>\frac{w^{T} x_{i}+b}{|w|} \geq d &amp; y_{i}=1 \<br>\frac{w^{T} x_{i}+b}{|w|} \leq-d &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>稍作转化可以得到：<br>$$<br>\left{\begin{array}{ll}<br>\frac{w^{T} x_{i}+b}{|w| d} \geq 1 &amp; y_{i}=1 \<br>\frac{w^{T} x_{i}+b}{|w| d} \leq-1 &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>由于$||w_i||d$为常数，可在所有系数上同时消去之，然后有（仍以原变量名命名）：<br>$$<br>\left{\begin{array}{ll}<br>w^{T} x_{i}+b \geq 1 &amp; y_{i}=1 \<br>w^{T} x_{i}+b \leq-1 &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>对于上面这个方程我们还能简写一下：<br>$$<br>y_{i}\left(w^{T} x_{i}+b\right) \geq 1<br>$$<br>超平面方程为：<br>$$<br>w^{T} x_{i}+b = \pm1<br>$$<br>有下图：<br><img src="/posts/Alg/svm_4.jpg" alt></p>
 <p>并且每个支撑向量到超平面的距离可以写为：</p>
 <p>$$d=\frac{|w^Tx_i+b|}{||w||}$$</p>
 <p>我们要最大化这个距离，也就是<br>$$max\frac{|w^Tx_i+b|}{||w||}$$</p>

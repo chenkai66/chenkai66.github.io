@@ -110,26 +110,26 @@
 
 <p>In brief，在变量前（可以是指针变量）加一个&amp;，就可以找到该变量的地址！对指针加一个*，就可以找到该（指针对应的）地址对应的值，下面我们开始深入理解指针~</p>
 <h1 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h1><p>我们先给出一个断言：物理内存的单位是字节,一个字节8个位，一个字节的表示范围为0000 0000~1111 1111(oxff)，实际上往往还会多出一个位用于校验。<br>由下图可见，我们每个（不同类型）变量占的字节大小不同</p>
-<p><img src="/posts/2df51814/Cpp/memory.png" alt></p>
+<p><img src="/posts/Cpp/memory.png" alt></p>
 <p>首先我们定义两个变量：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">char</span> a;</span><br></pre></td></tr></table></figure>
 
 <p>创建两个变量后，变量的空间占用如下（以下所有的地址都只是简化版本，实际上为8个位的字节）</p>
-<p><img src="/posts/2df51814/Cpp/memory2.PNG" alt></p>
+<p><img src="/posts/Cpp/memory2.PNG" alt></p>
 <p>当我们对变量进行赋值操作：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">i = <span class="number">30</span>;</span><br><span class="line">a = ’t’;</span><br></pre></td></tr></table></figure>
 
 <p>这时可以理解为：</p>
-<p><img src="/posts/2df51814/Cpp/memory3.PNG" alt></p>
+<p><img src="/posts/Cpp/memory3.PNG" alt></p>
 <p>下面我们定义一个指针：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *pi;</span><br></pre></td></tr></table></figure>
 
 <p>它会在内存中体现为：</p>
-<p><img src="/posts/2df51814/Cpp/memory4.PNG" alt></p>
+<p><img src="/posts/Cpp/memory4.PNG" alt></p>
 <p>那么给这个变量赋值，赋的值是变量i的地址：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pi = &amp;i;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/posts/2df51814/Cpp/memory5.PNG" alt></p>
+<p><img src="/posts/Cpp/memory5.PNG" alt></p>
 <p>注意看这个变量值为6，而变量i的内存地址也为6，也就是说将i的内存地址保存为pi变量的值，这是不是有点静态链表的内味了。</p>
 <p>总而言之：指针变量所存的内容就是内存的地址编号。</p>
  
