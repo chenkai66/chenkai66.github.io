@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/1f4ed7b2.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.291Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.810Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/CV/">CV</a>
@@ -102,19 +102,19 @@
     <div class="article-entry" itemprop="articleBody">
        
   <h1 id="腐蚀操作"><a href="#腐蚀操作" class="headerlink" title="腐蚀操作"></a>腐蚀操作</h1><p>图像腐蚀操作的前提（大多为）图像数据为二值，我们看下面这张图：</p>
-<p><img src="./Pic/CV/dige.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/dige.png" alt></p>
 <p>我们看到这两个字的很多地方有溢出来的白线，我们希望去掉这些白线，即转化后结果为：</p>
-<p><img src="./Pic/CV/fushi.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/fushi.png" alt></p>
 <p>同时我们还观察到上图的线条都变细了，这就是腐蚀操作做的事，我们再来仔细看一下腐蚀操作：</p>
 <p>原图如下：</p>
-<p><img src="./Pic/CV/pie.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/pie.png" alt></p>
 <p>腐蚀操作后如下：</p>
-<p><img src="./Pic/CV/pie2.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/pie2.png" alt></p>
 <p>我们在上面进行了如下操作：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">kernel = np.ones((<span class="number">30</span>,<span class="number">30</span>),np.uint8)</span><br><span class="line">erosion_1 = cv2.erode(pie,kernel,iterations = <span class="number">1</span>)</span><br><span class="line">erosion_2 = cv2.erode(pie,kernel,iterations = <span class="number">2</span>)</span><br><span class="line">erosion_3 = cv2.erode(pie,kernel,iterations = <span class="number">3</span>)</span><br><span class="line">res = np.hstack((erosion_1,erosion_2,erosion_3))</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'res'</span>, res)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>也就是进行了不同次数的腐蚀，第一张图循环次数是一次，第二张图两次，第三张图三次，依次展现出上面的图像，并且我们注意到我们的kernel是30×30的，如果我们指定更大的kernel值，比如50×50，是否预期会有更大的腐蚀面积（白色的区域更少），我们看一看实验结果：</p>
-<p><img src="./Pic/CV/pie3.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/pie3.png" alt></p>
 <p>我们看到果然是符合预期的。</p>
 <h1 id="膨胀操作"><a href="#膨胀操作" class="headerlink" title="膨胀操作"></a>膨胀操作</h1><p>腐蚀的逆操作不就是膨胀操作吗，比如我们最开始将字上面的刺儿都去掉了，但线条变细了，我们想让它变粗一些，我们可以执行膨胀操作：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kernel = np.ones((<span class="number">3</span>,<span class="number">3</span>),np.uint8)</span><br><span class="line">dige_dilate = cv2.dilate(dige_erosion,kernel,iterations = <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'dilate'</span>, dige_dilate)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
@@ -123,22 +123,22 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pie = cv2.imread(<span class="string">'pie.png'</span>)</span><br><span class="line"></span><br><span class="line">kernel = np.ones((<span class="number">30</span>,<span class="number">30</span>),np.uint8) </span><br><span class="line">dilate_1 = cv2.dilate(pie,kernel,iterations = <span class="number">1</span>)</span><br><span class="line">dilate_2 = cv2.dilate(pie,kernel,iterations = <span class="number">2</span>)</span><br><span class="line">dilate_3 = cv2.dilate(pie,kernel,iterations = <span class="number">3</span>)</span><br><span class="line">res = np.hstack((dilate_1,dilate_2,dilate_3))</span><br><span class="line">cv2.imshow(<span class="string">'res'</span>, res)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="./Pic/CV/pie4.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/pie4.png" alt></p>
 <h1 id="开运算"><a href="#开运算" class="headerlink" title="开运算"></a>开运算</h1><p><strong>对于最开始的任务，我们希望能既去掉毛刺又不破坏原来的图像，我们会进行一个腐蚀后膨胀的操作，开运算正是帮我们省去了这两部，直接一步到位~</strong>，具体操作为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开：先腐蚀，再膨胀</span></span><br><span class="line">img = cv2.imread(<span class="string">'dige.png'</span>)</span><br><span class="line"></span><br><span class="line">kernel = np.ones((<span class="number">5</span>,<span class="number">5</span>),np.uint8) </span><br><span class="line">opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'opening'</span>, opening)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>结果与我们做了两步操作后相同：</p>
-<p><img src="./Pic/CV/dege45.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/dege45.png" alt></p>
 <h1 id="闭运算"><a href="#闭运算" class="headerlink" title="闭运算"></a>闭运算</h1><p>闭运算就和开运算相反，先做膨胀后做腐蚀：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 闭：先膨胀，再腐蚀</span></span><br><span class="line">img = cv2.imread(<span class="string">'dige.png'</span>)</span><br><span class="line"></span><br><span class="line">kernel = np.ones((<span class="number">5</span>,<span class="number">5</span>),np.uint8) </span><br><span class="line">closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'closing'</span>, closing)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>在这张图上，旁边的线反而被加粗了。</p>
-<p><img src="./Pic/CV/dege12.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/dege12.png" alt></p>
 <h1 id="梯度运算"><a href="#梯度运算" class="headerlink" title="梯度运算"></a>梯度运算</h1><p>当我们想要关注边界信息时，我们可以对原图像执行一次腐蚀得到p1，再对原图像执行一次膨胀操作得到p2，用p2-p1就得到了边界的信息：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gradient = cv2.morphologyEx(pie, cv2.MORPH_GRADIENT, kernel)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'gradient'</span>, gradient)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>打印结果为：</p>
-<p><img src="./Pic/CV/tidu.png" alt=""></p>
+<p><img src="/posts/1f4ed7b2/CV/tidu.png" alt></p>
 <h1 id="礼帽和黑帽"><a href="#礼帽和黑帽" class="headerlink" title="礼帽和黑帽"></a>礼帽和黑帽</h1><ul>
 <li>礼帽 = 原始输入-开运算结果</li>
 <li>黑帽 = 闭运算-原始输入</li>

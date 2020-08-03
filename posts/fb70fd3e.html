@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/fb70fd3e.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.172Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.785Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/NLP/">NLP</a>
@@ -104,7 +104,7 @@
   <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h2><p>理解意义的最普遍的语言方式(linguistic way) : 语言符号与语言符号的意义的转化<br>$$\boxed{\text{signifier(symbol)}\Leftrightarrow \text{signified(idea or thing)}} \ = \textbf{denotational semantics}$$<br>在所有的NLP任务中，第一个也是可以说是最重要的共同点是我们如何将单词表示为任何模型的输入（编码）。</p>
 <h2 id="编码方式"><a href="#编码方式" class="headerlink" title="编码方式"></a>编码方式</h2><p>我们思考一下：我们如何让计算机学习到语言的意义？</p>
 <h3 id="1、WordNet"><a href="#1、WordNet" class="headerlink" title="1、WordNet"></a>1、WordNet</h3><p>Wordnet指的是一个包含同义词集和上位词列表的辞典，我们很容易通过nltk获取到这种词典：</p>
-<p><img src="./Pic/NLP/1.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/1.png" alt></p>
 <p>这种方式的缺点：</p>
 <ul>
 <li>需要人工操作，主观性强</li>
@@ -125,13 +125,13 @@
 <li>学习在向量本身中编码相似性</li>
 </ul>
 <h3 id="3、Representing-words-by-their-context"><a href="#3、Representing-words-by-their-context" class="headerlink" title="3、Representing words by their context"></a>3、Representing words by their context</h3><p>这种方式的思想在于：一个单词的意思是由经常出现在它附近的单词给出的，我们可以在单词$A$出现的上下文（固定大小的窗口）附近找到一组单词$a_k$来表示$A$：</p>
-<p><img src="./Pic/NLP/2.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/2.png" alt></p>
 <h1 id="Word2vec-introduction"><a href="#Word2vec-introduction" class="headerlink" title="Word2vec introduction"></a>Word2vec introduction</h1><p><strong>思想</strong>：我们为每个单词构建一个密集的向量，使其与出现在相似上下文中的单词向量相似</p>
-<p><img src="./Pic/NLP/3.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/3.png" alt></p>
 <p><strong>主要思路</strong>：给定大量的文本，给定一个初始词向量（低维度），对于文本中的每个位置$t$，其中有一个中心词$c$和上下文(“外部”)单词$o$。使用$c$和$o$的词向量的相似性，来计算给定$c$的$o$的概率(反之亦然)，然后我们不断调整词向量来最大化这个概率。</p>
 <p>下图为窗口大小$j=2$时的$P\left(w_{t+j} | w_{t}\right)$计算过程，center word分别为into和banking：</p>
-<p><img src="./Pic/NLP/4.png" alt=""></p>
-<p><img src="./Pic/NLP/5.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/4.png" alt></p>
+<p><img src="/posts/fb70fd3e/NLP/5.png" alt></p>
 <h2 id="目标函数"><a href="#目标函数" class="headerlink" title="目标函数"></a>目标函数</h2><p>对于每个位置$t=1, \ldots, T$，在大小为$m$的固定窗口内预测上下文单词，给定中心词$w_j$<br>$$Likelihoood = L(\theta) = \prod^{T}<em>{t=1} \prod</em>{-m \leq j \leq m \atop j \neq 0} P(w_{t+j} | w_{t} ; \theta)$$</p>
 <p>其中，$\theta$为所有需要优化的变量。<br>目标函数$J(\theta)$(有时被称为代价函数或损失函数) 是(平均)负对数似然<br>$$J(\theta)=-\frac{1}{T} \log L(\theta)=-\frac{1}{T} \sum_{t=1}^{T} \sum_{-m \leq j \leq m \atop j \neq 0} \log P\left(w_{t+j} | w_{t} ; \theta\right)$$</p>
 <p>其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
@@ -161,9 +161,9 @@
 </ul>
 <h2 id="将SVD应用于共现矩阵"><a href="#将SVD应用于共现矩阵" class="headerlink" title="将SVD应用于共现矩阵"></a>将SVD应用于共现矩阵</h2><p>我们对矩阵$X$使用SVD，观察奇异值（矩阵 S 上对角线上元素），根据期望的捕获方差百分比截断，留下前$k$个元素：</p>
 <p>然后取子矩阵$U_{1:|V|, 1:k}$作为词嵌入矩阵。这就给出了词汇表中每个词的$k$维表示，如下图所示：</p>
-<p><img src="./Pic/NLP/6.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/6.png" alt></p>
 <p>通过选择前$k$个奇异向量来降低维度：</p>
-<p><img src="./Pic/NLP/7.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/7.png" alt></p>
 <p>这两种方法都给我们提供了足够的词向量来编码语义和句法(part of speech)信息，但也有许多其他问题：</p>
 <ul>
 <li>矩阵的维度会经常发生改变（经常增加新的单词和语料库的大小会改变）。</li>
@@ -204,7 +204,7 @@
 </li>
 <li>我们希望生成的概率$\widehat{y} \in \mathbb{R}^{|V|}$与实际的概率$y \in \mathbb{R}^{|V|}$匹配。使得其刚好是实际的词，也就是这个     one-hot 向量。</li>
 </ol>
-<p><img src="./Pic/NLP/8.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/8.png" alt></p>
 <p>为了计算损失函数，我们首先给出度量两个概率分布的距离的方法 —— <strong>交叉熵$H(\widehat{y}, y)$</strong></p>
 <p>$$H(\hat{y}, y)=-\sum_{j=1}^{|V|} y_{j} \log \left(\hat{y}<em>{j}\right)$$<br>上面的公式中，$y$是 one-hot 向量。因此上面的损失函数可以简化为：<br>$$H(\widehat{y}, y)= - y</em>{j},log(\widehat{y}<em>{j})$$<br>c 是正确词的 one-hot 向量的索引。我们现在可以考虑我们的预测正确并且$\widehat{y}</em>{c}=1$的情况，可以计算得$H(\widehat{y}, y)=- log(1)=0$；若预测非常差并且$\widehat{y}<em>{c}=0.01$。和前面类似，我们可以计算损失$H(\widehat{y}, y)=-log(0.01)=4.605$。下面定义优化目标函数：<br>$$\begin{aligned} \text { minimize } J &amp;=-\log P\left(w</em>{c} | w_{c-m}, \ldots, w_{c-1}, w_{c+1}, \ldots, w_{c+m}\right)\ &amp;=-\log P\left(u_{c} | \hat{v}\right) \ &amp;=-\log \frac{\exp \left(u_{c}^{T} \hat{v}\right)}{\sum_{j=1}^{|V|} \exp \left(u_{j}^{T} \hat{v}\right)} \ &amp;=-u_{c}^{T} \hat{v}+\log \sum_{j=1}^{|V|} \exp \left(u_{j}^{T} \hat{v}\right) \end{aligned}$$</p>
 <p>我们使用 SGD 来更新所有相关的词向量$u_{c} 和 v_{j}$。SGD对一个窗口计算梯度和更新参数：</p>
@@ -218,7 +218,7 @@
 <li>我们希望我们生成的概率向量匹配真实概率$y^{(c-m)},…,y^{(c-1)},y^{(c+1)},…,y^{(c+m)}$，实际的输出的是one-hot向量。</li>
 </ul>
 <p>大致如下：</p>
-<p><img src="./Pic/NLP/9.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/9.png" alt></p>
 <p>我们要定义目标函数，首先假设给定中心词，所有输出的词是完全独立的（不甚严谨），于是可以写出目标函数：<br>$$\begin{aligned} \text { minimize } J &amp;=-\log P\left(w_{c-m}, \ldots, w_{c-1}, w_{c+1}, \ldots, w_{c+m} | w_{c}\right) \ &amp;=-\log \prod_{j=0, j \neq m}^{2 m} P\left(w_{c-m+j} | w_{c}\right) \ &amp;=-\log \prod_{j=0, j \neq m}^{2 m} P\left(u_{c-m+j} | v_{c}\right) \ &amp;=-\log \prod_{j=0, j \neq m}^{2 m} \frac{\exp \left(u_{c-m+j}^{T} v_{c}\right)}{\sum_{k=1}^{|V|} \exp \left(u_{k}^{T} v_{c}\right)} \ &amp;=-\sum_{j=0, j \neq m}^{2 m} u_{c-m+j}^{T} v_{c}+2 m \log \sum_{k=1}^{|V|} \exp \left(u_{k}^{T} v_{c}\right) \end{aligned}$$</p>
 <p>通过这个目标函数，我们可以计算出与未知参数相关的梯度，并且在每次迭代中通过 SGD 来更新它们。另外需要注意到</p>
 <p>$$\begin{aligned} J &amp;=-\sum_{j=0, j \neq m}^{2 m} \log P\left(u_{c-m+j} | v_{c}\right) \ &amp;=\sum_{j=0, j \neq m}^{2 m} H\left(\hat{y}, y_{c-m+j}\right) \end{aligned}$$</p>
@@ -239,7 +239,7 @@
 <p>Hierarchical softmax 使用一个二叉树来表示词表中的所有词。树中的每个叶结点都是一个单词，而且只有一条路径从根结点到叶结点。在这个模型中，没有词的输出表示。相反，图的每个节点（根节点和叶结点除外）与模型要学习的向量相关联。单词作为输出单词的概率定义为从根随机游走到单词所对应的叶的概率。计算成本变为$O(log (|V|))$而不是$O(|V|)$。</p>
 <p>在这个模型中，给定一个向量$w_{i}$的下的单词$w$的概率$p(w\mid w_{i})$，等于从根结点开始到对应$w$的叶结点结束的随机漫步概率。这个方法最大的优势是计算概率的时间复杂度仅仅是$O(log(|V|))$，对应着路径的长度。</p>
 <p>下图是 Hierarchical softmax 的二叉树示意图：</p>
-<p><img src="./Pic/NLP/10.png" alt=""></p>
+<p><img src="/posts/fb70fd3e/NLP/10.png" alt></p>
 <p>令$L(w)$为从根结点到叶结点$w$的路径中节点数目。例如，上图中的$L(w_{2})$为3。我们定义$n(w,i)$为与向量$v_{n(w,i)}$相关的路径上第$i$个结点。因此$n(w,1)$是根结点，而$n(w,L(w))$是$w$的父节点。现在对每个内部节点$n$，我们任意选取一个它的子节点，定义为$ch(n)$（一般是左节点）。然后，我们可以计算概率为<br>$$p\left(w | w_{i}\right)=\prod_{j=1}^{L(w)-1} \sigma\left([n(w, j+1)=\operatorname{ch}(n(w, j))] \cdot v_{n(w, j)}^{T} v_{w_{i}}\right)$$</p>
 <p>其中<br>$$[x]=\left{\begin{array}{ll}{1} &amp; {\text { if } x \text { is true }} \ {-1} &amp; {\text { otherwise }}\end{array}\right.$$</p>
 <p>这个公式看起来非常复杂，让我们细细梳理一下。</p>

@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Keras深度学习系列（二）/深度学习用于计算机视觉 |  言念君子
+    深度学习用于计算机视觉 |  言念君子
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -47,7 +47,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-Keras深度学习系列（二）/深度学习用于计算机视觉"
+  id="post-深度学习用于计算机视觉"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -58,15 +58,15 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Keras深度学习系列（二）/深度学习用于计算机视觉
+  深度学习用于计算机视觉
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/posts/4b6eecc1.html" class="article-date">
-  <time datetime="2020-08-03T01:32:22.642Z" itemprop="datePublished">2020-08-03</time>
+      <a href="/posts/c8c4a7ed.html" class="article-date">
+  <time datetime="2020-08-03T11:51:01.852Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/Keras/">Keras</a>
@@ -101,7 +101,8 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="mnist-数据集"><a href="#mnist-数据集" class="headerlink" title="mnist 数据集"></a>mnist 数据集</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br></pre></td></tr></table></figure>
+  <h1 id="mnist-数据集"><a href="#mnist-数据集" class="headerlink" title="mnist 数据集"></a>mnist 数据集</h1><p><img src="/posts/c8c4a7ed/Pic/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%94%A8%E4%BA%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/output_14_0.png" alt="s"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br></pre></td></tr></table></figure>
 
 <pre><code>Using TensorFlow backend.</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Conv2D(<span class="number">32</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">"relu"</span>, input_shape=(<span class="number">28</span>, <span class="number">28</span>, <span class="number">1</span>)))</span><br><span class="line">model.add(layers.MaxPooling2D((<span class="number">2</span>, <span class="number">2</span>)))</span><br><span class="line">model.add(layers.Conv2D(<span class="number">64</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.MaxPooling2D((<span class="number">2</span>, <span class="number">2</span>)))</span><br><span class="line">model.add(layers.Conv2D(<span class="number">64</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Flatten())</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">10</span>, activation=<span class="string">"softmax"</span>))</span><br><span class="line">model.summary()</span><br></pre></td></tr></table></figure>
 
@@ -175,10 +176,10 @@ total test dog images: 500</code></pre><h2 id="数据增强"><a href="#数据增
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line">i = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> batch <span class="keyword">in</span> datagen.flow(x, batch_size=<span class="number">1</span>):</span><br><span class="line">    plt.figure(i)</span><br><span class="line">    imgplot = plt.imshow(image.array_to_img(batch[<span class="number">0</span>]))</span><br><span class="line">    i += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> i%<span class="number">4</span> == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    </span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_14_0.png" alt="png"></p>
-<p><img src="output_14_1.png" alt="png"></p>
-<p><img src="output_14_2.png" alt="png"></p>
-<p><img src="output_14_3.png" alt="png"></p>
+<p><img src="/posts/c8c4a7ed/output_14_0-1596437116978.png" alt="png"></p>
+<p><img src="/posts/c8c4a7ed/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%94%A8%E4%BA%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/output_14_1.png" alt="png"></p>
+<p><img src="/posts/c8c4a7ed/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%94%A8%E4%BA%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/output_14_2.png" alt="png"></p>
+<p><img src="/posts/c8c4a7ed/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%94%A8%E4%BA%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/output_14_3.png" alt="png"></p>
 <h2 id="构建网络"><a href="#构建网络" class="headerlink" title="构建网络"></a>构建网络</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> optimizers</span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Conv2D(<span class="number">32</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">"relu"</span>, input_shape=(<span class="number">150</span>, <span class="number">150</span>, <span class="number">3</span>)))</span><br><span class="line">model.add(layers.MaxPooling2D(<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line">model.add(layers.Conv2D(<span class="number">64</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.MaxPooling2D(<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line">model.add(layers.Conv2D(<span class="number">128</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">'relu'</span>))</span><br><span class="line">model.add(layers.MaxPooling2D((<span class="number">2</span>, <span class="number">2</span>)))</span><br><span class="line">model.add(layers.Conv2D(<span class="number">128</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">'relu'</span>))</span><br><span class="line">model.add(layers.MaxPooling2D((<span class="number">2</span>, <span class="number">2</span>)))</span><br><span class="line">model.add(layers.Flatten())</span><br><span class="line">model.add(layers.Dropout(<span class="number">0.5</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">512</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">1</span>, activation=<span class="string">"sigmoid"</span>))</span><br><span class="line"></span><br><span class="line">model.compile(loss=<span class="string">"binary_crossentropy"</span>,</span><br><span class="line">             optimizer=optimizers.RMSprop(lr=<span class="number">1e-4</span>),</span><br><span class="line">             metrics=[<span class="string">'acc'</span>])</span><br></pre></td></tr></table></figure>
 
 <pre><code>WARNING:tensorflow:From C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\tensorflow_core\python\ops\nn_impl.py:183: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
@@ -509,8 +510,8 @@ Epoch 30/30
 2000/2000 [==============================] - 3s 2ms/step - loss: 0.0891 - acc: 0.9740 - val_loss: 0.2428 - val_acc: 0.9000</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">acc = history.history[<span class="string">'acc'</span>]</span><br><span class="line">val_acc = history.history[<span class="string">'val_acc'</span>]</span><br><span class="line">loss = history.history[<span class="string">'loss'</span>]</span><br><span class="line">val_loss = history.history[<span class="string">'val_loss'</span>]</span><br><span class="line"></span><br><span class="line">epochs = range(<span class="number">1</span>, len(acc) + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">plt.plot(epochs, acc, <span class="string">'bo'</span>, label=<span class="string">'Training acc'</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">'b'</span>, label=<span class="string">'Validation acc'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation accuracy'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(epochs, loss, <span class="string">'bo'</span>, label=<span class="string">'Training loss'</span>)</span><br><span class="line">plt.plot(epochs, val_loss, <span class="string">'b'</span>, label=<span class="string">'Validation loss'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation loss'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_24_0.png" alt="png"></p>
-<p><img src="output_24_1.png" alt="png"></p>
+<p><img src="/posts/c8c4a7ed/output_24_0.png" alt="png"></p>
+<p><img src="/posts/c8c4a7ed/output_24_1.png" alt="png"></p>
 <h1 id="可视化中间激活"><a href="#可视化中间激活" class="headerlink" title="可视化中间激活"></a>可视化中间激活</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> load_model</span><br><span class="line">model = load_model(<span class="string">'model/cats_and_dogs_small_2.h5'</span>)</span><br><span class="line">model.summary()</span><br></pre></td></tr></table></figure>
 
 <pre><code>Model: &quot;sequential_5&quot;
@@ -550,7 +551,7 @@ _________________________________________________________________</code></pre><p
 <pre><code>(1, 150, 150, 3)</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.imshow(img_tensor[<span class="number">0</span>])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_29_0.png" alt="png"></p>
+<p><img src="/posts/c8c4a7ed/output_29_0.png" alt="png"></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br><span class="line">layer_outputs = [layer.output <span class="keyword">for</span> layer <span class="keyword">in</span> model.layers[:<span class="number">8</span>]]</span><br><span class="line">activation_model = models.Model(inputs=model.input, outputs=layer_outputs)</span><br><span class="line">activations = activation_model.predict(img_tensor)</span><br><span class="line"></span><br><span class="line">first_layer_activation = activations[<span class="number">0</span>]</span><br><span class="line">print(first_layer_activation.shape)</span><br></pre></td></tr></table></figure>
 
 <pre><code>(1, 148, 148, 32)</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plt.matshow(first_layer_activation[<span class="number">0</span>, :, :, <span class="number">4</span>], cmap=<span class="string">'viridis'</span>)</span><br></pre></td></tr></table></figure>
@@ -558,7 +559,7 @@ _________________________________________________________________</code></pre><p
 
 
 
-<pre><code>&lt;matplotlib.image.AxesImage at 0x18690050be0&gt;</code></pre><p><img src="output_31_1.png" alt="png"></p>
+<pre><code>&lt;matplotlib.image.AxesImage at 0x18690050be0&gt;</code></pre><p><img src="/posts/c8c4a7ed/output_31_1.png" alt="png"></p>
 <p>当然，还有更多的可视化方法，但不是我们关注的主线，这里就不一一阐述了。</p>
 <blockquote>
 <p>注：以上内容均直接搬运自个人的jupyter notebook，参考书籍为《Python深度学习》，注释未到位之处请多谅解，有需要对哪些地方补充注释的可以在下方留言</p>
@@ -625,7 +626,7 @@ _________________________________________________________________</code></pre><p
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/4b6eecc1.html" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/c8c4a7ed.html" alt="微信分享二维码">
     </div>
 </div>
 
@@ -636,19 +637,19 @@ _________________________________________________________________</code></pre><p
    
   <nav class="article-nav">
     
-      <a href="/posts/88ec626e.html" class="article-nav-link">
+      <a href="/posts/990a7167.html" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            Keras深度学习系列（一）/神经网络入门
+            神经网络入门
           
         </div>
       </a>
     
     
-      <a href="/posts/4250a155.html" class="article-nav-link">
+      <a href="/posts/eb79fc5f.html" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Python与金融量化分析</div>
+        <div class="article-nav-title">新闻文本分类实战</div>
       </a>
     
   </nav>

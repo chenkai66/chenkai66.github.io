@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Keras深度学习系列（一）/神经网络入门 |  言念君子
+    神经网络入门 |  言念君子
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -47,7 +47,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-Keras深度学习系列（一）/神经网络入门"
+  id="post-神经网络入门"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -58,18 +58,18 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Keras深度学习系列（一）/神经网络入门
+  神经网络入门
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/posts/88ec626e.html" class="article-date">
-  <time datetime="2020-08-03T01:38:23.784Z" itemprop="datePublished">2020-08-03</time>
+      <a href="/posts/990a7167.html" class="article-date">
+  <time datetime="2020-08-03T11:51:01.853Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/Tensorflow/">Tensorflow</a>
+    <a class="article-category-link" href="/categories/Keras/">Keras</a>
   </div>
   
 <div class="word_count">
@@ -101,7 +101,9 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="神经网络剖析"><a href="#神经网络剖析" class="headerlink" title="神经网络剖析"></a>神经网络剖析</h1><p>训练神经网络主要分为以下四个方面：</p>
+  <h1 id="神经网络剖析"><a href="#神经网络剖析" class="headerlink" title="神经网络剖析"></a>神经网络剖析</h1><p><img src="/posts/990a7167/Pic/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%85%A5%E9%97%A8/output_14_0.png" alt="png"></p>
+<p><img src="/posts/990a7167/keras/output_14_0.png" alt></p>
+<p>、训练神经网络主要分为以下四个方面：</p>
 <ol>
 <li>层：多个层组合成网络（或模型）</li>
 <li>输入数据和相应的目标</li>
@@ -208,11 +210,11 @@ Epoch 20/20
 <pre><code>dict_keys([&apos;val_loss&apos;, &apos;val_accuracy&apos;, &apos;loss&apos;, &apos;accuracy&apos;])</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line">history_dict = history.history</span><br><span class="line">loss_values = history_dict[<span class="string">"loss"</span>]</span><br><span class="line">val_loss_values = history_dict[<span class="string">"val_loss"</span>]</span><br><span class="line">epochs = range(<span class="number">1</span>, len(loss_values)+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">plt.plot(epochs, loss_values, <span class="string">"bo"</span>, label=<span class="string">"Training loss"</span>)</span><br><span class="line">plt.plot(epochs, val_loss_values, <span class="string">"b"</span>, label=<span class="string">"Validation loss"</span>)</span><br><span class="line">plt.title(<span class="string">"Training and validation loss"</span>)</span><br><span class="line">plt.xlabel(<span class="string">"Epochs"</span>)</span><br><span class="line">plt.ylabel(<span class="string">"Loss"</span>)</span><br><span class="line">plt.legend()</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_24_0.png" alt="png"></p>
+<p><img src="/posts/990a7167/keras/output_24_2.png" alt="png"></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">plt.clf()</span><br><span class="line">acc = history_dict[<span class="string">'accuracy'</span>]</span><br><span class="line">val_acc = history_dict[<span class="string">'val_accuracy'</span>]</span><br><span class="line">plt.plot(epochs, acc, <span class="string">'bo'</span>, label=<span class="string">'Training acc'</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">'b'</span>, label=<span class="string">'Validation acc'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation accuracy'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Accuracy'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_25_0.png" alt="png"></p>
+<p><img src="/posts/990a7167/keras/output_25_0.png" alt="png"></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">1</span>, activation=<span class="string">"sigmoid"</span>))</span><br></pre></td></tr></table></figure>
 
 
@@ -318,11 +320,11 @@ Epoch 20/20
 7982/7982 [==============================] - 2s 253us/step - loss: 0.0768 - accuracy: 0.9569 - val_loss: 1.4354 - val_accuracy: 0.8040</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">history_dict = history.history</span><br><span class="line">loss = history_dict[<span class="string">"loss"</span>]</span><br><span class="line">val_loss = history_dict[<span class="string">"val_loss"</span>]</span><br><span class="line">epochs = range(<span class="number">1</span>, len(loss)+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">plt.plot(epochs, loss, <span class="string">'bo'</span>, label=<span class="string">'Training loss'</span>)</span><br><span class="line">plt.plot(epochs, val_loss, <span class="string">'b'</span>, label=<span class="string">'Validation loss'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation loss'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Loss'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_42_0.png" alt="png"></p>
+<p><img src="/posts/990a7167/keras/output_42_0.png" alt="png"></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">acc = history.history[<span class="string">'accuracy'</span>]</span><br><span class="line">val_acc = history.history[<span class="string">'val_accuracy'</span>]</span><br><span class="line">plt.plot(epochs, acc, <span class="string">'bo'</span>, label=<span class="string">'Training acc'</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">'b'</span>, label=<span class="string">'Validation acc'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation accuracy'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Accuracy'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_43_0.png" alt="png"></p>
+<p><img src="/posts/990a7167/keras/output_43_0.png" alt="png"></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 训练数据在第五轮左右开始过拟合</span></span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">46</span>, activation=<span class="string">"softmax"</span>))</span><br><span class="line"></span><br><span class="line">model.compile(optimizer=<span class="string">"rmsprop"</span>,</span><br><span class="line">             loss=<span class="string">"categorical_crossentropy"</span>,</span><br><span class="line">             metrics=[<span class="string">"accuracy"</span>])</span><br><span class="line">model.fit(x_train,</span><br><span class="line">         one_hot_train_labels,</span><br><span class="line">         epochs=<span class="number">5</span>,</span><br><span class="line">         batch_size=<span class="number">512</span>)</span><br><span class="line">results = model.evaluate(x_test, one_hot_test_labels)</span><br></pre></td></tr></table></figure>
 
 <pre><code>Epoch 1/5
@@ -348,16 +350,10 @@ Epoch 5/5
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">predictions[<span class="number">0</span>].shape</span><br></pre></td></tr></table></figure>
 
 
-
-
 <pre><code>(46,)</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.sum(predictions[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
 
 
-
-
 <pre><code>0.9999999</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.argmax(predictions[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
-
-
 
 
 <pre><code>3</code></pre><h2 id="处理标签的另一种方法"><a href="#处理标签的另一种方法" class="headerlink" title="处理标签的另一种方法"></a>处理标签的另一种方法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">y_train = np.array(train_labels)</span><br><span class="line">y_test = np.array(test_labels)</span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">46</span>, activation=<span class="string">"softmax"</span>))</span><br><span class="line"></span><br><span class="line">model.compile(optimizer=<span class="string">"rmsprop"</span>,</span><br><span class="line">             loss=<span class="string">"sparse_categorical_crossentropy"</span>,</span><br><span class="line">             metrics=[<span class="string">"acc"</span>])</span><br><span class="line">model.fit(x_train,</span><br><span class="line">         y_train,</span><br><span class="line">         epochs=<span class="number">5</span>,</span><br><span class="line">         batch_size=<span class="number">512</span>)</span><br><span class="line">results = model.evaluate(x_test, y_test)</span><br><span class="line">print(results)</span><br></pre></td></tr></table></figure>
@@ -405,7 +401,7 @@ processing fold # 2
 processing fold # 3</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.plot(range(<span class="number">1</span>, len(average_mae_history) + <span class="number">1</span>), average_mae_history)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Validation MAE'</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_64_0.png" alt="png"></p>
+<p><img src="/posts/990a7167/output_64_0.png" alt="png"></p>
 <p>因为纵轴的范围较大，且数据方差相对较大，所以难以看清这张图的规律。我们来重新绘制一张图。</p>
 <ul>
 <li>删除前 10 个数据点，因为它们的取值范围与曲线上的其他点不同。</li>
@@ -414,7 +410,7 @@ processing fold # 3</code></pre><figure class="highlight python"><table><tr><td 
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">smooth_curve</span><span class="params">(points, factor=<span class="number">0.9</span>)</span>:</span></span><br><span class="line">    smoothed_points = []</span><br><span class="line">    <span class="keyword">for</span> point <span class="keyword">in</span> points:</span><br><span class="line">        <span class="keyword">if</span> smoothed_points:</span><br><span class="line">            previous = smoothed_points[<span class="number">-1</span>]</span><br><span class="line">            smoothed_points.append(previous * factor + point * (<span class="number">1</span> - factor))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            smoothed_points.append(point)</span><br><span class="line">    <span class="keyword">return</span> smoothed_points</span><br><span class="line"></span><br><span class="line">smooth_mae_history = smooth_curve(average_mae_history[<span class="number">10</span>:])</span><br><span class="line">plt.plot(range(<span class="number">1</span>, len(smooth_mae_history) + <span class="number">1</span>), smooth_mae_history)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Validation MAE'</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
 
-<p><img src="output_66_0.png" alt="png"></p>
+<p><img src="/posts/990a7167/output_66_0.png" alt="png"></p>
 <blockquote>
 <p>注：以上内容均直接搬运自个人的jupyter notebook，参考书籍为《Python深度学习》，注释未到位之处请多谅解，有需要对哪些地方补充注释的可以在下方留言</p>
 </blockquote>
@@ -480,7 +476,7 @@ processing fold # 3</code></pre><figure class="highlight python"><table><tr><td 
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/88ec626e.html" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/990a7167.html" alt="微信分享二维码">
     </div>
 </div>
 
@@ -491,10 +487,19 @@ processing fold # 3</code></pre><figure class="highlight python"><table><tr><td 
    
   <nav class="article-nav">
     
+      <a href="/posts/f019e32d.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            算法复现（一）—— 快速排序算法
+          
+        </div>
+      </a>
     
-      <a href="/posts/4b6eecc1.html" class="article-nav-link">
+    
+      <a href="/posts/c8c4a7ed.html" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Keras深度学习系列（二）/深度学习用于计算机视觉</div>
+        <div class="article-nav-title">深度学习用于计算机视觉</div>
       </a>
     
   </nav>

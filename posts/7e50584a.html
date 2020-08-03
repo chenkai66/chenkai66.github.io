@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/7e50584a.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.203Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.794Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/CV/">CV</a>
@@ -103,39 +103,39 @@
        
   <h1 id="人脸检测例子"><a href="#人脸检测例子" class="headerlink" title="人脸检测例子"></a>人脸检测例子</h1><h2 id="人脸检测"><a href="#人脸检测" class="headerlink" title="人脸检测"></a>人脸检测</h2><p>在开始介绍Haar特征描述算子之前，为了便于理解，我们直接看具体怎么通过opencv调用训练好的haar模型，从而实现人脸识别。首先Mark一下一些已经训练好的haar的模型，可以直接下载，里面包含了多种人类特征检测的训练模型，包括脸、身体、眼睛、笑脸等，链接<a href="https://github.com/opencv/opencv/tree/master/data/haarcascades" target="_blank" rel="noopener">戳我</a></p>
 <p>我们打开的github链接长这样：</p>
-<p><img src="./Pic/CV/haar1.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar1.png" alt></p>
 <p>我们下载其中一个haarcascade_frontalface_default.xml作为示例（点Raw后下载网页）。然后我们导入待识别图：</p>
-<p><img src="./Pic/CV/4.jpg" alt=""></p>
+<p><img src="/posts/7e50584a/CV/4.jpg" alt></p>
 <p>执行以下代码，即可获得人脸检测的结果：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">"Pic/1.jpg"</span>)</span><br><span class="line"></span><br><span class="line">face_engine = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_frontalface_default.xml'</span>)</span><br><span class="line"></span><br><span class="line">faces = face_engine.detectMultiScale(img,scaleFactor=<span class="number">1.3</span>,minNeighbors=<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (x,y,w,h) <span class="keyword">in</span> faces:</span><br><span class="line">    img = cv2.rectangle(img,(x,y),(x+w,y+h),(<span class="number">255</span>,<span class="number">0</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'img'</span>,img)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>检测结果不负众望：</p>
-<p><img src="./Pic/CV/reba.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/reba.png" alt></p>
 <p>我们留意到以上代码的face_engine步骤，其作用是导入人脸级联分类器引擎，’.xml’文件里包含训练出来的人脸特征。随后用人脸级联分类器引擎进行人脸识别，返回的faces为人脸坐标列表，1.3是放大比例，5是重复识别次数。</p>
 <h2 id="人脸检测和人眼检测"><a href="#人脸检测和人眼检测" class="headerlink" title="人脸检测和人眼检测"></a>人脸检测和人眼检测</h2><p>我们也可以尝试前面xml文件中的人眼检测：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导入opencv</span></span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入人脸级联分类器引擎，'.xml'文件里包含训练出来的人脸特征，cv2.data.haarcascades即为存放所有级联分类器模型文件的目录</span></span><br><span class="line">face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_frontalface_default.xml'</span>)</span><br><span class="line"><span class="comment"># 导入人眼级联分类器引擎吗，'.xml'文件里包含训练出来的人眼特征</span></span><br><span class="line">eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_eye.xml'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读入一张图片，引号里为图片的路径，需要你自己手动设置</span></span><br><span class="line">img = cv2.imread(<span class="string">'image3.png'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用人脸级联分类器引擎进行人脸识别，返回的faces为人脸坐标列表，1.3是放大比例，5是重复识别次数</span></span><br><span class="line">faces = face_cascade.detectMultiScale(img, <span class="number">1.3</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对每一张脸，进行如下操作</span></span><br><span class="line"><span class="keyword">for</span> (x,y,w,h) <span class="keyword">in</span> faces:</span><br><span class="line">    <span class="comment"># 画出人脸框，蓝色（BGR色彩体系），画笔宽度为2</span></span><br><span class="line">    img = cv2.rectangle(img,(x,y),(x+w,y+h),(<span class="number">255</span>,<span class="number">0</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line">    <span class="comment"># 框选出人脸区域，在人脸区域而不是全图中进行人眼检测，节省计算资源</span></span><br><span class="line">    face_area = img[y:y+h, x:x+w]</span><br><span class="line">    eyes = eye_cascade.detectMultiScale(face_area)</span><br><span class="line">    <span class="comment"># 用人眼级联分类器引擎在人脸区域进行人眼识别，返回的eyes为眼睛坐标列表</span></span><br><span class="line">    <span class="keyword">for</span> (ex,ey,ew,eh) <span class="keyword">in</span> eyes:</span><br><span class="line">        <span class="comment">#画出人眼框，绿色，画笔宽度为1</span></span><br><span class="line">        cv2.rectangle(face_area,(ex,ey),(ex+ew,ey+eh),(<span class="number">0</span>,<span class="number">255</span>,<span class="number">0</span>),<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在"img2"窗口中展示效果图</span></span><br><span class="line">cv2.imshow(<span class="string">'img2'</span>,img)</span><br><span class="line"><span class="comment"># 监听键盘上任何按键，如有案件即退出并关闭窗口，并将图片保存为output.jpg</span></span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br><span class="line">cv2.imwrite(<span class="string">'output.jpg'</span>,img)</span><br></pre></td></tr></table></figure>
 
 <p>上面的代码最值得注意的就是face_area = img[y:y+h, x:x+w]，这一步会将人脸区域框出来，在其中执行人眼检测。同样对上图进行检测，结果如下：</p>
-<p><img src="./Pic/CV/output.jpg" alt=""></p>
+<p><img src="/posts/7e50584a/CV/output.jpg" alt></p>
 <p>结果还行吧。</p>
 <h2 id="调用电脑摄像头进行实时人脸识别和人眼识别"><a href="#调用电脑摄像头进行实时人脸识别和人眼识别" class="headerlink" title="调用电脑摄像头进行实时人脸识别和人眼识别"></a>调用电脑摄像头进行实时人脸识别和人眼识别</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_frontalface_default.xml'</span>)</span><br><span class="line"></span><br><span class="line">eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_eye.xml'</span>)</span><br><span class="line"><span class="comment"># 调用摄像头摄像头</span></span><br><span class="line">cap = cv2.VideoCapture(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">True</span>):</span><br><span class="line">    <span class="comment"># 获取摄像头拍摄到的画面</span></span><br><span class="line">    ret, frame = cap.read()</span><br><span class="line">    faces = face_cascade.detectMultiScale(frame, <span class="number">1.3</span>, <span class="number">5</span>)</span><br><span class="line">    img = frame</span><br><span class="line">    <span class="keyword">for</span> (x,y,w,h) <span class="keyword">in</span> faces:</span><br><span class="line">    	<span class="comment"># 画出人脸框，蓝色，画笔宽度微</span></span><br><span class="line">        img = cv2.rectangle(img,(x,y),(x+w,y+h),(<span class="number">255</span>,<span class="number">0</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line">    	<span class="comment"># 框选出人脸区域，在人脸区域而不是全图中进行人眼检测，节省计算资源</span></span><br><span class="line">        face_area = img[y:y+h, x:x+w]</span><br><span class="line">        eyes = eye_cascade.detectMultiScale(face_area)</span><br><span class="line">    	<span class="comment"># 用人眼级联分类器引擎在人脸区域进行人眼识别，返回的eyes为眼睛坐标列表</span></span><br><span class="line">        <span class="keyword">for</span> (ex,ey,ew,eh) <span class="keyword">in</span> eyes:</span><br><span class="line">            <span class="comment">#画出人眼框，绿色，画笔宽度为1</span></span><br><span class="line">            cv2.rectangle(face_area,(ex,ey),(ex+ew,ey+eh),(<span class="number">0</span>,<span class="number">255</span>,<span class="number">0</span>),<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment"># 实时展示效果画面</span></span><br><span class="line">    cv2.imshow(<span class="string">'frame2'</span>,img)</span><br><span class="line">    <span class="comment"># 每5毫秒监听一次键盘动作</span></span><br><span class="line">    <span class="keyword">if</span> cv2.waitKey(<span class="number">5</span>) &amp; <span class="number">0xFF</span> == ord(<span class="string">'q'</span>):</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 最后，关闭所有窗口</span></span><br><span class="line">cap.release()</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>以上我们都可以通过调整参数调整精度要求。</p>
 <h1 id="Haar原理解析"><a href="#Haar原理解析" class="headerlink" title="Haar原理解析"></a>Haar原理解析</h1><h2 id="Haar特征"><a href="#Haar特征" class="headerlink" title="Haar特征"></a>Haar特征</h2><p>Haar特征包含三种：边缘特征、线性特征、中心特征和对角线特征。每种分类器都从图片中提取出对应的特征。有点类似于卷积神经网络中的卷积核，每个卷积核提取出对应的特征。</p>
 <p>我们最基础的卷积核（划掉），哦不haar特征为下图中的Basic Haar Set：</p>
-<p><img src="./Pic/CV/haar2.jpg" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar2.jpg" alt></p>
 <p>我们通常将Haar特征分为以下三类，我们根据名字就可以分辨出这三类的用途:</p>
 <ul>
-<li><p>第一类是边缘特征：<br><img src="./Pic/CV/haar3.png" alt=""></p>
+<li><p>第一类是边缘特征：<br><img src="/posts/7e50584a/CV/haar3.png" alt></p>
 </li>
-<li><p>第二类是线性特征：<br><img src="./Pic/CV/haar4.png" alt=""></p>
+<li><p>第二类是线性特征：<br><img src="/posts/7e50584a/CV/haar4.png" alt></p>
 </li>
-<li><p>第三类是中心特征：<br><img src="./Pic/CV/haar5.jpg" alt=""></p>
+<li><p>第三类是中心特征：<br><img src="/posts/7e50584a/CV/haar5.jpg" alt></p>
 </li>
 </ul>
 <p>特征模板内有白色和黑色两种矩形，并定义该模板的特征值为白色矩形像素和减去黑色矩形像素和。Haar特征值反映了图像的灰度变化情况。</p>
 <p>例如：脸部的一些特征能由矩形特征简单的描述，如：眼睛要比脸颊颜色要深，鼻梁两侧比鼻梁颜色要深，嘴巴比周围颜色要深等。但矩形特征只对一些简单的图形结构，如边缘、线段较敏感，所以只能描述特定走向（水平、垂直、对角）的结构。由于有时候人脸未必是定向的，可能是会有歪曲的，因此我们可以训练旋转一定角度的矩形特征来识别人脸。</p>
-<p><img src="./Pic/CV/haar6.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar6.png" alt></p>
 <p>总而言之，Haar特征就是利用一些固定的特征来模拟人脸中的相关特征。</p>
 <p>矩形特征可位于图像任意位置，大小也可以任意改变，所以矩形特征值是矩形模版类别、矩形位置和矩形大小这三个因素的函数。故类别、大小和位置的变化，使得很小的检测窗口含有非常多的矩形特征，如：在24*24像素大小的检测窗口内矩形特征数量可以达到16万个。这样就有两个问题需要解决了：</p>
 <p>（1）如何快速计算那么多的特征？—积分图大显神通；</p>
@@ -148,9 +148,9 @@
 <p>$$ii(x,y) = ii(x-1,y)+ii(x,y-1)+f(x,y)-ii(i-1,j-1)$$</p>
 <h2 id="计算Haar特征值"><a href="#计算Haar特征值" class="headerlink" title="计算Haar特征值"></a>计算Haar特征值</h2><h3 id="矩形特征"><a href="#矩形特征" class="headerlink" title="矩形特征"></a>矩形特征</h3><p>构建好积分图后，图像中任何矩形区域的像素值累加和都可以通过简单的加减运算快速得到，如下图所示，矩形区域D的像素和值计算公式如下：</p>
 <p>$\operatorname{Sum}(D)=i i\left(x_{4}, y_{4}\right)-i i\left(x_{2}, y_{2}\right)-i i\left(x_{3}, y_{3}\right)+i i\left(x_{1}, y_{1}\right)$</p>
-<p><img src="./Pic/CV/haar7.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar7.png" alt></p>
 <p>矩形区域求和示意图 在下图中，以水平向右为$x$轴正方向，垂直向下为$y$轴正方向，可定义积分图公式Summed Area Table$(S A T(x, y))$<br>$$<br>S A T(x, y)=\Sigma_{x^{\prime} \leq x, y^{\prime} \leq y} i\left(x^{\prime}, y^{\prime}\right)<br>$$<br>以及迭代求解式<br>$$<br>\begin{array}{c}<br>S A T(x, y)=S A T(x, y-1)+S A T(x-1, y)-S A T(x-1, y-1)+I(x, y) \<br>S A T(-1, y)=0, S A T(x,-1)=0<br>\end{array}<br>$$<br>对于左上角坐标为$(x, y),$宽高为$(w, h)$的矩形区域$r(x, y, w, h, 0),$可利用积分图$S A T(x, y)$求取像素和值<br>$$<br>\operatorname{RecSum}(r)=S A T(x+w-1, y+h-1)+S A T(x-1, y-1)-S A T(x+w-1, y-1)-S A T(x-1, y+h-1)<br>$$</p>
-<p><img src="./Pic/CV/haar8.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar8.png" alt></p>
 <h3 id="旋转矩形特征"><a href="#旋转矩形特征" class="headerlink" title="旋转矩形特征"></a>旋转矩形特征</h3><p>对于旋转矩形特征，相应的有$45$°倾斜积分图用于快速计算Haar特征值，如下图所示，倾斜积分图的定义为像素点左上角$45$°区域和左下角$45$°区域的像素和，公式表示如下：</p>
 <p>$$RSAT(x, y)=\Sigma_{x^{\prime} \leq x, x^{\prime} \leq x-\left|y-y^{\prime}\right|} i\left(x^{\prime}, y^{\prime}\right)$$</p>
 <p>其递推公式计算如下：</p>
@@ -158,12 +158,12 @@
 <p>其中$R S A T(-1, y)=R S A T(-2, y)=R S A T(x,-1)=0$</p>
 <p>也可直接通过下式递归计算:<br>$$R S A T(x, y)=R S A T(x-1, y-1)+R S A T(x+1, y-1)-R S A T(x, y-2)+I(x-1, y)+I(x, y)$$<br>以上3个积分图计算公式是等价的。</p>
 <p>如下图所示，构建好倾斜积分图后，可快速计算倾斜矩形区域r$=\left(x, y, w, h, 45^{\circ}\right)$的像素和值</p>
-<p><img src="./Pic/CV/haar9.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar9.png" alt></p>
 <p>$$\operatorname{RecSum}(r)=R S A T(x+w, y+w)+R S A T(x-h, y+h)-R S A T(x, y)-R S A T(x+w-h, y+w+h)$$</p>
 <h3 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h3><p>了解了特征值的计算之后，我们来看看不同的特征值的含义是什么。我们选取MIT人脸库中2706个大小为$20*20$的人脸正样本图像，计算如下图所示的Haar特征：</p>
-<p><img src="./Pic/CV/haar10.jpg" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar10.jpg" alt></p>
 <p>左边对应的人眼区域，右边无具体意义。</p>
-<p><img src="./Pic/CV/harr11.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/harr11.png" alt></p>
 <p>可以看到，图中2个不同Haar特征在同一组样本中具有不同的特征值分布，左边特征计算出的特征值基本都大于0（对样本的区分度大），而右边特征的特征值基本均匀分布于0两侧（对样本的区分度小）。所以，正是由于样本中Haar特征值分布不均匀，导致了不同Haar特征分类效果不同。显而易见，对正负样本区分度越大的特征分类效果越好，即红色曲线对应图中的的左边Haar特征分类效果好于右边Haar特征。</p>
 <p>那么看到这里，应该理解了下面2个问题：</p>
 <ol>
@@ -196,8 +196,8 @@
 <p>事实上，一张图片绝大部分的区域都不是人脸。如果对一张图片的每个角落都提取6000个特征，将会浪费巨量的计算资源。</p>
 <p>如果能找到一个简单的方法能够检测某个窗口是不是人脸区域，如果该窗口不是人脸区域，那么就只看一眼便直接跳过，也就不用进行后续处理了，这样就能集中精力判别那些可能是人脸的区域。 为此，有人引入了Cascade 分类器。它不是将6000个特征都用在一个窗口，而是将特征分为不同的阶段，然后一个阶段一个阶段的应用这些特征(通常情况下，前几个阶段只有很少量的特征)。如果窗口在第一个阶段就检测失败了，那么就直接舍弃它，无需考虑剩下的特征。如果检测通过，则考虑第二阶段的特征并继续处理。如果所有阶段的都通过了，那么这个窗口就是人脸区域。 作者的检测器将6000+的特征分为了38个阶段，前五个阶段分别有1，10，25，25，50个特征(前文图中提到的识别眼睛和鼻梁的两个特征实际上是Adaboost中得到的最好的两个特征)。根据作者所述，平均每个子窗口只需要使用6000+个特征中的10个左右。</p>
 <p>简单地说，在进行人脸检测的过程中，需要使用一个强分类器，且其由多个弱分类器组成。那么其中的每个弱分类器都只包含一个Haar特征。每个分类器都将确定一个阈值，如果某区域的处理差值小于该阈值，则被归为负类，反之则进行下一级的弱分类，最终经过多个弱分类器后，可完成检测。其分类过程如下图所示：</p>
-<p><img src="./Pic/CV/haar13.png" alt=""></p>
-<h3 id="举个例子-1"><a href="#举个例子-1" class="headerlink" title="举个例子"></a>举个例子</h3><p><img src="./Pic/CV/haar12.png" alt=""></p>
+<p><img src="/posts/7e50584a/CV/haar13.png" alt></p>
+<h3 id="举个例子-1"><a href="#举个例子-1" class="headerlink" title="举个例子"></a>举个例子</h3><p><img src="/posts/7e50584a/CV/haar12.png" alt></p>
 <ol>
 <li>首先，对于一幅图像，它可能存在K个面部特征，假设这些面部特征可以用来区分眼睛、眉毛、鼻子、嘴等特征。</li>
 <li>确定一些超参数，如滑动窗口的大小，及窗口的移动步长。窗口从上往下，从左向右地滑动。在滑动的过程中，每次都可以计算出一个数值$K$。</li>
@@ -328,9 +328,9 @@
       </a>
     
     
-      <a href="/posts/f2fb8471.html" class="article-nav-link">
+      <a href="/posts/ba35fcf2.html" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">CS224n 13_Contextual Representations</div>
+        <div class="article-nav-title">GAN学习（一）</div>
       </a>
     
   </nav>

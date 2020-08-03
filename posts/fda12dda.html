@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/fda12dda.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.577Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.863Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
@@ -112,7 +112,7 @@
 <h2 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h2><p>首先我们要删除最小堆（如下图）的最顶端元素 0，我们首先将 0 与 3 进行交换，将最下面的元素交换到最上面。<br><img src="https://img-blog.csdn.net/20160521003432801?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center#pic_center" alt="在这里插入图片描述"><br>交换结果如下图，此时发现最上面的子堆不满足最小堆的定义：</p>
 <p><img src="https://img-blog.csdn.net/20160521003454410?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center#pic_center" alt="在这里插入图片描述"><br>交换元素 1 和 3：</p>
 <p><img src="https://img-blog.csdn.net/20160521003517583?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center#pic_center" alt="在这里插入图片描述"><br>一直向下调整，直到满足所有子堆最小堆的要求，得到最终结果：</p>
-<p><img src="https://img-blog.csdn.net/20160521003536802?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center#pic_center" alt=""></p>
+<p><img src="https://img-blog.csdn.net/20160521003536802?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center#pic_center" alt></p>
 <h2 id="构建二叉堆"><a href="#构建二叉堆" class="headerlink" title="构建二叉堆"></a>构建二叉堆</h2><p>构建二叉堆也就是将一个无序的二叉树调整为二叉堆，本质上就是让所偶非叶子节点依次下沉，有两种方式——自下而上和自上而下。</p>
 <p>自下而上就是首先看有叶子节点的最后一个堆，将其调整为一个最小堆（或最大堆），实际上就是和删除节点或插入节点时有类似的步骤，大家可以自己推一推。</p>
 <h1 id="堆的实现"><a href="#堆的实现" class="headerlink" title="堆的实现"></a>堆的实现</h1><p>二叉堆虽然是一棵完全二叉树，但它的存储方式并不是链式存储，二十顺序存储，也就是说二叉堆的所有节点都存储在数组当中。</p>

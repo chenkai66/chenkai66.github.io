@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/dcd951b.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.348Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.814Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/CV/">CV</a>
@@ -114,31 +114,31 @@
 </li>
 </ol>
 <h2 id="具体来说"><a href="#具体来说" class="headerlink" title="具体来说"></a>具体来说</h2><p>首先我们有一个归一化后的<strong>高斯滤波器</strong>，然后完成我们前面说的<strong>平滑处理</strong>：</p>
-<p><img src="./Pic/CV/canny_1.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/canny_1.png" alt></p>
 <p>如前一篇文章我们进行<strong>图像梯度</strong>的计算：</p>
-<p><img src="./Pic/CV/canny_2.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/canny_2.png" alt></p>
 <p><strong>非极大值抑制</strong>可以用线性插值法来实现：</p>
-<p><img src="./Pic/CV/canny_3.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/canny_3.png" alt></p>
 <p>也可以简化操作：</p>
-<p><img src="./Pic/CV/canny_6.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/canny_6.png" alt></p>
 <p>其本质就是比较当前点与周围两点的梯度幅值大小，若他是最大的就保存下来，若不是就要抑制。</p>
 <p>然后我们通过一个<strong>双阈值检测</strong>，检测过程如下：</p>
-<p><img src="./Pic/CV/canny_5.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/canny_5.png" alt></p>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>我们下面设置了两个不同的阈值（双阈值检测的min和max）进行对比：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">img=cv2.imread(<span class="string">"lena.jpg"</span>,cv2.IMREAD_GRAYSCALE)</span><br><span class="line"></span><br><span class="line">v1=cv2.Canny(img,<span class="number">80</span>,<span class="number">150</span>)</span><br><span class="line">v2=cv2.Canny(img,<span class="number">50</span>,<span class="number">100</span>)</span><br><span class="line"></span><br><span class="line">res = np.hstack((v1,v2))</span><br><span class="line">cv_show(res,<span class="string">'res'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="./Pic/CV/cannycompare.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/cannycompare.png" alt></p>
 <p>我们可以看到，两个阈值都比较小的一组边界更细致，更多边界信息被刻画到，但也可能 考虑进了更多噪音点。</p>
 <p>我们可以从下面的例子看到更明显的对比：</p>
 <p>我们导入一排汽车的图片：</p>
-<p><img src="./Pic/CV/car.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/car.png" alt></p>
 <p>我们对其进行同上处理，结果为：</p>
-<p><img src="./Pic/CV/cannycompare2.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/cannycompare2.png" alt></p>
 <p>我们看到右边图中明显多出了很多信息。</p>
 <h1 id="概念解释"><a href="#概念解释" class="headerlink" title="概念解释"></a>概念解释</h1><h2 id="非极大值抑制"><a href="#非极大值抑制" class="headerlink" title="非极大值抑制"></a>非极大值抑制</h2><p>非极大值抑制（Non-Maximum Suppression，NMS），顾名思义就是抑制不是极大值的元素，可以理解为局部最大搜索。这个局部代表的是一个邻域，邻域有两个参数可变，一是邻域的维数，二是邻域的大小。这里不讨论通用的NMS算法(参考论文《Efficient Non-Maximum Suppression》对1维和2维数据的NMS实现)，而是用于目标检测中提取分数最高的窗口的。例如在行人检测中，滑动窗口经提取特征，经分类器分类识别后，每个窗口都会得到一个分数。但是滑动窗口会导致很多窗口与其他窗口存在包含或者大部分交叉的情况。这时就需要用到NMS来选取那些邻域里分数最高（是行人的概率最大），并且抑制那些分数低的窗口。</p>
 <p>简单地说，经过一个算法进行人脸识别，其中有多个窗口，有的窗口覆盖了一部分人脸，有的窗口覆盖了整个人脸，非极大值抑制可以筛选出含全部人脸的部分，剔除掉只含部分人脸的部分。</p>
-<p><img src="./Pic/CV/nms.png" alt=""></p>
+<p><img src="/posts/dcd951b/CV/nms.png" alt></p>
 <p>例如在上图中我们的目的就是要去除左边冗余的检测框，留下最好的那个（右边）。</p>
 <h2 id="双阈值检测"><a href="#双阈值检测" class="headerlink" title="双阈值检测"></a>双阈值检测</h2><p><strong>目的：</strong>检测过程中有一些边界候选值，要对其进行过滤找真实边界。</p>
 <p><strong>具体方法：</strong></p>

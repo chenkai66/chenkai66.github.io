@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/5f014252.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.210Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.796Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/CV/">CV</a>
@@ -118,7 +118,7 @@
 </ul>
 <p>于是我们可以看到这一节Harris特征点提取的地位是图像局部特征之一的一种提取方法。</p>
 <h2 id="角点"><a href="#角点" class="headerlink" title="角点"></a>角点</h2><p>我们先看下面这个讲解：</p>
-<p><img src="./Pic/CV/harris1.png" alt=""></p>
+<p><img src="/posts/5f014252/CV/harris1.png" alt></p>
 <p>角点（特征点）是当窗口向各方向移动，都会引起像素值发生很大变化的一个位置点（右图）；边缘特征是仅当窗口单方向上来回移动，才会引起像素值发生较大变化的一个位置区域（中图）；平坦区域是无论窗口移动方向如何，都不会引起像素值发生很大的变化的区域（左图）。</p>
 <h2 id="Harris算法"><a href="#Harris算法" class="headerlink" title="Harris算法"></a>Harris算法</h2><p>图像梯度表示一种现象：像素值发生了很大变化。<br>从表现形式来看，在数学中可以用微分或者导数表示；在数字图像中是二维离散函数求梯度后使用差分近似求导；在实操中，即计算图像中每个像素的某个领域内的灰度变化差值（细化流程：设置合适的算子与窗口大小进行卷积运算）。</p>
 <p>具体的数学推导如下：</p>
@@ -135,7 +135,7 @@
 <li>当两个特征值$λ_1$和$λ_2$都很大的时候，表示窗口沿任意方向移动都会使灰度变化很明显，该点位置就是图像角点的位置。</li>
 </ol>
 <p>也就得到了下面这张图所示：</p>
-<p><img src="./Pic/CV/harris2.png" alt=""></p>
+<p><img src="/posts/5f014252/CV/harris2.png" alt></p>
 <h2 id="角点响应函数CRF"><a href="#角点响应函数CRF" class="headerlink" title="角点响应函数CRF"></a>角点响应函数CRF</h2><p>实际中我们很少判断两个特征值，更多的是使用角点响应函数，计算方法如下：</p>
 <p>$$R = detM - k(traceM)^2$$<br>其中$detM = \lambda_1\lambda_2,traceM = \lambda_1+\lambda_2,k$为一个修正值，经验取值为$0.04-0.06$，算出响应值之后，根据$R$与阈值$T$的比较来判断是否为角点。</p>
 <ol>
@@ -150,7 +150,7 @@
 <li>Harris检测算子不具有尺度不变性，即尺度的变化，会将角点变为边缘，或者边缘变为角点。而将Harris角点检测算子与高斯尺度空间表示相结合，使Harris角点检测算子具有尺度的不变性。</li>
 </ol>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>首先我导入最可爱的松鼠图，获得图片的尺寸信息：</p>
-<p><img src="./Pic/CV/animal.jpg" alt=""></p>
+<p><img src="/posts/5f014252/CV/animal.jpg" alt></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># detector parameters</span></span><br><span class="line">block_size = <span class="number">3</span></span><br><span class="line">sobel_size = <span class="number">3</span></span><br><span class="line">k = <span class="number">0.04</span></span><br><span class="line"></span><br><span class="line">image = cv2.imread(<span class="string">'Pic/animal.jpg'</span>)</span><br><span class="line"></span><br><span class="line">print(image.shape)</span><br><span class="line">height = image.shape[<span class="number">0</span>]</span><br><span class="line">width = image.shape[<span class="number">1</span>]</span><br><span class="line">channels = image.shape[<span class="number">2</span>]</span><br><span class="line">print(<span class="string">"width: %s  height: %s  channels: %s"</span> % (width, height, channels))</span><br></pre></td></tr></table></figure>
 
 <p>然后将一个三维的BGR彩色图像转化为一张二维的数据类型为float32灰度图：</p>
@@ -163,7 +163,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cv_show</span><span class="params">(name, img)</span>:</span></span><br><span class="line">    cv2.imshow(name, img)</span><br><span class="line">    cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">    cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>显示得到的图像为（好诡异）：</p>
-<p><img src="./Pic/CV/corner_img.png" alt=""></p>
+<p><img src="/posts/5f014252/CV/corner_img.png" alt></p>
 <p>随后我们构造卷积核(kernel为3×2全1矩阵)，对图像进行膨胀操作：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(<span class="number">3</span>, <span class="number">3</span>))</span><br><span class="line"></span><br><span class="line">dst = cv2.dilate(corners_img, kernel)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">"dst"</span>,dst)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 <p>由于膨胀后的图像与上一个比起来看不出什么变化就不进行展示了。我们使用膨胀的原因就是非极大值抑制，其原理是：在一个窗口内，如果有多个角点则用值最大的那个角点，其他的角点都删除，窗口大小这里我们用3*3，程序中通过图像的膨胀运算来达到检测极大值的目的，因为默认参数的膨胀运算就是用窗口内的最大值替代当前的灰度值。</p>
@@ -172,9 +172,9 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> cv2 <span class="keyword">as</span> cv</span><br><span class="line"></span><br><span class="line">filename = <span class="string">'Pic/animal.jpg'</span></span><br><span class="line">img = cv.imread(filename)</span><br><span class="line">gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)</span><br><span class="line">gray = np.float32(gray)</span><br><span class="line">dst = cv.cornerHarris(gray,<span class="number">2</span>,<span class="number">3</span>,<span class="number">0.04</span>)</span><br><span class="line"><span class="comment">#result用于标记角点，并不重要</span></span><br><span class="line">dst = cv.dilate(dst,<span class="literal">None</span>)</span><br><span class="line"><span class="comment">#最佳值的阈值，它可能因图像而异。</span></span><br><span class="line">img[dst&gt;<span class="number">0.01</span>*dst.max()]=[<span class="number">0</span>,<span class="number">0</span>,<span class="number">255</span>]</span><br><span class="line">cv.imshow(<span class="string">'dst'</span>,img)</span><br><span class="line"><span class="keyword">if</span> cv.waitKey(<span class="number">0</span>) &amp; <span class="number">0xff</span> == <span class="number">27</span>:</span><br><span class="line">    cv.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
 <p>得到的图像如下:</p>
-<p><img src="./Pic/CV/img1.png" alt=""></p>
+<p><img src="/posts/5f014252/CV/img1.png" alt></p>
 <p>我们修改阈值参数(修改为0.03)，图像如下：</p>
-<p><img src="./Pic/CV/img2.png" alt=""></p>
+<p><img src="/posts/5f014252/CV/img2.png" alt></p>
 <p>以上就是Harris特征点检测的的全部内容啦~</p>
 <blockquote>
 <p>参考文章：<br><a href="https://blog.csdn.net/bymar/article/details/104503450/" target="_blank" rel="noopener">https://blog.csdn.net/bymar/article/details/104503450/</a><br><a href="https://blog.csdn.net/m0_38052500/article/details/106877072?utm_source=blogxgwz7" target="_blank" rel="noopener">https://blog.csdn.net/m0_38052500/article/details/106877072?utm_source=blogxgwz7</a><br><a href="https://blog.csdn.net/pbymw8iwm/article/details/82624898" target="_blank" rel="noopener">https://blog.csdn.net/pbymw8iwm/article/details/82624898</a><br><a href="https://blog.csdn.net/weixin_41923000/article/details/88631944" target="_blank" rel="noopener">https://blog.csdn.net/weixin_41923000/article/details/88631944</a><br><a href="http://www.woshicver.com/Sixth/5_2_%E5%93%88%E9%87%8C%E6%96%AF%E8%A7%92%E6%A3%80%E6%B5%8B/" target="_blank" rel="noopener">http://www.woshicver.com/Sixth/5_2_%E5%93%88%E9%87%8C%E6%96%AF%E8%A7%92%E6%A3%80%E6%B5%8B/</a></p>

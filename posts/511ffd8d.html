@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/511ffd8d.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.353Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.816Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/CV/">CV</a>
@@ -101,32 +101,33 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="图像金字塔"><a href="#图像金字塔" class="headerlink" title="图像金字塔"></a>图像金字塔</h1><p>图像金字塔是<strong>图像中多尺度表达</strong>的一种，最主要用于<strong>图像的分割</strong>，是一种<strong>以多分辨率来解释图像的有效但概念简单的结构</strong>。</p>
+  <h1 id="图像金字塔"><a href="#图像金字塔" class="headerlink" title="图像金字塔"></a>图像金字塔</h1><p><img src="/posts/511ffd8d/.%5CPic%5CCV%5CPyramid_1.png" alt="s"></p>
+<p>图像金字塔是<strong>图像中多尺度表达</strong>的一种，最主要用于<strong>图像的分割</strong>，是一种<strong>以多分辨率来解释图像的有效但概念简单的结构</strong>。</p>
 <p>图像金字塔最初用于机器视觉和图像压缩，<strong>一幅图像的金字塔是一系列以金字塔形状排列的分辨率逐步降低，且来源于同一张原始图的图像集合</strong>。其通过梯次向下采样获得，直到达到某个终止条件才停止采样。金字塔的底部是待处理图像的高分辨率表示，而顶部是低分辨率的近似。我们将一层一层的图像比喻成金字塔，<strong>层级越高，则图像越小，分辨率越低</strong>。</p>
 <p>首先我们看一下图像金字塔长啥样：</p>
-<p><img src="./Pic/CV/Pyramid_1.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/Pyramid_1.png" alt></p>
 <p>左边的图是高斯金字塔，右边的图是拉普拉斯金字塔。假设我们有一张$800<em>800$的图像，我们可以对其进行往上层变换，由于越离金字塔尖的图像会越小，可能就变成了$400</em>400$的图像了，然后依次往上走，越来越小，这样我们就把一张图像变成了一系列不同大小的图像。你可能就会问这样的图像金字塔有什么用呢？我们以后将做特征提取，这时候我们不一定只是对原图像进行特征提取，可能会对好几层金字塔进行特征提取，每一层提取出来的结果是不一样的，最后再综合在一起。</p>
 <p>我们下面分别介绍两种图像金字塔——高斯金字塔与拉普拉斯金字塔：</p>
 <h2 id="高斯金字塔"><a href="#高斯金字塔" class="headerlink" title="高斯金字塔"></a>高斯金字塔</h2><p>高斯金字塔的主要采样方法分为两种——向上采样和向下采样。这两个名称恰好和金字塔的图像相反，向下采样是指将图像变得越来越小，也就对应从金字塔塔底到塔尖的过程；反过来向上采样对应从金字塔塔尖到塔底的过程。</p>
-<h3 id="向下采样"><a href="#向下采样" class="headerlink" title="向下采样"></a>向下采样</h3><p><img src="./Pic/CV/Pyramid_2.png" alt=""></p>
+<h3 id="向下采样"><a href="#向下采样" class="headerlink" title="向下采样"></a>向下采样</h3><p><img src="/posts/511ffd8d/CV/Pyramid_2.png" alt></p>
 <p>如上图所示，首先我们对内核做卷积操作，将内核与位置相乘后累加，除以总数归一化，随后我们将所有偶数行去掉。</p>
-<h3 id="向上采样"><a href="#向上采样" class="headerlink" title="向上采样"></a>向上采样</h3><p><img src="./Pic/CV/Pyramid_3.png" alt=""></p>
+<h3 id="向上采样"><a href="#向上采样" class="headerlink" title="向上采样"></a>向上采样</h3><p><img src="/posts/511ffd8d/CV/Pyramid_3.png" alt></p>
 <p>我们的原图像为：</p>
-<p><img src="/Pic/CV/AM.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/AM.png" alt></p>
 <p>首先我们直接对原像素矩阵扩充，然后用之前同样的内核对原图像进行卷积操作，得到近似放大图像，实现代码为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">up=cv2.pyrUp(img)</span><br><span class="line">cv_show(up,<span class="string">'up'</span>)</span><br><span class="line"><span class="keyword">print</span> (up.shape)</span><br></pre></td></tr></table></figure>
 
 <p>这里关键就是pyrUp函数，这是做了一个向上采样，得到的图像为：</p>
-<p><img src="/Pic/CV/upAM.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/upAM.png" alt></p>
 <p>我们可以看到这张图片明显变大了，既然图片能变大，当然也能变小：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">down=cv2.pyrDown(img)</span><br><span class="line">cv_show(down,<span class="string">'down'</span>)</span><br><span class="line"><span class="keyword">print</span> (down.shape)</span><br></pre></td></tr></table></figure>
 
-<p><img src="/Pic/CV/downAM.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/downAM.png" alt></p>
 <p>我们看到该图片确实比原图小了一半。那么有一个问题，我们将图片放大之后再缩小，图片能恢复原状吗？显然是不行的，采样之后得到的图像只是一个近似值，我们可以通过对得到的两个图像相减得到两个图像的差值：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">up=cv2.pyrUp(img)</span><br><span class="line">up_down=cv2.pyrDown(up)</span><br><span class="line">cv_show(img-up_down,<span class="string">'img-up_down'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>得到的结果蛮酷炫的：</p>
-<p><img src="/Pic/CV/imgup_down.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/imgup_down.png" alt></p>
 <h2 id="拉普拉斯金字塔"><a href="#拉普拉斯金字塔" class="headerlink" title="拉普拉斯金字塔"></a>拉普拉斯金字塔</h2><p>拉普拉斯金字塔用来从金字塔低层图像重建上层未采样图像，在数字图像处理中也即是预测残差，可以对图像进行最大程度的还原，配合高斯金字塔一起使用。其原理稍为复杂，我们直接看代码较为直观：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">laplacian</span><span class="params">(gaussian_pyramid, up_times=<span class="number">5</span>)</span>:</span></span><br><span class="line">    laplacian_pyramid = [gaussian_pyramid[<span class="number">-1</span>]]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(up_times, <span class="number">0</span>, <span class="number">-1</span>):</span><br><span class="line">        <span class="comment"># i的取值为5,4,3,2,1,0也就是拉普拉斯金字塔有6层</span></span><br><span class="line">        temp_pyrUp = cv2.pyrUp(gaussian_pyramid[i])</span><br><span class="line">        temp_lap = cv2.subtract(gaussian_pyramid[i<span class="number">-1</span>], temp_pyrUp)</span><br><span class="line">        laplacian_pyramid.append(temp_lap)</span><br><span class="line">    <span class="keyword">return</span> laplacian_pyramid</span><br></pre></td></tr></table></figure>
 
@@ -155,9 +156,9 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">'car.png'</span>)</span><br><span class="line">gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)</span><br><span class="line">ret, thresh = cv2.threshold(gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_BINARY)</span><br><span class="line">cv_show(thresh,<span class="string">'thresh'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>上面代码中第一步是读入图像，第二步是将图像转换为灰度图，第三步将灰度图转化为二值图像（像素值大于127的像素点为1，小于127的像素点为0），我们传入的图像为：</p>
-<p><img src="/Pic/CV/car.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/car.png" alt></p>
 <p>转化后的图像为：</p>
-<p><img src="/Pic/CV/thresh.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/thresh.png" alt></p>
 <p>下面我们使用检测函数进行检测：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">binary, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)</span><br></pre></td></tr></table></figure>
 
@@ -167,7 +168,7 @@
 <p>返回值为$(2579,)$，我们也可以#传入绘制图像，轮廓，轮廓索引，颜色模式，线条厚度，展示轮廓图像，注意需要copy，要不原图会变：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">draw_img = img.copy()</span><br><span class="line">res = cv2.drawContours(draw_img, contours, <span class="number">-1</span>, (<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), <span class="number">2</span>)</span><br><span class="line">cv_show(res,<span class="string">'res'</span>)</span><br></pre></td></tr></table></figure>
 
-<p><img src="/Pic/CV/res23.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/res23.png" alt></p>
 <p>我们改变一下参数：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">draw_img = img.copy()</span><br><span class="line">res = cv2.drawContours(draw_img, contours, <span class="number">0</span>, (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">2</span>)</span><br><span class="line">cv_show(res,<span class="string">'res'</span>)</span><br></pre></td></tr></table></figure>
 
@@ -176,32 +177,32 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cnt = contours[<span class="number">0</span>]</span><br><span class="line"><span class="comment">#面积</span></span><br><span class="line">cv2.contourArea(cnt)</span><br><span class="line"><span class="comment">#周长，True表示闭合的</span></span><br><span class="line">cv2.arcLength(cnt,<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
 
 <h2 id="轮廓近似"><a href="#轮廓近似" class="headerlink" title="轮廓近似"></a>轮廓近似</h2><p>如下图，我们可以改变阈值对轮廓做不同层次的近似（轮廓真实点与直线距离小于某个阈值时可以认为归为这条直线内部），最终可以将轮廓划分成尽可能少的图像。</p>
-<p><img src="/Pic/CV/contours3.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/contours3.png" alt></p>
 <p>我们直接来看如何实现这样一个轮廓近似，首先我们给图像描出一个轮廓：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">'contours2.png'</span>)</span><br><span class="line"></span><br><span class="line">gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)</span><br><span class="line">ret, thresh = cv2.threshold(gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_BINARY)</span><br><span class="line">binary, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)</span><br><span class="line">cnt = contours[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">draw_img = img.copy()</span><br><span class="line">res = cv2.drawContours(draw_img, [cnt], <span class="number">-1</span>, (<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), <span class="number">2</span>)</span><br><span class="line">cv_show(res,<span class="string">'res'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>原图像为：</p>
-<p><img src="/Pic/CV/contours2.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/contours2.png" alt></p>
 <p>绘制的轮廓结果为：</p>
-<p><img src="/Pic/CV/ctor.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/ctor.png" alt></p>
 <p>我们近似轮廓的代码其实很简单：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">epsilon = <span class="number">0.15</span>*cv2.arcLength(cnt,<span class="literal">True</span>) </span><br><span class="line">approx = cv2.approxPolyDP(cnt,epsilon,<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">draw_img = img.copy()</span><br><span class="line">res = cv2.drawContours(draw_img, [approx], <span class="number">-1</span>, (<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), <span class="number">2</span>)</span><br><span class="line">cv_show(res,<span class="string">'res'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>其中第一个参数为传入待近似的轮廓，第二个参数传入阈值，这个阈值通常是通过轮廓的周长进行设定，这里取了0.15倍的周长，近似轮廓结果如下：</p>
-<p><img src="" alt="">)<img src="/Pic/CV/ctor2.png" alt="ctor2"></p>
+<p><img src alt>)<img src="/posts/511ffd8d/CV/ctor2.png" alt="ctor2"></p>
 <p>我们可以看到近似效果其实很不好，我们可以缩减阈值：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">epsilon = <span class="number">0.02</span>*cv2.arcLength(cnt,<span class="literal">True</span>) </span><br><span class="line">approx = cv2.approxPolyDP(cnt,epsilon,<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">draw_img = img.copy()</span><br><span class="line">res = cv2.drawContours(draw_img, [approx], <span class="number">-1</span>, (<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), <span class="number">2</span>)</span><br><span class="line">cv_show(res,<span class="string">'res'</span>)</span><br><span class="line">cv2.imwrite(<span class="string">"ctor2.png"</span>, res)</span><br></pre></td></tr></table></figure>
 
 <p>得到的结果如下：</p>
-<p><img src="/Pic/CV/ctor3.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/ctor3.png" alt></p>
 <p>结果比原来好了很多，我们还可以继续修改参数得到我们最满意的结果。</p>
 <h2 id="外接图形"><a href="#外接图形" class="headerlink" title="外接图形"></a>外接图形</h2><p>我们也可以对图像的轮廓做外接矩形或外接圆等，具体做法为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">'contours.png'</span>)</span><br><span class="line"></span><br><span class="line">gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)</span><br><span class="line">ret, thresh = cv2.threshold(gray, <span class="number">127</span>, <span class="number">255</span>, cv2.THRESH_BINARY)</span><br><span class="line">binary, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)</span><br><span class="line">cnt = contours[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">x,y,w,h = cv2.boundingRect(cnt)</span><br><span class="line">img = cv2.rectangle(img,(x,y),(x+w,y+h),(<span class="number">0</span>,<span class="number">255</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line">cv_show(img,<span class="string">'img'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>传入的图像为：</p>
-<p><img src="/Pic/CV/contours.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/contours.png" alt></p>
 <p>绘制出来的结果长成这个样子：</p>
-<p><img src="/Pic/CV/ctor4.png" alt=""></p>
+<p><img src="/posts/511ffd8d/CV/ctor4.png" alt></p>
 <p>同样也可以绘制外接圆：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(x,y),radius = cv2.minEnclosingCircle(cnt) </span><br><span class="line">center = (int(x),int(y)) </span><br><span class="line">radius = int(radius) </span><br><span class="line">img = cv2.circle(img,center,radius,(<span class="number">0</span>,<span class="number">255</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line">cv_show(img,<span class="string">'img'</span>)</span><br></pre></td></tr></table></figure>
 

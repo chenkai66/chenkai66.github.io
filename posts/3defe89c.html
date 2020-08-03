@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/3defe89c.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.565Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.859Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
@@ -103,7 +103,7 @@
        
   <p>双指针算法是数组问题中常常用到的算法，主要分为对撞指针和快慢指针两种.</p>
 <h1 id="对撞指针"><a href="#对撞指针" class="headerlink" title="对撞指针"></a>对撞指针</h1><p>我们先看Leetcode的第167题：</p>
-<p><img src="./Pic/Alg/167.png" alt=""></p>
+<p><img src="/posts/3defe89c/Alg/167.png" alt></p>
 <p>最直接的思考：暴力解法，双层遍历，令i和j同时遍历，看nums[i]+nums[j]是否等于target，此时时间复杂度是$O(n^2)$，事实上我们提交此算法到Leetcode，会提示Time Exceed，因此我们必须想出更高效的思路。</p>
 <p>事实上，我们很容易看出，这个暴力解法忽略了这个数组一个很重要的特征——这个数组是有序的。当我们想到这一点，我们就知道在搜索时我们可以使用二分搜索的方法，时间复杂度就降为了$O(nlogn)$，此时算法比前面的暴力解法自然高效多了。</p>
 <p>对这个问题，实际上存在一种时间复杂度为$O(n)$的解答：</p>
@@ -111,13 +111,13 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">twoSum</span><span class="params">(self, numbers: List[int], target: int)</span> -&gt; List[int]:</span></span><br><span class="line">        i, j = <span class="number">0</span>, len(numbers)<span class="number">-1</span></span><br><span class="line">        <span class="keyword">while</span>((numbers[i]+numbers[j])!=target <span class="keyword">and</span> i&lt;j):</span><br><span class="line">            <span class="keyword">if</span> numbers[i]+numbers[j]&lt;target:</span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                j -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> [i+<span class="number">1</span>,j+<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="./Pic/Alg/167_sol1.png" alt=""></p>
+<p><img src="/posts/3defe89c/Alg/167_sol1.png" alt></p>
 <p>其他用到对撞指针的问题：</p>
 <blockquote>
 <p>125 Valid Palindrome<br>344 Reverse String<br>345 Reverse Vowels of a String<br>11  Container With Most Water(难度较高)</p>
 </blockquote>
 <h1 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h1><p>我们看到Leetcode第142题：</p>
-<p><img src="./Pic/Alg/142.png" alt=""></p>
+<p><img src="/posts/3defe89c/Alg/142.png" alt></p>
 <p>如果我们用一个Set保存已经访问过的节点，我们可以遍历整个列表并返回第一个出现重复的节点。这可以很好地解决这道题，但若我们增加一个条件：空间复杂度为$)(1)$，那么我们就不能使用这种算法，接下来我们介绍快慢指针的思想：</p>
 <p>当一个跑的快的人与一个跑的慢的人在一条赛道上赛跑（无止尽），在某一个时刻，跑的快的人一定会从后面赶上跑得慢的人。类比之，我们定义快指针fast一次走两步，慢指针slow一次走一步，最终他们会在环中的某个位置相遇（最小公倍数）。</p>
 <p><strong>快慢指针的步骤</strong>：</p>
@@ -137,7 +137,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class Solution:</span><br><span class="line">    def detectCycle(self, head: ListNode) -&gt; ListNode:</span><br><span class="line">        fast, slow &#x3D; head, head</span><br><span class="line">        while fast !&#x3D; None:</span><br><span class="line">            fast &#x3D; fast.next</span><br><span class="line">            if fast &#x3D;&#x3D; None:</span><br><span class="line">                break</span><br><span class="line">            fast &#x3D; fast.next</span><br><span class="line">            slow &#x3D; slow.next</span><br><span class="line">            if slow &#x3D;&#x3D; fast:</span><br><span class="line">                break</span><br><span class="line">        if fast &#x3D;&#x3D; None:</span><br><span class="line">            return None</span><br><span class="line">        p1, p2&#x3D; slow, head</span><br><span class="line">        while p1 !&#x3D; p2:</span><br><span class="line">            p1 &#x3D; p1.next</span><br><span class="line">            p2 &#x3D; p2.next</span><br><span class="line">        return p1</span><br></pre></td></tr></table></figure>
 
 <p>结果为</p>
-<p><img src="./Pic/Alg/142_sol.png" alt=""></p>
+<p><img src="/posts/3defe89c/Alg/142_sol.png" alt></p>
  
       <!-- reward -->
       

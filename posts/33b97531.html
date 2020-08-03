@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/33b97531.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.359Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.817Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/CV/">CV</a>
@@ -102,10 +102,10 @@
     <div class="article-entry" itemprop="articleBody">
        
   <h1 id="Sobel算子"><a href="#Sobel算子" class="headerlink" title="Sobel算子"></a>Sobel算子</h1><p>梯度是图像中两个实体的边缘，我们可以算一算这个点的左边是什么，右边是什么，上面是什么，下面是什么，因此 我们主要考虑两个方向———上下、左右。</p>
-<p><img src="./Pic/CV/sobel_1.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/sobel_1.png" alt></p>
 <p>在上面这张图中，A是一个3×3的矩阵，我们计算左右梯度也就是左乘上图左边的矩阵（卷积核），；同理我们计算上下梯度就是左乘上图右边的矩阵。我们可以看到相邻的像素值的权重会被增大，这不正是前面说的高斯滤波的感觉了吗。综上所述，就是下减上，右减左。</p>
 <p>我们先导入要计算梯度的图片：</p>
-<p><img src="./Pic/CV/pie.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/pie.png" alt></p>
 <p>导入图片并定义show函数的代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">'pie.png'</span>,cv2.IMREAD_GRAYSCALE)</span><br><span class="line">cv2.imshow(<span class="string">"img"</span>,img)</span><br><span class="line">cv2.waitKey()</span><br><span class="line">cv2.destroyAllWindows()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cv_show</span><span class="params">(img,name)</span>:</span></span><br><span class="line">    cv2.imshow(name,img)</span><br><span class="line">    cv2.waitKey()</span><br><span class="line">    cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
 
@@ -121,47 +121,47 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sobelx = cv2.Sobel(img,cv2.CV_64F,<span class="number">1</span>,<span class="number">0</span>,ksize=<span class="number">3</span>)</span><br><span class="line">cv_show(sobelx,<span class="string">'sobelx'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="./Pic/CV/sobel1.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/sobel1.png" alt></p>
 <p>我们看到传入了一个新的参数：cv2.CV_64F，这个参数是什么意思呢？我们在计算梯度的时候结果不一定是正数，假如结果是负数，图像的像素默认是0-255，一般情况下在图像展示时会被归为0，因此上如图右边本该是白色的框框就变成黑色了。后面对应dx，dy的位置分别为1和0，这意味着只看x轴不看y轴。</p>
 <p>我们如果想让右边被抹掉的框框也变为白色，我们可以对相减的得到负数取绝对值，也就是把得到的结果做转换，具体操作为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sobelx = cv2.Sobel(img,cv2.CV_64F,<span class="number">1</span>,<span class="number">0</span>,ksize=<span class="number">3</span>)</span><br><span class="line">sobelx = cv2.convertScaleAbs(sobelx)</span><br><span class="line">cv_show(sobelx,<span class="string">'sobelx'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>结果如下：</p>
-<p><img src="./Pic/CV/sobel2.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/sobel2.png" alt></p>
 <p>同理我们可以对y方向的梯度也做同样的操作：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sobely = cv2.Sobel(img,cv2.CV_64F,<span class="number">0</span>,<span class="number">1</span>,ksize=<span class="number">3</span>)</span><br><span class="line">sobely = cv2.convertScaleAbs(sobely)</span><br><span class="line">cv_show(sobely,<span class="string">'sobely'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="./Pic/CV/sobel3.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/sobel3.png" alt></p>
 <p>现在我们得到了x方向的梯度和y方向的梯度，我们可以计算一个总和，我们可以计算平方和开根号，也可以取绝对值相加，我们在下面对得到的x和y进行求和：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sobelxy = cv2.addWeighted(sobelx,<span class="number">0.5</span>,sobely,<span class="number">0.5</span>,<span class="number">0</span>)</span><br><span class="line">cv_show(sobelxy,<span class="string">'sobelxy'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>下面是得到的图像的效果：</p>
-<p><img src="./Pic/CV/sobel4.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/sobel4.png" alt></p>
 <p>我们在这里不建议直接计算，直接计算方式为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sobelxy=cv2.Sobel(img,cv2.CV_64F,<span class="number">1</span>,<span class="number">1</span>,ksize=<span class="number">3</span>)</span><br><span class="line">sobelxy = cv2.convertScaleAbs(sobelxy)</span><br><span class="line">cv_show(sobelxy,<span class="string">'sobelxy'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>结果为：</p>
-<p><img src="./Pic/CV/sobel5.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/sobel5.png" alt></p>
 <p>我们可以看到直接计算的效果不是很好，下面我们对Lena的图像进行操作，原始图像为：</p>
-<p><img src="./Pic/CV/lena.jpg" alt=""></p>
+<p><img src="/posts/33b97531/CV/lena.jpg" alt></p>
 <p>转化后的图像为：</p>
-<p><img src="./Pic/CV/lenaSobel.jpg" alt=""></p>
+<p><img src="/posts/33b97531/CV/lenaSobel.jpg" alt></p>
 <p>代码为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">'lena.jpg'</span>,cv2.IMREAD_GRAYSCALE)</span><br><span class="line">sobelx = cv2.Sobel(img,cv2.CV_64F,<span class="number">1</span>,<span class="number">0</span>,ksize=<span class="number">3</span>)</span><br><span class="line">sobelx = cv2.convertScaleAbs(sobelx)</span><br><span class="line">sobely = cv2.Sobel(img,cv2.CV_64F,<span class="number">0</span>,<span class="number">1</span>,ksize=<span class="number">3</span>)</span><br><span class="line">sobely = cv2.convertScaleAbs(sobely)</span><br><span class="line">sobelxy = cv2.addWeighted(sobelx,<span class="number">0.5</span>,sobely,<span class="number">0.5</span>,<span class="number">0</span>)</span><br><span class="line">cv_show(sobelxy,<span class="string">'sobelxy'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>下面我们再介绍两个算子——Scharr算子和Laplacian算子</p>
 <h1 id="其他算子"><a href="#其他算子" class="headerlink" title="其他算子"></a>其他算子</h1><p>我们先直观地看一下这两个算子的卷积核：</p>
 <p><strong>Scharr算子</strong></p>
-<p><img src="./Pic/CV/scharr.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/scharr.png" alt></p>
 <p><strong>Laplacian算子</strong></p>
-<p><img src="./Pic/CV/l.png" alt=""></p>
+<p><img src="/posts/33b97531/CV/l.png" alt></p>
 <p>Scharr算子对结果的差异更敏感一些，而Laplacian算子相比于Sobel算子以及Scharr算子会对一些变化更敏感，因为Laplacian算子使用了二阶导，也就是一阶导的变化率，但Laplacian的缺陷是对噪音点比较敏感，因此一般Laplacian算子并不会单独使用，一般是结合其他工具使用。</p>
 <p>下面我们进行一个对比试验：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">'lena.jpg'</span>,cv2.IMREAD_GRAYSCALE)</span><br><span class="line">sobelx = cv2.Sobel(img,cv2.CV_64F,<span class="number">1</span>,<span class="number">0</span>,ksize=<span class="number">3</span>)</span><br><span class="line">sobely = cv2.Sobel(img,cv2.CV_64F,<span class="number">0</span>,<span class="number">1</span>,ksize=<span class="number">3</span>)</span><br><span class="line">sobelx = cv2.convertScaleAbs(sobelx)</span><br><span class="line">sobely = cv2.convertScaleAbs(sobely)</span><br><span class="line">sobelxy =  cv2.addWeighted(sobelx,<span class="number">0.5</span>,sobely,<span class="number">0.5</span>,<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">scharrx = cv2.Scharr(img,cv2.CV_64F,<span class="number">1</span>,<span class="number">0</span>)</span><br><span class="line">scharry = cv2.Scharr(img,cv2.CV_64F,<span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line">scharrx = cv2.convertScaleAbs(scharrx)</span><br><span class="line">scharry = cv2.convertScaleAbs(scharry)</span><br><span class="line">scharrxy =  cv2.addWeighted(scharrx,<span class="number">0.5</span>,scharry,<span class="number">0.5</span>,<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">laplacian = cv2.Laplacian(img,cv2.CV_64F)</span><br><span class="line">laplacian = cv2.convertScaleAbs(laplacian)</span><br><span class="line"></span><br><span class="line">res = np.hstack((sobelxy,scharrxy,laplacian))</span><br><span class="line">cv_show(res,<span class="string">'res'</span>)</span><br></pre></td></tr></table></figure>
 
 <p>对比结果为：</p>
-<p><img src="./Pic/CV/concat.jpg" alt=""></p>
+<p><img src="/posts/33b97531/CV/concat.jpg" alt></p>
  
       <!-- reward -->
       
@@ -235,11 +235,11 @@
    
   <nav class="article-nav">
     
-      <a href="/posts/a8332004.html" class="article-nav-link">
+      <a href="/posts/4250a155.html" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            Python爬虫初级（一）—— Requests 库入门
+            Python与金融量化分析
           
         </div>
       </a>

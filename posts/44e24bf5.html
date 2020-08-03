@@ -66,7 +66,7 @@
      
     <div class="article-meta">
       <a href="/posts/44e24bf5.html" class="article-date">
-  <time datetime="2020-07-26T11:10:26.245Z" itemprop="datePublished">2020-07-26</time>
+  <time datetime="2020-08-03T11:51:01.802Z" itemprop="datePublished">2020-08-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/Structure/">Structure</a>
@@ -101,7 +101,7 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <meta name="referrer" content="no-referrer" />
+  <meta name="referrer" content="no-referrer">
 
 <h1 id="认识-kubernetes-架构及应用场景"><a href="#认识-kubernetes-架构及应用场景" class="headerlink" title="认识 kubernetes 架构及应用场景"></a>认识 kubernetes 架构及应用场景</h1><h2 id="kubernetes（k8s-在企业中的应用场景"><a href="#kubernetes（k8s-在企业中的应用场景" class="headerlink" title="kubernetes（k8s) 在企业中的应用场景"></a>kubernetes（k8s) 在企业中的应用场景</h2><h3 id="构建自动化运维平台"><a href="#构建自动化运维平台" class="headerlink" title="构建自动化运维平台"></a>构建自动化运维平台</h3><p>（1） 中小型企业，使用 k8s 构建一套自动化运维平台（降本增效）<br>（2） 大型互联网公司更要使用，实现更高效的运作方式</p>
 <h3 id="充分利用服务器资源"><a href="#充分利用服务器资源" class="headerlink" title="充分利用服务器资源"></a>充分利用服务器资源</h3><p>怎么理解充分利用服务器资源这一条呢，我们举个例子：假设并发量200请求，服务器是两核心CPU，4G内存，其中静态请求150个，比如访问CDN、nginx、缓存等，动态请求50个，主要是访问数据库，把数据读入内存，我们来估算服务器资源（只考虑内存，不考虑程序员RT与CPU切换时间）：</p>
@@ -152,7 +152,7 @@
     阿里将所有服务部署到云端之后，效率提升了60%</code></pre><h3 id="云原生"><a href="#云原生" class="headerlink" title="云原生"></a>云原生</h3><p>就是为了让应用程序（项目、服务软件）都 运行在云上的解决方案，这样的方案叫做云原生。<br><strong>特点</strong>：<br>（1）容器化 —— 所有服务部署都必须部署在容器中<br>（2）微服务 —— web 服务架构、微服务架构<br>（3）CI、CD —— 可持续交互与可持续部署<br>（4）DevOps —— 开发与运维密不可分</p>
 <h2 id="kubernetes-架构原理"><a href="#kubernetes-架构原理" class="headerlink" title="kubernetes 架构原理"></a>kubernetes 架构原理</h2><p>1）kubernetes 是 Google 使用 go 语言开发，原来的系统是 borg 系统（也是云平台管理工具），Docker后来自己开发了容器管理平台 Docker Swarm，Google 表示不服，因此参照 borg 架构开发了 k8s 架构</p>
 <p>2）k8s 架构</p>
-<p><img src="./Pic/k8s/arch1.jpg" alt=""></p>
+<p><img src="/posts/44e24bf5/k8s/arch1.jpg" alt></p>
 <p>关系：一个 master 对应多个 node 节点</p>
 <p><strong>master 节点</strong></p>
 <ol>
@@ -180,10 +180,10 @@
 </ol>
 <p><strong>pod是什么呢</strong>:pod也是一个容器，但这个容器中装的是docker创建的容器，也就是pod是用来封装容器的容器，pod是一个虚拟化分组（pod有自己的地址，主机名），相当于一台独立的沙箱环境（主机），可以封装一个容器或多个容器</p>
 <p><strong>pod用来干什么</strong>：通常情况下，在服务部署时使用pod来管理一组相关服务（一个pod要么部署一个服务，要么部署一组相关的服务），所谓的一组相关的服务，即为链式调用的调用链路上的服务。</p>
-<p><img src="./Pic/k8s/pod1.png" alt=""></p>
+<p><img src="/posts/44e24bf5/k8s/pod1.png" alt></p>
 <p><strong>web服务集群如何实现</strong>：只需要复制多方pod的副本即可，这也是k8s管理的先进之处，k8s如果继续扩容、缩容，只需要控制pod的数量即可</p>
 <p><strong>pod底层网络，数据存储是如何进行的</strong>：pod内部容器创建之前必须先创建pause容器，服务容器之间的访问使用localhost访问，性能非常高，实际就像访问本地服务一样</p>
-<p><img src="./Pic/k8s/pod2.png" alt=""></p>
+<p><img src="/posts/44e24bf5/k8s/pod2.png" alt></p>
 <h2 id="ReplicaSet副本控制器"><a href="#ReplicaSet副本控制器" class="headerlink" title="ReplicaSet副本控制器"></a>ReplicaSet副本控制器</h2><p><strong>什么叫做副本控制器</strong>：<strong>用于控制pod副本的数量</strong>，使副本数量与预期数量保持一致。例如，我们提前设置replicas=3（有三个副本），因此创建三个pod。当有一个pod宕机之后，k8s会立刻创建一个新的，保证副本数量等于三个，这就是副本控制器的作用——永远保证副本数量为设定值。</p>
 <p>副本控制器能通过<strong>标签选择器</strong>选择维护一组相关的服务（它自己的服务），那么它要怎么判断是自己的服务呢？这里就通过标签选择，比如</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">selector:</span><br><span class="line">	app &#x3D; web</span><br><span class="line">    release &#x3D; stable</span><br></pre></td></tr></table></figure>
@@ -206,9 +206,9 @@
 <li>滚动更新</li>
 </ul>
 <p>虽然在企业中我们采用ReplicaSet作为副本控制器，但在实际中项目不断更新，项目的版本将会不停的发版，版本的变化如何做到服务的更新呢？我们做的是滚动更新，如下图，每当发布一个新的版本，每更新一个POD，就要干掉原有的POD。</p>
-<p><img src="./Pic/k8s/Deployment.png" alt=""></p>
+<p><img src="/posts/44e24bf5/k8s/Deployment.png" alt></p>
 <p>那么滚动更新是由谁实现的呢？这就涉及到部署模型：因为事实上ReplicaSet是不支持滚动更新的，滚动更新是由Deployment支持的，通常两者一起使用，因此部署模型为如下结构：</p>
-<p><img src="./Pic/k8s/dep2.png" alt=""></p>
+<p><img src="/posts/44e24bf5/k8s/dep2.png" alt></p>
 <p>如果后一个版本出现问题，k8s也可以支持向前滚动。</p>
 <h2 id="StatefulSet部署有状态服务"><a href="#StatefulSet部署有状态服务" class="headerlink" title="StatefulSet部署有状态服务"></a>StatefulSet部署有状态服务</h2><p>StatefulSet和Deployment类似，区别就是StatefulSet是为了解决有状态服务容器化部署问题而产生的。</p>
 <p>思考：MySQL使用容器化部署，存在怎样的问题？</p>
