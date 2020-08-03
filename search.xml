@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>区块链入门（三） —— web3js编写以太坊脚本</title>
-    <url>/posts/67d22044.html</url>
+    <url>/posts/733c8737.html</url>
     <content><![CDATA[<h1 id="web3-js基础"><a href="#web3-js基础" class="headerlink" title="web3.js基础"></a>web3.js基础</h1><h2 id="web3-js是什么"><a href="#web3-js是什么" class="headerlink" title="web3.js是什么"></a>web3.js是什么</h2><ul>
 <li>Web3 JavaScript app API</li>
 <li>web3..js 是一个JavaScript API库。要使DApper在以太坊上运行，我们可以使用web3.js库提供的web3对象</li>
