@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    神经网络入门/Keras深度学习系列（一）神经网络入门 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-神经网络入门/Keras深度学习系列（一）神经网络入门"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  神经网络入门/Keras深度学习系列（一）神经网络入门
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/88ec626e.html" class="article-date">
+  <time datetime="2020-08-03T01:38:23.784Z" itemprop="datePublished">2020-08-03</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tensorflow/">Tensorflow</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.6k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">20 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="神经网络剖析"><a href="#神经网络剖析" class="headerlink" title="神经网络剖析"></a>神经网络剖析</h1><p>训练神经网络主要分为以下四个方面：</p>
+<ol>
+<li>层：多个层组合成网络（或模型）</li>
+<li>输入数据和相应的目标</li>
+<li>损失函数：即用于学习的返回信号</li>
+<li>优化器：决定学习进程如何进行</li>
+</ol>
+<h2 id="定义模型"><a href="#定义模型" class="headerlink" title="定义模型"></a>定义模型</h2><p>定义模型的两种不同方法：</p>
+<ol>
+<li>使用Sequential类（仅用于层的线性堆叠）</li>
+<li>函数式API（可以构建任何形式的架构）</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br></pre></td></tr></table></figure>
+
+<p><strong>Sequential类定义的模型</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">32</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">784</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">10</span>, activation=<span class="string">"softmax"</span>))</span><br></pre></td></tr></table></figure>
+
+<pre><code>WARNING:tensorflow:From C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\tensorflow_core\python\ops\resource_variable_ops.py:1630: calling BaseResourceVariable.__init__ (from tensorflow.python.ops.resource_variable_ops) with constraint is deprecated and will be removed in a future version.
+Instructions for updating:
+If using Keras pass *_constraint arguments to layers.</code></pre><p><strong>函数式API定义的模型</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">input_tensor = layers.Input(shape=(<span class="number">784</span>,))</span><br><span class="line">x = layers.Dense(<span class="number">32</span>, activation=<span class="string">"relu"</span>)(input_tensor)</span><br><span class="line">output_tensor = layers.Dense(<span class="number">10</span>, activation=<span class="string">"softmax"</span>)(x)</span><br><span class="line">model = models.Model(inputs=input_tensor, outputs=output_tensor)</span><br></pre></td></tr></table></figure>
+
+<h2 id="损失函数与优化器"><a href="#损失函数与优化器" class="headerlink" title="损失函数与优化器"></a>损失函数与优化器</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> optimizers</span><br><span class="line"></span><br><span class="line">model.compile(optimizer=optimizers.RMSprop(lr=<span class="number">0.01</span>), loss=<span class="string">"mse"</span>, metrics=[<span class="string">'accuracy'</span>])</span><br></pre></td></tr></table></figure>
+
+<p>最后，学习过程就是通过fit() 方法将输入数据的Numpy 数组（和对应的目标数据）传入模型，这一做法与Scikit-Learn 及其他机器学习库类似。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.fit(input_tensor, target_tensor, batch_size=<span class="number">128</span>, epoches=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="电影评论分类：二分类问题"><a href="#电影评论分类：二分类问题" class="headerlink" title="电影评论分类：二分类问题"></a>电影评论分类：二分类问题</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> imdb</span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=<span class="number">10000</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\keras\datasets\imdb.py:101: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &apos;dtype=object&apos; when creating the ndarray
+  x_train, y_train = np.array(xs[:idx]), np.array(labels[:idx])
+C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\keras\datasets\imdb.py:102: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &apos;dtype=object&apos; when creating the ndarray
+  x_test, y_test = np.array(xs[idx:]), np.array(labels[idx:])</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print(train_data[<span class="number">0</span>])</span><br><span class="line">print(train_labels[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<pre><code>[1, 14, 22, 16, 43, 530, 973, 1622, 1385, 65, 458, 4468, 66, 3941, 4, 173, 36, 256, 5, 25, 100, 43, 838, 112, 50, 670, 2, 9, 35, 480, 284, 5, 150, 4, 172, 112, 167, 2, 336, 385, 39, 4, 172, 4536, 1111, 17, 546, 38, 13, 447, 4, 192, 50, 16, 6, 147, 2025, 19, 14, 22, 4, 1920, 4613, 469, 4, 22, 71, 87, 12, 16, 43, 530, 38, 76, 15, 13, 1247, 4, 22, 17, 515, 17, 12, 16, 626, 18, 2, 5, 62, 386, 12, 8, 316, 8, 106, 5, 4, 2223, 5244, 16, 480, 66, 3785, 33, 4, 130, 12, 16, 38, 619, 5, 25, 124, 51, 36, 135, 48, 25, 1415, 33, 6, 22, 12, 215, 28, 77, 52, 5, 14, 407, 16, 82, 2, 8, 4, 107, 117, 5952, 15, 256, 4, 2, 7, 3766, 5, 723, 36, 71, 43, 530, 476, 26, 400, 317, 46, 7, 4, 2, 1029, 13, 104, 88, 4, 381, 15, 297, 98, 32, 2071, 56, 26, 141, 6, 194, 7486, 18, 4, 226, 22, 21, 134, 476, 26, 480, 5, 144, 30, 5535, 18, 51, 36, 28, 224, 92, 25, 104, 4, 226, 65, 16, 38, 1334, 88, 12, 16, 283, 5, 16, 4472, 113, 103, 32, 15, 16, 5345, 19, 178, 32]
+1</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">word_index = imdb.get_word_index()</span><br><span class="line">reverse_word_index = dict([(value, key) <span class="keyword">for</span> (key, value) <span class="keyword">in</span> word_index.items()])</span><br><span class="line">decoded_review = <span class="string">" "</span>.join([reverse_word_index.get(i<span class="number">-3</span>, <span class="string">"?"</span>) <span class="keyword">for</span> i <span class="keyword">in</span> train_data[<span class="number">0</span>]])</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">vectorize_sequences</span><span class="params">(sequences, dimension=<span class="number">10000</span>)</span>:</span></span><br><span class="line">    results = np.zeros((len(sequences), dimension))</span><br><span class="line">    <span class="keyword">for</span> i, sequence <span class="keyword">in</span> enumerate(sequences):</span><br><span class="line">        results[i, sequence] = <span class="number">1.</span></span><br><span class="line">    <span class="keyword">return</span> results</span><br><span class="line"></span><br><span class="line">x_train = vectorize_sequences(train_data)</span><br><span class="line">x_test = vectorize_sequences(test_data)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y_train = np.asarray(train_labels).astype(<span class="string">'float32'</span>)</span><br><span class="line">y_test = np.asarray(test_labels).astype(<span class="string">'float32'</span>)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 模型定义</span></span><br><span class="line"><span class="keyword">import</span> keras.models <span class="keyword">as</span> models</span><br><span class="line"><span class="keyword">import</span> keras.layers <span class="keyword">as</span> layers</span><br><span class="line"></span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">1</span>, activation=<span class="string">"sigmoid"</span>))</span><br></pre></td></tr></table></figure>
+
+<pre><code>WARNING:tensorflow:From C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\tensorflow_core\python\ops\resource_variable_ops.py:1630: calling BaseResourceVariable.__init__ (from tensorflow.python.ops.resource_variable_ops) with constraint is deprecated and will be removed in a future version.
+Instructions for updating:
+If using Keras pass *_constraint arguments to layers.</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model.compile(optimizer=<span class="string">"rmsprop"</span>,</span><br><span class="line">              loss=<span class="string">"binary_crossentropy"</span>,</span><br><span class="line">              metrics=[<span class="string">"accuracy"</span>])</span><br></pre></td></tr></table></figure>
+
+<pre><code>WARNING:tensorflow:From C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\tensorflow_core\python\ops\nn_impl.py:183: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">x_val = x_train[:<span class="number">10000</span>]</span><br><span class="line">partial_x_train = x_train[<span class="number">10000</span>:]</span><br><span class="line"></span><br><span class="line">y_val = y_train[:<span class="number">10000</span>]</span><br><span class="line">partial_y_train = y_train[<span class="number">10000</span>:]</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">history = model.fit(partial_x_train,</span><br><span class="line">                    partial_y_train,</span><br><span class="line">                    epochs=<span class="number">20</span>,</span><br><span class="line">                    batch_size=<span class="number">512</span>,</span><br><span class="line">                    validation_data=(x_val, y_val))</span><br></pre></td></tr></table></figure>
+
+<pre><code>WARNING:tensorflow:From C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\keras\backend\tensorflow_backend.py:422: The name tf.global_variables is deprecated. Please use tf.compat.v1.global_variables instead.
+
+Train on 15000 samples, validate on 10000 samples
+Epoch 1/20
+15000/15000 [==============================] - 5s 304us/step - loss: 0.5254 - accuracy: 0.7822 - val_loss: 0.3898 - val_accuracy: 0.8633
+Epoch 2/20
+15000/15000 [==============================] - 2s 110us/step - loss: 0.3074 - accuracy: 0.9003 - val_loss: 0.3077 - val_accuracy: 0.8848
+Epoch 3/20
+15000/15000 [==============================] - 2s 102us/step - loss: 0.2278 - accuracy: 0.9264 - val_loss: 0.2798 - val_accuracy: 0.8914
+Epoch 4/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.1805 - accuracy: 0.9415 - val_loss: 0.2928 - val_accuracy: 0.8823
+Epoch 5/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.1486 - accuracy: 0.9529 - val_loss: 0.2839 - val_accuracy: 0.8875
+Epoch 6/20
+15000/15000 [==============================] - 2s 101us/step - loss: 0.1194 - accuracy: 0.9642 - val_loss: 0.2957 - val_accuracy: 0.8872
+Epoch 7/20
+15000/15000 [==============================] - 1s 99us/step - loss: 0.1030 - accuracy: 0.9678 - val_loss: 0.3137 - val_accuracy: 0.8836
+Epoch 8/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0846 - accuracy: 0.9773 - val_loss: 0.3224 - val_accuracy: 0.8827
+Epoch 9/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0735 - accuracy: 0.9803 - val_loss: 0.3628 - val_accuracy: 0.8725
+Epoch 10/20
+15000/15000 [==============================] - 1s 99us/step - loss: 0.0582 - accuracy: 0.9861 - val_loss: 0.3789 - val_accuracy: 0.8783
+Epoch 11/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0500 - accuracy: 0.9883 - val_loss: 0.3892 - val_accuracy: 0.8786
+Epoch 12/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0397 - accuracy: 0.9917 - val_loss: 0.4213 - val_accuracy: 0.8718
+Epoch 13/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0338 - accuracy: 0.9931 - val_loss: 0.4453 - val_accuracy: 0.8744
+Epoch 14/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0273 - accuracy: 0.9948 - val_loss: 0.4754 - val_accuracy: 0.8745
+Epoch 15/20
+15000/15000 [==============================] - 2s 101us/step - loss: 0.0224 - accuracy: 0.9961 - val_loss: 0.5247 - val_accuracy: 0.8717
+Epoch 16/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0155 - accuracy: 0.9981 - val_loss: 0.5341 - val_accuracy: 0.8711
+Epoch 17/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0139 - accuracy: 0.9983 - val_loss: 0.5686 - val_accuracy: 0.8695
+Epoch 18/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0127 - accuracy: 0.9973 - val_loss: 0.6013 - val_accuracy: 0.8672
+Epoch 19/20
+15000/15000 [==============================] - 2s 100us/step - loss: 0.0062 - accuracy: 0.9997 - val_loss: 0.6324 - val_accuracy: 0.8652
+Epoch 20/20
+15000/15000 [==============================] - 1s 98us/step - loss: 0.0079 - accuracy: 0.9989 - val_loss: 0.6615 - val_accuracy: 0.8668</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">history_dict = history.history</span><br><span class="line">history_dict.keys()</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>dict_keys([&apos;val_loss&apos;, &apos;val_accuracy&apos;, &apos;loss&apos;, &apos;accuracy&apos;])</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line">history_dict = history.history</span><br><span class="line">loss_values = history_dict[<span class="string">"loss"</span>]</span><br><span class="line">val_loss_values = history_dict[<span class="string">"val_loss"</span>]</span><br><span class="line">epochs = range(<span class="number">1</span>, len(loss_values)+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">plt.plot(epochs, loss_values, <span class="string">"bo"</span>, label=<span class="string">"Training loss"</span>)</span><br><span class="line">plt.plot(epochs, val_loss_values, <span class="string">"b"</span>, label=<span class="string">"Validation loss"</span>)</span><br><span class="line">plt.title(<span class="string">"Training and validation loss"</span>)</span><br><span class="line">plt.xlabel(<span class="string">"Epochs"</span>)</span><br><span class="line">plt.ylabel(<span class="string">"Loss"</span>)</span><br><span class="line">plt.legend()</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_24_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">plt.clf()</span><br><span class="line">acc = history_dict[<span class="string">'accuracy'</span>]</span><br><span class="line">val_acc = history_dict[<span class="string">'val_accuracy'</span>]</span><br><span class="line">plt.plot(epochs, acc, <span class="string">'bo'</span>, label=<span class="string">'Training acc'</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">'b'</span>, label=<span class="string">'Validation acc'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation accuracy'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Accuracy'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_25_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">1</span>, activation=<span class="string">"sigmoid"</span>))</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">model.compile(optimizer=<span class="string">"rmsprop"</span>,</span><br><span class="line">             loss=<span class="string">"binary_crossentropy"</span>,</span><br><span class="line">             metrics=[<span class="string">"acc"</span>])</span><br><span class="line">model.fit(x_train, y_train, epochs=<span class="number">4</span>, batch_size=<span class="number">512</span>)</span><br><span class="line">results = model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Epoch 1/4
+25000/25000 [==============================] - 2s 65us/step - loss: 0.4611 - acc: 0.8215
+Epoch 2/4
+25000/25000 [==============================] - 2s 62us/step - loss: 0.2626 - acc: 0.9069
+Epoch 3/4
+25000/25000 [==============================] - 2s 65us/step - loss: 0.2007 - acc: 0.9264
+Epoch 4/4
+25000/25000 [==============================] - 2s 67us/step - loss: 0.1659 - acc: 0.9414
+25000/25000 [==============================] - 15s 586us/step</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">results</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>[0.2943145182275772, 0.8847600221633911]</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.predict(x_test)</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>array([[0.20976487],
+       [0.999882  ],
+       [0.89416105],
+       ...,
+       [0.12636474],
+       [0.05909678],
+       [0.44751233]], dtype=float32)</code></pre><h1 id="新闻分类：多分类问题"><a href="#新闻分类：多分类问题" class="headerlink" title="新闻分类：多分类问题"></a>新闻分类：多分类问题</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> reuters</span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = reuters.load_data(num_words=<span class="number">10000</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\keras\datasets\reuters.py:85: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &apos;dtype=object&apos; when creating the ndarray
+  x_train, y_train = np.array(xs[:idx]), np.array(labels[:idx])
+C:\Users\16402\Anaconda3\envs\python36\lib\site-packages\keras\datasets\reuters.py:86: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &apos;dtype=object&apos; when creating the ndarray
+  x_test, y_test = np.array(xs[idx:]), np.array(labels[idx:])</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print(len(train_data))</span><br><span class="line">print(len(train_labels))</span><br></pre></td></tr></table></figure>
+
+<pre><code>8982
+8982</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">word_index = reuters.get_word_index()</span><br><span class="line">reverse_word_index = dict([(value, key) <span class="keyword">for</span> (key,value) <span class="keyword">in</span> word_index.items()])</span><br><span class="line">decoded_newwire = <span class="string">" "</span>.join([reverse_word_index.get(i<span class="number">-3</span>, <span class="string">"?"</span>) <span class="keyword">for</span> i <span class="keyword">in</span> train_data[<span class="number">0</span>]])</span><br><span class="line">decoded_newwire</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>&apos;? ? ? said as a result of its december acquisition of space co it expects earnings per share in 1987 of 1 15 to 1 30 dlrs per share up from 70 cts in 1986 the company said pretax net should rise to nine to 10 mln dlrs from six mln dlrs in 1986 and rental operation revenues to 19 to 22 mln dlrs from 12 5 mln dlrs it said cash flow per share this year should be 2 50 to three dlrs reuter 3&apos;</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">vectorize_sequences</span><span class="params">(sequences, dimension=<span class="number">10000</span>)</span>:</span></span><br><span class="line">    results = np.zeros((len(sequences), dimension))</span><br><span class="line">    <span class="keyword">for</span> i, sequence <span class="keyword">in</span> enumerate(sequences):</span><br><span class="line">        results[i, sequence] = <span class="number">1.</span></span><br><span class="line">    <span class="keyword">return</span> results</span><br><span class="line"></span><br><span class="line">x_train = vectorize_sequences(train_data)</span><br><span class="line">x_test = vectorize_sequences(test_data)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_one_hot</span><span class="params">(labels, dimension=<span class="number">46</span>)</span>:</span></span><br><span class="line">    results = np.zeros((len(labels), dimension))</span><br><span class="line">    <span class="keyword">for</span> i, label <span class="keyword">in</span> enumerate(labels):</span><br><span class="line">        results[i, label] = <span class="number">1.</span></span><br><span class="line">    <span class="keyword">return</span> results</span><br><span class="line"></span><br><span class="line">one_hot_train_labels = to_one_hot(train_labels)</span><br><span class="line">one_hot_test_labels = to_one_hot(test_labels)</span><br></pre></td></tr></table></figure>
+
+<p>注意，Keras 内置方法可以实现One-hot操作:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.utils.np_utils <span class="keyword">import</span> to_categorical</span><br><span class="line"></span><br><span class="line">one_hot_train_labels = to_categorical(train_labels)</span><br><span class="line">one_hot_test_labels = to_categorical(test_labels)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras.models <span class="keyword">as</span> models</span><br><span class="line"><span class="keyword">import</span> keras.layers <span class="keyword">as</span> layers</span><br><span class="line"></span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">512</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">512</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">46</span>, activation=<span class="string">"softmax"</span>))</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model.compile(optimizer=<span class="string">"rmsprop"</span>,</span><br><span class="line">             loss=<span class="string">"categorical_crossentropy"</span>,</span><br><span class="line">             metrics=[<span class="string">"accuracy"</span>])</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x_val = x_train[:<span class="number">1000</span>]</span><br><span class="line">partial_x_train = x_train[<span class="number">1000</span>:]</span><br><span class="line">y_val = one_hot_train_labels[:<span class="number">1000</span>]</span><br><span class="line">partial_y_train = one_hot_train_labels[<span class="number">1000</span>:]</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">history = model.fit(partial_x_train,</span><br><span class="line">                   partial_y_train,</span><br><span class="line">                   epochs=<span class="number">20</span>,</span><br><span class="line">                   batch_size=<span class="number">512</span>,</span><br><span class="line">                   validation_data=(x_val, y_val))</span><br></pre></td></tr></table></figure>
+
+<pre><code>Train on 7982 samples, validate on 1000 samples
+Epoch 1/20
+7982/7982 [==============================] - 2s 272us/step - loss: 1.8693 - accuracy: 0.5712 - val_loss: 1.2307 - val_accuracy: 0.7020
+Epoch 2/20
+7982/7982 [==============================] - 2s 258us/step - loss: 0.8578 - accuracy: 0.8029 - val_loss: 0.9550 - val_accuracy: 0.7770
+Epoch 3/20
+7982/7982 [==============================] - 2s 257us/step - loss: 0.4959 - accuracy: 0.8861 - val_loss: 0.8886 - val_accuracy: 0.8010
+Epoch 4/20
+7982/7982 [==============================] - 2s 269us/step - loss: 0.3254 - accuracy: 0.9247 - val_loss: 0.8109 - val_accuracy: 0.8330
+Epoch 5/20
+7982/7982 [==============================] - 2s 266us/step - loss: 0.2040 - accuracy: 0.9491 - val_loss: 0.8889 - val_accuracy: 0.8050
+Epoch 6/20
+7982/7982 [==============================] - 2s 257us/step - loss: 0.1730 - accuracy: 0.9520 - val_loss: 0.8479 - val_accuracy: 0.8200
+Epoch 7/20
+7982/7982 [==============================] - 2s 247us/step - loss: 0.1677 - accuracy: 0.9520 - val_loss: 0.9323 - val_accuracy: 0.8040
+Epoch 8/20
+7982/7982 [==============================] - 2s 245us/step - loss: 0.1376 - accuracy: 0.9546 - val_loss: 0.8941 - val_accuracy: 0.8190
+Epoch 9/20
+7982/7982 [==============================] - 2s 256us/step - loss: 0.1273 - accuracy: 0.9564 - val_loss: 0.9124 - val_accuracy: 0.8190
+Epoch 10/20
+7982/7982 [==============================] - 2s 252us/step - loss: 0.1188 - accuracy: 0.9559 - val_loss: 1.0038 - val_accuracy: 0.7970
+Epoch 11/20
+7982/7982 [==============================] - 2s 264us/step - loss: 0.1116 - accuracy: 0.9555 - val_loss: 0.9859 - val_accuracy: 0.8120
+Epoch 12/20
+7982/7982 [==============================] - 2s 256us/step - loss: 0.1014 - accuracy: 0.9578 - val_loss: 1.1145 - val_accuracy: 0.7910
+Epoch 13/20
+7982/7982 [==============================] - 2s 251us/step - loss: 0.1018 - accuracy: 0.9554 - val_loss: 1.0680 - val_accuracy: 0.8020
+Epoch 14/20
+7982/7982 [==============================] - 2s 258us/step - loss: 0.0950 - accuracy: 0.9568 - val_loss: 1.1566 - val_accuracy: 0.8000
+Epoch 15/20
+7982/7982 [==============================] - 2s 284us/step - loss: 0.0906 - accuracy: 0.9578 - val_loss: 1.1965 - val_accuracy: 0.8040
+Epoch 16/20
+7982/7982 [==============================] - 2s 289us/step - loss: 0.0843 - accuracy: 0.9562 - val_loss: 1.1994 - val_accuracy: 0.8020
+Epoch 17/20
+7982/7982 [==============================] - 2s 263us/step - loss: 0.0834 - accuracy: 0.9575 - val_loss: 1.2736 - val_accuracy: 0.8060
+Epoch 18/20
+7982/7982 [==============================] - 2s 249us/step - loss: 0.0786 - accuracy: 0.9559 - val_loss: 1.3329 - val_accuracy: 0.8050
+Epoch 19/20
+7982/7982 [==============================] - 2s 255us/step - loss: 0.0771 - accuracy: 0.9592 - val_loss: 1.7559 - val_accuracy: 0.7720
+Epoch 20/20
+7982/7982 [==============================] - 2s 253us/step - loss: 0.0768 - accuracy: 0.9569 - val_loss: 1.4354 - val_accuracy: 0.8040</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">history_dict = history.history</span><br><span class="line">loss = history_dict[<span class="string">"loss"</span>]</span><br><span class="line">val_loss = history_dict[<span class="string">"val_loss"</span>]</span><br><span class="line">epochs = range(<span class="number">1</span>, len(loss)+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">plt.plot(epochs, loss, <span class="string">'bo'</span>, label=<span class="string">'Training loss'</span>)</span><br><span class="line">plt.plot(epochs, val_loss, <span class="string">'b'</span>, label=<span class="string">'Validation loss'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation loss'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Loss'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_42_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">acc = history.history[<span class="string">'accuracy'</span>]</span><br><span class="line">val_acc = history.history[<span class="string">'val_accuracy'</span>]</span><br><span class="line">plt.plot(epochs, acc, <span class="string">'bo'</span>, label=<span class="string">'Training acc'</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">'b'</span>, label=<span class="string">'Validation acc'</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation accuracy'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Accuracy'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_43_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 训练数据在第五轮左右开始过拟合</span></span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">46</span>, activation=<span class="string">"softmax"</span>))</span><br><span class="line"></span><br><span class="line">model.compile(optimizer=<span class="string">"rmsprop"</span>,</span><br><span class="line">             loss=<span class="string">"categorical_crossentropy"</span>,</span><br><span class="line">             metrics=[<span class="string">"accuracy"</span>])</span><br><span class="line">model.fit(x_train,</span><br><span class="line">         one_hot_train_labels,</span><br><span class="line">         epochs=<span class="number">5</span>,</span><br><span class="line">         batch_size=<span class="number">512</span>)</span><br><span class="line">results = model.evaluate(x_test, one_hot_test_labels)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Epoch 1/5
+8982/8982 [==============================] - 1s 84us/step - loss: 2.4658 - accuracy: 0.5529
+Epoch 2/5
+8982/8982 [==============================] - 1s 77us/step - loss: 1.3174 - accuracy: 0.7286
+Epoch 3/5
+8982/8982 [==============================] - 1s 79us/step - loss: 0.9746 - accuracy: 0.7960
+Epoch 4/5
+8982/8982 [==============================] - 1s 77us/step - loss: 0.7625 - accuracy: 0.8398
+Epoch 5/5
+8982/8982 [==============================] - 1s 77us/step - loss: 0.6018 - accuracy: 0.8720
+2246/2246 [==============================] - 0s 118us/step</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">results</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>[0.9859163759015865, 0.7822796106338501]</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 完全随机的分类精度</span></span><br><span class="line"><span class="keyword">import</span> copy</span><br><span class="line">test_labels_copy = copy.copy(test_labels)</span><br><span class="line">np.random.shuffle(test_labels_copy)</span><br><span class="line">hits_array = np.array(test_labels) == np.array(test_labels_copy)</span><br><span class="line">print(float(np.sum(hits_array))/len(test_labels))</span><br></pre></td></tr></table></figure>
+
+<pre><code>0.1861086375779163</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">predictions = model.predict(x_test)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">predictions[<span class="number">0</span>].shape</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>(46,)</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.sum(predictions[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>0.9999999</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.argmax(predictions[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>3</code></pre><h2 id="处理标签的另一种方法"><a href="#处理标签的另一种方法" class="headerlink" title="处理标签的另一种方法"></a>处理标签的另一种方法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">y_train = np.array(train_labels)</span><br><span class="line">y_test = np.array(test_labels)</span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">46</span>, activation=<span class="string">"softmax"</span>))</span><br><span class="line"></span><br><span class="line">model.compile(optimizer=<span class="string">"rmsprop"</span>,</span><br><span class="line">             loss=<span class="string">"sparse_categorical_crossentropy"</span>,</span><br><span class="line">             metrics=[<span class="string">"acc"</span>])</span><br><span class="line">model.fit(x_train,</span><br><span class="line">         y_train,</span><br><span class="line">         epochs=<span class="number">5</span>,</span><br><span class="line">         batch_size=<span class="number">512</span>)</span><br><span class="line">results = model.evaluate(x_test, y_test)</span><br><span class="line">print(results)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Epoch 1/5
+8982/8982 [==============================] - 1s 85us/step - loss: 2.6402 - acc: 0.5324
+Epoch 2/5
+8982/8982 [==============================] - 1s 80us/step - loss: 1.3306 - acc: 0.7237
+Epoch 3/5
+8982/8982 [==============================] - 1s 75us/step - loss: 0.9743 - acc: 0.7951
+Epoch 4/5
+8982/8982 [==============================] - 1s 76us/step - loss: 0.7556 - acc: 0.8447
+Epoch 5/5
+8982/8982 [==============================] - 1s 76us/step - loss: 0.5990 - acc: 0.8785
+2246/2246 [==============================] - 0s 104us/step
+[0.9927649695429543, 0.7724844217300415]</code></pre><h1 id="预测房价：回归问题"><a href="#预测房价：回归问题" class="headerlink" title="预测房价：回归问题"></a>预测房价：回归问题</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> boston_housing</span><br><span class="line">(train_data, train_targets), (test_data, test_targets) = boston_housing.load_data()</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print(train_data.shape)</span><br><span class="line">print(test_data.shape)</span><br></pre></td></tr></table></figure>
+
+<pre><code>(404, 13)
+(102, 13)</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train_targets[:<span class="number">10</span>]</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>array([15.2, 42.3, 50. , 21.1, 17.7, 18.5, 11.3, 15.6, 15.6, 14.4])</code></pre><p>将取值范围差异很大的数据输入到神经网络中，这是有问题的。网络可能会自动适应这种<br>取值范围不同的数据，但学习肯定变得更加困难。对于这种数据，普遍采用的最佳实践是对每<br>个特征做标准化，即对于输入数据的每个特征（输入数据矩阵中的列），减去特征平均值，再除<br>以标准差，这样得到的特征平均值为0，标准差为1</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mean = train_data.mean(axis=<span class="number">0</span>)</span><br><span class="line">train_data -= mean</span><br><span class="line">std = train_data.std(axis=<span class="number">0</span>)</span><br><span class="line">train_data /= std</span><br><span class="line"></span><br><span class="line">test_data -= mean</span><br><span class="line">test_data /= std</span><br></pre></td></tr></table></figure>
+
+<p>注意，用于测试数据标准化的均值和标准差都是在训练数据上计算得到的。在工作流程中，<br>你不能使用在测试数据上计算得到的任何结果，即使是像数据标准化这么简单的事情也不行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">build_model</span><span class="params">()</span>:</span></span><br><span class="line">    model = models.Sequential()</span><br><span class="line">    model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>, input_shape=(train_data.shape[<span class="number">1</span>],)))</span><br><span class="line">    model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">    model.add(layers.Dense(<span class="number">1</span>))</span><br><span class="line">    model.compile(optimizer=<span class="string">"rmsprop"</span>, loss=<span class="string">"mse"</span>, metrics=[<span class="string">"mae"</span>])</span><br><span class="line">    <span class="keyword">return</span> model</span><br></pre></td></tr></table></figure>
+
+<h2 id="K折验证"><a href="#K折验证" class="headerlink" title="K折验证"></a>K折验证</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">k = <span class="number">4</span></span><br><span class="line">num_val_samples = len(train_data) // k</span><br><span class="line">num_epochs = <span class="number">100</span></span><br><span class="line">all_scores = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(k):</span><br><span class="line">    print(<span class="string">"Processing fold #"</span>, i)</span><br><span class="line">    val_data = train_data[i*num_val_samples: (i+<span class="number">1</span>)*num_val_samples]</span><br><span class="line">    val_targets = train_targets[i*num_val_samples:(i+<span class="number">1</span>)*num_val_samples]</span><br><span class="line">    partial_train_data = np.concatenate([train_data[:i*num_val_samples], train_data[(i+<span class="number">1</span>)*num_val_samples:]], axis=<span class="number">0</span>)</span><br><span class="line">    partial_train_targets = np.concatenate([train_targets[:i*num_val_samples], train_targets[(i+<span class="number">1</span>)*num_val_samples:]], axis=<span class="number">0</span>)</span><br><span class="line">    model = build_model()</span><br><span class="line">    model.fit(partial_train_data, partial_train_targets, epochs=num_epochs, batch_size=<span class="number">1</span>, verbose=<span class="number">0</span>)</span><br><span class="line">    val_mse, val_mae = model.evaluate(val_data, val_targets, verbose=<span class="number">0</span>)</span><br><span class="line">    all_scores.append(val_mae)</span><br><span class="line">print(all_scores)</span><br><span class="line">print(np.mean(all_scores))</span><br></pre></td></tr></table></figure>
+
+<pre><code>Processing fold # 0
+Processing fold # 1
+Processing fold # 2
+Processing fold # 3
+[2.0739996433258057, 2.4122469425201416, 2.454885959625244, 2.5617122650146484]
+2.37571120262146</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">num_epochs = <span class="number">500</span></span><br><span class="line">all_mae_histories = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(k):</span><br><span class="line">    print(<span class="string">'processing fold #'</span>, i)</span><br><span class="line">    val_data = train_data[i * num_val_samples: (i + <span class="number">1</span>) * num_val_samples]</span><br><span class="line">    val_targets = train_targets[i * num_val_samples: (i + <span class="number">1</span>) * num_val_samples]</span><br><span class="line">    partial_train_data = np.concatenate(</span><br><span class="line">        [train_data[:i * num_val_samples],</span><br><span class="line">         train_data[(i + <span class="number">1</span>) * num_val_samples:]],</span><br><span class="line">         axis=<span class="number">0</span>)</span><br><span class="line">    partial_train_targets = np.concatenate(</span><br><span class="line">        [train_targets[:i * num_val_samples],</span><br><span class="line">         train_targets[(i + <span class="number">1</span>) * num_val_samples:]],</span><br><span class="line">        axis=<span class="number">0</span>)</span><br><span class="line">    model = build_model()</span><br><span class="line">    history = model.fit(partial_train_data, partial_train_targets,</span><br><span class="line">    validation_data=(val_data, val_targets),</span><br><span class="line">    epochs=num_epochs, batch_size=<span class="number">1</span>, verbose=<span class="number">0</span>)</span><br><span class="line">    mae_history = history.history[<span class="string">'mae'</span>]</span><br><span class="line">    all_mae_histories.append(mae_history)</span><br><span class="line"></span><br><span class="line">average_mae_history = [np.mean([x[i] <span class="keyword">for</span> x <span class="keyword">in</span> all_mae_histories]) <span class="keyword">for</span> i <span class="keyword">in</span> range(num_epochs)]</span><br></pre></td></tr></table></figure>
+
+<pre><code>processing fold # 0
+processing fold # 1
+processing fold # 2
+processing fold # 3</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.plot(range(<span class="number">1</span>, len(average_mae_history) + <span class="number">1</span>), average_mae_history)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Validation MAE'</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_64_0.png" alt="png"></p>
+<p>因为纵轴的范围较大，且数据方差相对较大，所以难以看清这张图的规律。我们来重新绘制一张图。</p>
+<ul>
+<li>删除前 10 个数据点，因为它们的取值范围与曲线上的其他点不同。</li>
+<li>将每个数据点替换为前面数据点的指数移动平均值，以得到光滑的曲线。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">smooth_curve</span><span class="params">(points, factor=<span class="number">0.9</span>)</span>:</span></span><br><span class="line">    smoothed_points = []</span><br><span class="line">    <span class="keyword">for</span> point <span class="keyword">in</span> points:</span><br><span class="line">        <span class="keyword">if</span> smoothed_points:</span><br><span class="line">            previous = smoothed_points[<span class="number">-1</span>]</span><br><span class="line">            smoothed_points.append(previous * factor + point * (<span class="number">1</span> - factor))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            smoothed_points.append(point)</span><br><span class="line">    <span class="keyword">return</span> smoothed_points</span><br><span class="line"></span><br><span class="line">smooth_mae_history = smooth_curve(average_mae_history[<span class="number">10</span>:])</span><br><span class="line">plt.plot(range(<span class="number">1</span>, len(smooth_mae_history) + <span class="number">1</span>), smooth_mae_history)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Validation MAE'</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_66_0.png" alt="png"></p>
+<blockquote>
+<p>注：以上内容均直接搬运自个人的jupyter notebook，参考书籍为《Python深度学习》，注释未到位之处请多谅解，有需要对哪些地方补充注释的可以在下方留言</p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/88ec626e.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/4b6eecc1.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">深度学习用于计算机视觉/Keras深度学习系列（二）深度学习用于计算机视觉</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
