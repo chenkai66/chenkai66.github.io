@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    新闻文本分类实战(二) |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-新闻文本分类实战(二)"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  新闻文本分类实战(二)
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/e39af9a7.html" class="article-date">
+  <time datetime="2020-08-04T14:46:38.096Z" itemprop="datePublished">2020-08-04</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NLP/">NLP</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">24 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>这里我们接着前面的<a href="https://chenk.tech/posts/eb79fc5f.html" target="_blank" rel="noopener">新闻文本实战的比赛案例</a>，在这里介绍了比赛数据以及实现了机器学习方法及fastText，Word2Vec等方法进行了文本分类，下面我们使用Bert（Transformer框架）对文本实现分类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import logging</span><br><span class="line">import random</span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line">import torch</span><br><span class="line"></span><br><span class="line">logging.basicConfig(level&#x3D;logging.INFO, format&#x3D;&#39;%(asctime)-15s %(levelname)s: %(message)s&#39;)</span><br><span class="line"></span><br><span class="line"># set seed</span><br><span class="line">seed &#x3D; 666</span><br><span class="line">random.seed(seed)</span><br><span class="line">np.random.seed(seed)</span><br><span class="line">torch.cuda.manual_seed(seed)</span><br><span class="line">torch.manual_seed(seed)</span><br><span class="line"></span><br><span class="line"># set cuda</span><br><span class="line">gpu &#x3D; 0</span><br><span class="line">use_cuda &#x3D; gpu &gt;&#x3D; 0 and torch.cuda.is_available()</span><br><span class="line">if use_cuda:</span><br><span class="line">    torch.cuda.set_device(gpu)</span><br><span class="line">    device &#x3D; torch.device(&quot;cuda&quot;, gpu)</span><br><span class="line">else:</span><br><span class="line">    device &#x3D; torch.device(&quot;cpu&quot;)</span><br><span class="line">logging.info(&quot;Use cuda: %s, gpu id: %d.&quot;, use_cuda, gpu)</span><br></pre></td></tr></table></figure>
+
+
+
+<pre><code>2020-08-04 20:51:59,686 INFO: Use cuda: False, gpu id: 0.</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># split data to 10 fold</span></span><br><span class="line">fold_num = <span class="number">10</span></span><br><span class="line">data_file = <span class="string">'train.csv'</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">all_data2fold</span><span class="params">(fold_num, num=<span class="number">10000</span>)</span>:</span></span><br><span class="line">    fold_data = []</span><br><span class="line">    f = pd.read_csv(data_file, sep=<span class="string">'\t'</span>, encoding=<span class="string">'UTF-8'</span>)</span><br><span class="line">    texts = f[<span class="string">'text'</span>].tolist()[:num]</span><br><span class="line">    labels = f[<span class="string">'label'</span>].tolist()[:num]</span><br><span class="line"></span><br><span class="line">    total = len(labels)</span><br><span class="line"></span><br><span class="line">    index = list(range(total))</span><br><span class="line">    np.random.shuffle(index)</span><br><span class="line"></span><br><span class="line">    all_texts = []</span><br><span class="line">    all_labels = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> index:</span><br><span class="line">        all_texts.append(texts[i])</span><br><span class="line">        all_labels.append(labels[i])</span><br><span class="line"></span><br><span class="line">    label2id = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(total):</span><br><span class="line">        label = str(all_labels[i])</span><br><span class="line">        <span class="keyword">if</span> label <span class="keyword">not</span> <span class="keyword">in</span> label2id:</span><br><span class="line">            label2id[label] = [i]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            label2id[label].append(i)</span><br><span class="line"></span><br><span class="line">    all_index = [[] <span class="keyword">for</span> _ <span class="keyword">in</span> range(fold_num)]</span><br><span class="line">    <span class="keyword">for</span> label, data <span class="keyword">in</span> label2id.items():</span><br><span class="line">        <span class="comment"># print(label, len(data))</span></span><br><span class="line">        batch_size = int(len(data) / fold_num)</span><br><span class="line">        other = len(data) - batch_size * fold_num</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(fold_num):</span><br><span class="line">            cur_batch_size = batch_size + <span class="number">1</span> <span class="keyword">if</span> i &lt; other <span class="keyword">else</span> batch_size</span><br><span class="line">            <span class="comment"># print(cur_batch_size)</span></span><br><span class="line">            batch_data = [data[i * batch_size + b] <span class="keyword">for</span> b <span class="keyword">in</span> range(cur_batch_size)]</span><br><span class="line">            all_index[i].extend(batch_data)</span><br><span class="line"></span><br><span class="line">    batch_size = int(total / fold_num)</span><br><span class="line">    other_texts = []</span><br><span class="line">    other_labels = []</span><br><span class="line">    other_num = <span class="number">0</span></span><br><span class="line">    start = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> fold <span class="keyword">in</span> range(fold_num):</span><br><span class="line">        num = len(all_index[fold])</span><br><span class="line">        texts = [all_texts[i] <span class="keyword">for</span> i <span class="keyword">in</span> all_index[fold]]</span><br><span class="line">        labels = [all_labels[i] <span class="keyword">for</span> i <span class="keyword">in</span> all_index[fold]]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> num &gt; batch_size:</span><br><span class="line">            fold_texts = texts[:batch_size]</span><br><span class="line">            other_texts.extend(texts[batch_size:])</span><br><span class="line">            fold_labels = labels[:batch_size]</span><br><span class="line">            other_labels.extend(labels[batch_size:])</span><br><span class="line">            other_num += num - batch_size</span><br><span class="line">        <span class="keyword">elif</span> num &lt; batch_size:</span><br><span class="line">            end = start + batch_size - num</span><br><span class="line">            fold_texts = texts + other_texts[start: end]</span><br><span class="line">            fold_labels = labels + other_labels[start: end]</span><br><span class="line">            start = end</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            fold_texts = texts</span><br><span class="line">            fold_labels = labels</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> batch_size == len(fold_labels)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># shuffle</span></span><br><span class="line">        index = list(range(batch_size))</span><br><span class="line">        np.random.shuffle(index)</span><br><span class="line"></span><br><span class="line">        shuffle_fold_texts = []</span><br><span class="line">        shuffle_fold_labels = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> index:</span><br><span class="line">            shuffle_fold_texts.append(fold_texts[i])</span><br><span class="line">            shuffle_fold_labels.append(fold_labels[i])</span><br><span class="line"></span><br><span class="line">        data = &#123;<span class="string">'label'</span>: shuffle_fold_labels, <span class="string">'text'</span>: shuffle_fold_texts&#125;</span><br><span class="line">        fold_data.append(data)</span><br><span class="line"></span><br><span class="line">    logging.info(<span class="string">"Fold lens %s"</span>, str([len(data[<span class="string">'label'</span>]) <span class="keyword">for</span> data <span class="keyword">in</span> fold_data]))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> fold_data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">fold_data = all_data2fold(<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>2020-08-04 20:52:13,069 INFO: Fold lens [1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build train, dev, test data</span></span><br><span class="line">fold_id = <span class="number">9</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># dev</span></span><br><span class="line">dev_data = fold_data[fold_id]</span><br><span class="line"></span><br><span class="line"><span class="comment"># train</span></span><br><span class="line">train_texts = []</span><br><span class="line">train_labels = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, fold_id):</span><br><span class="line">    data = fold_data[i]</span><br><span class="line">    train_texts.extend(data[<span class="string">'text'</span>])</span><br><span class="line">    train_labels.extend(data[<span class="string">'label'</span>])</span><br><span class="line"></span><br><span class="line">train_data = &#123;<span class="string">'label'</span>: train_labels, <span class="string">'text'</span>: train_texts&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># test</span></span><br><span class="line">test_data_file = <span class="string">'test.csv'</span></span><br><span class="line">f = pd.read_csv(test_data_file, sep=<span class="string">'\t'</span>, encoding=<span class="string">'UTF-8'</span>)</span><br><span class="line">texts = f[<span class="string">'text'</span>].tolist()</span><br><span class="line">test_data = &#123;<span class="string">'label'</span>: [<span class="number">0</span>] * len(texts), <span class="string">'text'</span>: texts&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build vocab</span></span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BasicTokenizer</span><br><span class="line"></span><br><span class="line">basic_tokenizer = BasicTokenizer()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vocab</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, train_data)</span>:</span></span><br><span class="line">        self.min_count = <span class="number">5</span></span><br><span class="line">        self.pad = <span class="number">0</span></span><br><span class="line">        self.unk = <span class="number">1</span></span><br><span class="line">        self._id2word = [<span class="string">'[PAD]'</span>, <span class="string">'[UNK]'</span>]</span><br><span class="line">        self._id2extword = [<span class="string">'[PAD]'</span>, <span class="string">'[UNK]'</span>]</span><br><span class="line"></span><br><span class="line">        self._id2label = []</span><br><span class="line">        self.target_names = []</span><br><span class="line"></span><br><span class="line">        self.build_vocab(train_data)</span><br><span class="line"></span><br><span class="line">        reverse = <span class="keyword">lambda</span> x: dict(zip(x, range(len(x))))</span><br><span class="line">        self._word2id = reverse(self._id2word)</span><br><span class="line">        self._label2id = reverse(self._id2label)</span><br><span class="line"></span><br><span class="line">        logging.info(<span class="string">"Build vocab: words %d, labels %d."</span> % (self.word_size, self.label_size))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">build_vocab</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        self.word_counter = Counter()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> text <span class="keyword">in</span> data[<span class="string">'text'</span>]:</span><br><span class="line">            words = text.split()</span><br><span class="line">            <span class="keyword">for</span> word <span class="keyword">in</span> words:</span><br><span class="line">                self.word_counter[word] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> word, count <span class="keyword">in</span> self.word_counter.most_common():</span><br><span class="line">            <span class="keyword">if</span> count &gt;= self.min_count:</span><br><span class="line">                self._id2word.append(word)</span><br><span class="line"></span><br><span class="line">        label2name = &#123;<span class="number">0</span>: <span class="string">'科技'</span>, <span class="number">1</span>: <span class="string">'股票'</span>, <span class="number">2</span>: <span class="string">'体育'</span>, <span class="number">3</span>: <span class="string">'娱乐'</span>, <span class="number">4</span>: <span class="string">'时政'</span>, <span class="number">5</span>: <span class="string">'社会'</span>, <span class="number">6</span>: <span class="string">'教育'</span>, <span class="number">7</span>: <span class="string">'财经'</span>,</span><br><span class="line">                      <span class="number">8</span>: <span class="string">'家居'</span>, <span class="number">9</span>: <span class="string">'游戏'</span>, <span class="number">10</span>: <span class="string">'房产'</span>, <span class="number">11</span>: <span class="string">'时尚'</span>, <span class="number">12</span>: <span class="string">'彩票'</span>, <span class="number">13</span>: <span class="string">'星座'</span>&#125;</span><br><span class="line"></span><br><span class="line">        self.label_counter = Counter(data[<span class="string">'label'</span>])</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> label <span class="keyword">in</span> range(len(self.label_counter)):</span><br><span class="line">            count = self.label_counter[label]</span><br><span class="line">            self._id2label.append(label)</span><br><span class="line">            self.target_names.append(label2name[label])</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">load_pretrained_embs</span><span class="params">(self, embfile)</span>:</span></span><br><span class="line">        <span class="keyword">with</span> open(embfile, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">            lines = f.readlines()</span><br><span class="line">            items = lines[<span class="number">0</span>].split()</span><br><span class="line">            word_count, embedding_dim = int(items[<span class="number">0</span>]), int(items[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">        index = len(self._id2extword)</span><br><span class="line">        embeddings = np.zeros((word_count + index, embedding_dim))</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> lines[<span class="number">1</span>:]:</span><br><span class="line">            values = line.split()</span><br><span class="line">            self._id2extword.append(values[<span class="number">0</span>])</span><br><span class="line">            vector = np.array(values[<span class="number">1</span>:], dtype=<span class="string">'float64'</span>)</span><br><span class="line">            embeddings[self.unk] += vector</span><br><span class="line">            embeddings[index] = vector</span><br><span class="line">            index += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        embeddings[self.unk] = embeddings[self.unk] / word_count</span><br><span class="line">        embeddings = embeddings / np.std(embeddings)</span><br><span class="line"></span><br><span class="line">        reverse = <span class="keyword">lambda</span> x: dict(zip(x, range(len(x))))</span><br><span class="line">        self._extword2id = reverse(self._id2extword)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> len(set(self._id2extword)) == len(self._id2extword)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> embeddings</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">word2id</span><span class="params">(self, xs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(xs, list):</span><br><span class="line">            <span class="keyword">return</span> [self._word2id.get(x, self.unk) <span class="keyword">for</span> x <span class="keyword">in</span> xs]</span><br><span class="line">        <span class="keyword">return</span> self._word2id.get(xs, self.unk)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">extword2id</span><span class="params">(self, xs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(xs, list):</span><br><span class="line">            <span class="keyword">return</span> [self._extword2id.get(x, self.unk) <span class="keyword">for</span> x <span class="keyword">in</span> xs]</span><br><span class="line">        <span class="keyword">return</span> self._extword2id.get(xs, self.unk)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">label2id</span><span class="params">(self, xs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(xs, list):</span><br><span class="line">            <span class="keyword">return</span> [self._label2id.get(x, self.unk) <span class="keyword">for</span> x <span class="keyword">in</span> xs]</span><br><span class="line">        <span class="keyword">return</span> self._label2id.get(xs, self.unk)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">word_size</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> len(self._id2word)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">extword_size</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> len(self._id2extword)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">label_size</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> len(self._id2label)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vocab = Vocab(train_data)</span><br></pre></td></tr></table></figure>
+
+<pre><code>2020-08-04 20:52:21,004 INFO: PyTorch version 1.6.0+cpu available.
+2020-08-04 20:52:23,281 INFO: Build vocab: words 4337, labels 14.</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build module</span></span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Attention</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, hidden_size)</span>:</span></span><br><span class="line">        super(Attention, self).__init__()</span><br><span class="line">        self.weight = nn.Parameter(torch.Tensor(hidden_size, hidden_size))</span><br><span class="line">        self.weight.data.normal_(mean=<span class="number">0.0</span>, std=<span class="number">0.05</span>)</span><br><span class="line"></span><br><span class="line">        self.bias = nn.Parameter(torch.Tensor(hidden_size))</span><br><span class="line">        b = np.zeros(hidden_size, dtype=np.float32)</span><br><span class="line">        self.bias.data.copy_(torch.from_numpy(b))</span><br><span class="line"></span><br><span class="line">        self.query = nn.Parameter(torch.Tensor(hidden_size))</span><br><span class="line">        self.query.data.normal_(mean=<span class="number">0.0</span>, std=<span class="number">0.05</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, batch_hidden, batch_masks)</span>:</span></span><br><span class="line">        <span class="comment"># batch_hidden: b x len x hidden_size (2 * hidden_size of lstm)</span></span><br><span class="line">        <span class="comment"># batch_masks:  b x len</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># linear</span></span><br><span class="line">        key = torch.matmul(batch_hidden, self.weight) + self.bias  <span class="comment"># b x len x hidden</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># compute attention</span></span><br><span class="line">        outputs = torch.matmul(key, self.query)  <span class="comment"># b x len</span></span><br><span class="line"></span><br><span class="line">        masked_outputs = outputs.masked_fill((<span class="number">1</span> - batch_masks).bool(), float(<span class="number">-1e32</span>))</span><br><span class="line"></span><br><span class="line">        attn_scores = F.softmax(masked_outputs, dim=<span class="number">1</span>)  <span class="comment"># b x len</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 对于全零向量，-1e32的结果为 1/len, -inf为nan, 额外补0</span></span><br><span class="line">        masked_attn_scores = attn_scores.masked_fill((<span class="number">1</span> - batch_masks).bool(), <span class="number">0.0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># sum weighted sources</span></span><br><span class="line">        batch_outputs = torch.bmm(masked_attn_scores.unsqueeze(<span class="number">1</span>), key).squeeze(<span class="number">1</span>)  <span class="comment"># b x hidden</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> batch_outputs, attn_scores</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build word encoder</span></span><br><span class="line"><span class="comment"># bert_path = 'bert/bert-mini/'</span></span><br><span class="line">dropout = <span class="number">0.15</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BertModel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WordBertEncoder</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(WordBertEncoder, self).__init__()</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line"></span><br><span class="line">        self.tokenizer = WhitespaceTokenizer()</span><br><span class="line">        self.bert = BertModel.from_pretrained(bert_path)</span><br><span class="line"></span><br><span class="line">        self.pooled = <span class="literal">False</span></span><br><span class="line">        logging.info(<span class="string">'Build Bert encoder with pooled &#123;&#125;.'</span>.format(self.pooled))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">encode</span><span class="params">(self, tokens)</span>:</span></span><br><span class="line">        tokens = self.tokenizer.tokenize(tokens)</span><br><span class="line">        <span class="keyword">return</span> tokens</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_bert_parameters</span><span class="params">(self)</span>:</span></span><br><span class="line">        no_decay = [<span class="string">'bias'</span>, <span class="string">'LayerNorm.weight'</span>]</span><br><span class="line">        optimizer_parameters = [</span><br><span class="line">            &#123;<span class="string">'params'</span>: [p <span class="keyword">for</span> n, p <span class="keyword">in</span> self.bert.named_parameters() <span class="keyword">if</span> <span class="keyword">not</span> any(nd <span class="keyword">in</span> n <span class="keyword">for</span> nd <span class="keyword">in</span> no_decay)],</span><br><span class="line">             <span class="string">'weight_decay'</span>: <span class="number">0.01</span>&#125;,</span><br><span class="line">            &#123;<span class="string">'params'</span>: [p <span class="keyword">for</span> n, p <span class="keyword">in</span> self.bert.named_parameters() <span class="keyword">if</span> any(nd <span class="keyword">in</span> n <span class="keyword">for</span> nd <span class="keyword">in</span> no_decay)],</span><br><span class="line">             <span class="string">'weight_decay'</span>: <span class="number">0.0</span>&#125;</span><br><span class="line">        ]</span><br><span class="line">        <span class="keyword">return</span> optimizer_parameters</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, input_ids, token_type_ids)</span>:</span></span><br><span class="line">        <span class="comment"># input_ids: sen_num x bert_len</span></span><br><span class="line">        <span class="comment"># token_type_ids: sen_num  x bert_len</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># sen_num x bert_len x 256, sen_num x 256</span></span><br><span class="line">        sequence_output, pooled_output = self.bert(input_ids=input_ids, token_type_ids=token_type_ids)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.pooled:</span><br><span class="line">            reps = pooled_output</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            reps = sequence_output[:, <span class="number">0</span>, :]  <span class="comment"># sen_num x 256</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.training:</span><br><span class="line">            reps = self.dropout(reps)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> reps</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WhitespaceTokenizer</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="string">"""WhitespaceTokenizer with vocab."""</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        vocab_file = bert_path + <span class="string">'vocab.txt'</span></span><br><span class="line">        self._token2id = self.load_vocab(vocab_file)</span><br><span class="line">        self._id2token = &#123;v: k <span class="keyword">for</span> k, v <span class="keyword">in</span> self._token2id.items()&#125;</span><br><span class="line">        self.max_len = <span class="number">256</span></span><br><span class="line">        self.unk = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        logging.info(<span class="string">"Build Bert vocab with size %d."</span> % (self.vocab_size))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">load_vocab</span><span class="params">(self, vocab_file)</span>:</span></span><br><span class="line">        f = open(vocab_file, <span class="string">'r'</span>)</span><br><span class="line">        lines = f.readlines()</span><br><span class="line">        lines = list(map(<span class="keyword">lambda</span> x: x.strip(), lines))</span><br><span class="line">        vocab = dict(zip(lines, range(len(lines))))</span><br><span class="line">        <span class="keyword">return</span> vocab</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tokenize</span><span class="params">(self, tokens)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> len(tokens) &lt;= self.max_len - <span class="number">2</span></span><br><span class="line">        tokens = [<span class="string">"[CLS]"</span>] + tokens + [<span class="string">"[SEP]"</span>]</span><br><span class="line">        output_tokens = self.token2id(tokens)</span><br><span class="line">        <span class="keyword">return</span> output_tokens</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">token2id</span><span class="params">(self, xs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(xs, list):</span><br><span class="line">            <span class="keyword">return</span> [self._token2id.get(x, self.unk) <span class="keyword">for</span> x <span class="keyword">in</span> xs]</span><br><span class="line">        <span class="keyword">return</span> self._token2id.get(xs, self.unk)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">vocab_size</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> len(self._id2token)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build sent encoder</span></span><br><span class="line">sent_hidden_size = <span class="number">256</span></span><br><span class="line">sent_num_layers = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SentEncoder</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, sent_rep_size)</span>:</span></span><br><span class="line">        super(SentEncoder, self).__init__()</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line"></span><br><span class="line">        self.sent_lstm = nn.LSTM(</span><br><span class="line">            input_size=sent_rep_size,</span><br><span class="line">            hidden_size=sent_hidden_size,</span><br><span class="line">            num_layers=sent_num_layers,</span><br><span class="line">            batch_first=<span class="literal">True</span>,</span><br><span class="line">            bidirectional=<span class="literal">True</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sent_reps, sent_masks)</span>:</span></span><br><span class="line">        <span class="comment"># sent_reps:  b x doc_len x sent_rep_size</span></span><br><span class="line">        <span class="comment"># sent_masks: b x doc_len</span></span><br><span class="line"></span><br><span class="line">        sent_hiddens, _ = self.sent_lstm(sent_reps)  <span class="comment"># b x doc_len x hidden*2</span></span><br><span class="line">        sent_hiddens = sent_hiddens * sent_masks.unsqueeze(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.training:</span><br><span class="line">            sent_hiddens = self.dropout(sent_hiddens)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sent_hiddens</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build model</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vocab)</span>:</span></span><br><span class="line">        super(Model, self).__init__()</span><br><span class="line">        self.sent_rep_size = <span class="number">256</span></span><br><span class="line">        self.doc_rep_size = sent_hidden_size * <span class="number">2</span></span><br><span class="line">        self.all_parameters = &#123;&#125;</span><br><span class="line">        parameters = []</span><br><span class="line">        self.word_encoder = WordBertEncoder()</span><br><span class="line">        bert_parameters = self.word_encoder.get_bert_parameters()</span><br><span class="line"></span><br><span class="line">        self.sent_encoder = SentEncoder(self.sent_rep_size)</span><br><span class="line">        self.sent_attention = Attention(self.doc_rep_size)</span><br><span class="line">        parameters.extend(list(filter(<span class="keyword">lambda</span> p: p.requires_grad, self.sent_encoder.parameters())))</span><br><span class="line">        parameters.extend(list(filter(<span class="keyword">lambda</span> p: p.requires_grad, self.sent_attention.parameters())))</span><br><span class="line"></span><br><span class="line">        self.out = nn.Linear(self.doc_rep_size, vocab.label_size, bias=<span class="literal">True</span>)</span><br><span class="line">        parameters.extend(list(filter(<span class="keyword">lambda</span> p: p.requires_grad, self.out.parameters())))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> use_cuda:</span><br><span class="line">            self.to(device)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> len(parameters) &gt; <span class="number">0</span>:</span><br><span class="line">            self.all_parameters[<span class="string">"basic_parameters"</span>] = parameters</span><br><span class="line">        self.all_parameters[<span class="string">"bert_parameters"</span>] = bert_parameters</span><br><span class="line"></span><br><span class="line">        logging.info(<span class="string">'Build model with bert word encoder, lstm sent encoder.'</span>)</span><br><span class="line"></span><br><span class="line">        para_num = sum([np.prod(list(p.size())) <span class="keyword">for</span> p <span class="keyword">in</span> self.parameters()])</span><br><span class="line">        logging.info(<span class="string">'Model param num: %.2f M.'</span> % (para_num / <span class="number">1e6</span>))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, batch_inputs)</span>:</span></span><br><span class="line">        <span class="comment"># batch_inputs(batch_inputs1, batch_inputs2): b x doc_len x sent_len</span></span><br><span class="line">        <span class="comment"># batch_masks : b x doc_len x sent_len</span></span><br><span class="line">        batch_inputs1, batch_inputs2, batch_masks = batch_inputs</span><br><span class="line">        batch_size, max_doc_len, max_sent_len = batch_inputs1.shape[<span class="number">0</span>], batch_inputs1.shape[<span class="number">1</span>], batch_inputs1.shape[<span class="number">2</span>]</span><br><span class="line">        batch_inputs1 = batch_inputs1.view(batch_size * max_doc_len, max_sent_len)  <span class="comment"># sen_num x sent_len</span></span><br><span class="line">        batch_inputs2 = batch_inputs2.view(batch_size * max_doc_len, max_sent_len)  <span class="comment"># sen_num x sent_len</span></span><br><span class="line">        batch_masks = batch_masks.view(batch_size * max_doc_len, max_sent_len)  <span class="comment"># sen_num x sent_len</span></span><br><span class="line"></span><br><span class="line">        sent_reps = self.word_encoder(batch_inputs1, batch_inputs2)  <span class="comment"># sen_num x sent_rep_size</span></span><br><span class="line"></span><br><span class="line">        sent_reps = sent_reps.view(batch_size, max_doc_len, self.sent_rep_size)  <span class="comment"># b x doc_len x sent_rep_size</span></span><br><span class="line">        batch_masks = batch_masks.view(batch_size, max_doc_len, max_sent_len)  <span class="comment"># b x doc_len x max_sent_len</span></span><br><span class="line">        sent_masks = batch_masks.bool().any(<span class="number">2</span>).float()  <span class="comment"># b x doc_len</span></span><br><span class="line"></span><br><span class="line">        sent_hiddens = self.sent_encoder(sent_reps, sent_masks)  <span class="comment"># b x doc_len x doc_rep_size</span></span><br><span class="line">        doc_reps, atten_scores = self.sent_attention(sent_hiddens, sent_masks)  <span class="comment"># b x doc_rep_size</span></span><br><span class="line"></span><br><span class="line">        batch_outputs = self.out(doc_reps)  <span class="comment"># b x num_labels</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> batch_outputs</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bert_path = <span class="string">'bert/bert-mini/'</span></span><br><span class="line">model = Model(vocab)</span><br></pre></td></tr></table></figure>
+
+<pre><code>2020-08-04 21:08:52,810 INFO: Build Bert vocab with size 5981.
+2020-08-04 21:08:52,812 INFO: loading configuration file bert/bert-mini/config.json
+2020-08-04 21:08:52,812 INFO: Model config BertConfig {
+  &quot;attention_probs_dropout_prob&quot;: 0.1,
+  &quot;gradient_checkpointing&quot;: false,
+  &quot;hidden_act&quot;: &quot;gelu&quot;,
+  &quot;hidden_dropout_prob&quot;: 0.1,
+  &quot;hidden_size&quot;: 256,
+  &quot;initializer_range&quot;: 0.02,
+  &quot;intermediate_size&quot;: 1024,
+  &quot;layer_norm_eps&quot;: 1e-12,
+  &quot;max_position_embeddings&quot;: 256,
+  &quot;model_type&quot;: &quot;bert&quot;,
+  &quot;num_attention_heads&quot;: 4,
+  &quot;num_hidden_layers&quot;: 4,
+  &quot;pad_token_id&quot;: 0,
+  &quot;type_vocab_size&quot;: 2,
+  &quot;vocab_size&quot;: 5981
+}
+
+2020-08-04 21:08:52,814 INFO: loading weights file bert/bert-mini/pytorch_model.bin
+2020-08-04 21:08:53,114 INFO: All model checkpoint weights were used when initializing BertModel.
+
+2020-08-04 21:08:53,115 INFO: All the weights of BertModel were initialized from the model checkpoint at bert/bert-mini/.
+If your task is similar to the task the model of the ckeckpoint was trained on, you can already use BertModel for predictions without further training.
+2020-08-04 21:08:53,117 INFO: Build Bert encoder with pooled False.
+2020-08-04 21:08:53,156 INFO: Build model with bert word encoder, lstm sent encoder.
+2020-08-04 21:08:53,159 INFO: Model param num: 7.72 M.</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build optimizer</span></span><br><span class="line">learning_rate = <span class="number">2e-4</span></span><br><span class="line">bert_lr = <span class="number">5e-5</span></span><br><span class="line">decay = <span class="number">.75</span></span><br><span class="line">decay_step = <span class="number">1000</span></span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AdamW, get_linear_schedule_with_warmup</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Optimizer</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, model_parameters, steps)</span>:</span></span><br><span class="line">        self.all_params = []</span><br><span class="line">        self.optims = []</span><br><span class="line">        self.schedulers = []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> name, parameters <span class="keyword">in</span> model_parameters.items():</span><br><span class="line">            <span class="keyword">if</span> name.startswith(<span class="string">"basic"</span>):</span><br><span class="line">                optim = torch.optim.Adam(parameters, lr=learning_rate)</span><br><span class="line">                self.optims.append(optim)</span><br><span class="line"></span><br><span class="line">                l = <span class="keyword">lambda</span> step: decay ** (step // decay_step)</span><br><span class="line">                scheduler = torch.optim.lr_scheduler.LambdaLR(optim, lr_lambda=l)</span><br><span class="line">                self.schedulers.append(scheduler)</span><br><span class="line">                self.all_params.extend(parameters)</span><br><span class="line">            <span class="keyword">elif</span> name.startswith(<span class="string">"bert"</span>):</span><br><span class="line">                optim_bert = AdamW(parameters, bert_lr, eps=<span class="number">1e-8</span>)</span><br><span class="line">                self.optims.append(optim_bert)</span><br><span class="line"></span><br><span class="line">                scheduler_bert = get_linear_schedule_with_warmup(optim_bert, <span class="number">0</span>, steps)</span><br><span class="line">                self.schedulers.append(scheduler_bert)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> group <span class="keyword">in</span> parameters:</span><br><span class="line">                    <span class="keyword">for</span> p <span class="keyword">in</span> group[<span class="string">'params'</span>]:</span><br><span class="line">                        self.all_params.append(p)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                Exception(<span class="string">"no nameed parameters."</span>)</span><br><span class="line"></span><br><span class="line">        self.num = len(self.optims)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">step</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> optim, scheduler <span class="keyword">in</span> zip(self.optims, self.schedulers):</span><br><span class="line">            optim.step()</span><br><span class="line">            scheduler.step()</span><br><span class="line">            optim.zero_grad()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">zero_grad</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> optim <span class="keyword">in</span> self.optims:</span><br><span class="line">            optim.zero_grad()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_lr</span><span class="params">(self)</span>:</span></span><br><span class="line">        lrs = tuple(map(<span class="keyword">lambda</span> x: x.get_lr()[<span class="number">-1</span>], self.schedulers))</span><br><span class="line">        lr = <span class="string">' %.5f'</span> * self.num</span><br><span class="line">        res = lr % lrs</span><br><span class="line">        <span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build dataset</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sentence_split</span><span class="params">(text, vocab, max_sent_len=<span class="number">256</span>, max_segment=<span class="number">16</span>)</span>:</span></span><br><span class="line">    words = text.strip().split()</span><br><span class="line">    document_len = len(words)</span><br><span class="line"></span><br><span class="line">    index = list(range(<span class="number">0</span>, document_len, max_sent_len))</span><br><span class="line">    index.append(document_len)</span><br><span class="line"></span><br><span class="line">    segments = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(index) - <span class="number">1</span>):</span><br><span class="line">        segment = words[index[i]: index[i + <span class="number">1</span>]]</span><br><span class="line">        <span class="keyword">assert</span> len(segment) &gt; <span class="number">0</span></span><br><span class="line">        segment = [word <span class="keyword">if</span> word <span class="keyword">in</span> vocab._id2word <span class="keyword">else</span> <span class="string">'&lt;UNK&gt;'</span> <span class="keyword">for</span> word <span class="keyword">in</span> segment]</span><br><span class="line">        segments.append([len(segment), segment])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">assert</span> len(segments) &gt; <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> len(segments) &gt; max_segment:</span><br><span class="line">        segment_ = int(max_segment / <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> segments[:segment_] + segments[-segment_:]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> segments</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_examples</span><span class="params">(data, word_encoder, vocab, max_sent_len=<span class="number">256</span>, max_segment=<span class="number">8</span>)</span>:</span></span><br><span class="line">    label2id = vocab.label2id</span><br><span class="line">    examples = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> text, label <span class="keyword">in</span> zip(data[<span class="string">'text'</span>], data[<span class="string">'label'</span>]):</span><br><span class="line">        <span class="comment"># label</span></span><br><span class="line">        id = label2id(label)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># words</span></span><br><span class="line">        sents_words = sentence_split(text, vocab, max_sent_len<span class="number">-2</span>, max_segment)</span><br><span class="line">        doc = []</span><br><span class="line">        <span class="keyword">for</span> sent_len, sent_words <span class="keyword">in</span> sents_words:</span><br><span class="line">            token_ids = word_encoder.encode(sent_words)</span><br><span class="line">            sent_len = len(token_ids)</span><br><span class="line">            token_type_ids = [<span class="number">0</span>] * sent_len</span><br><span class="line">            doc.append([sent_len, token_ids, token_type_ids])</span><br><span class="line">        examples.append([id, len(doc), doc])</span><br><span class="line"></span><br><span class="line">    logging.info(<span class="string">'Total %d docs.'</span> % len(examples))</span><br><span class="line">    <span class="keyword">return</span> examples</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build loader</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">batch_slice</span><span class="params">(data, batch_size)</span>:</span></span><br><span class="line">    batch_num = int(np.ceil(len(data) / float(batch_size)))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_num):</span><br><span class="line">        cur_batch_size = batch_size <span class="keyword">if</span> i &lt; batch_num - <span class="number">1</span> <span class="keyword">else</span> len(data) - batch_size * i</span><br><span class="line">        docs = [data[i * batch_size + b] <span class="keyword">for</span> b <span class="keyword">in</span> range(cur_batch_size)]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">yield</span> docs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">data_iter</span><span class="params">(data, batch_size, shuffle=True, noise=<span class="number">1.0</span>)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    randomly permute data, then sort by source length, and partition into batches</span></span><br><span class="line"><span class="string">    ensure that the length of  sentences in each batch</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    batched_data = []</span><br><span class="line">    <span class="keyword">if</span> shuffle:</span><br><span class="line">        np.random.shuffle(data)</span><br><span class="line"></span><br><span class="line">        lengths = [example[<span class="number">1</span>] <span class="keyword">for</span> example <span class="keyword">in</span> data]</span><br><span class="line">        noisy_lengths = [- (l + np.random.uniform(- noise, noise)) <span class="keyword">for</span> l <span class="keyword">in</span> lengths]</span><br><span class="line">        sorted_indices = np.argsort(noisy_lengths).tolist()</span><br><span class="line">        sorted_data = [data[i] <span class="keyword">for</span> i <span class="keyword">in</span> sorted_indices]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        sorted_data =data</span><br><span class="line">        </span><br><span class="line">    batched_data.extend(list(batch_slice(sorted_data, batch_size)))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> shuffle:</span><br><span class="line">        np.random.shuffle(batched_data)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> batch <span class="keyword">in</span> batched_data:</span><br><span class="line">        <span class="keyword">yield</span> batch</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># some function</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> f1_score, precision_score, recall_score</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_score</span><span class="params">(y_ture, y_pred)</span>:</span></span><br><span class="line">    y_ture = np.array(y_ture)</span><br><span class="line">    y_pred = np.array(y_pred)</span><br><span class="line">    f1 = f1_score(y_ture, y_pred, average=<span class="string">'macro'</span>) * <span class="number">100</span></span><br><span class="line">    p = precision_score(y_ture, y_pred, average=<span class="string">'macro'</span>) * <span class="number">100</span></span><br><span class="line">    r = recall_score(y_ture, y_pred, average=<span class="string">'macro'</span>) * <span class="number">100</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> str((reformat(p, <span class="number">2</span>), reformat(r, <span class="number">2</span>), reformat(f1, <span class="number">2</span>))), reformat(f1, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">reformat</span><span class="params">(num, n)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> float(format(num, <span class="string">'0.'</span> + str(n) + <span class="string">'f'</span>))</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build trainer</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report</span><br><span class="line"></span><br><span class="line">clip = <span class="number">5.0</span></span><br><span class="line">epochs = <span class="number">1</span></span><br><span class="line">early_stops = <span class="number">3</span></span><br><span class="line">log_interval = <span class="number">50</span></span><br><span class="line"></span><br><span class="line">test_batch_size = <span class="number">16</span></span><br><span class="line">train_batch_size = <span class="number">16</span></span><br><span class="line"></span><br><span class="line">save_model = <span class="string">'./bert.bin'</span></span><br><span class="line">save_test = <span class="string">'./bert.csv'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Trainer</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, model, vocab)</span>:</span></span><br><span class="line">        self.model = model</span><br><span class="line">        self.report = <span class="literal">True</span></span><br><span class="line">        </span><br><span class="line">        self.train_data = get_examples(train_data, model.word_encoder, vocab)</span><br><span class="line">        self.batch_num = int(np.ceil(len(self.train_data) / float(train_batch_size)))</span><br><span class="line">        self.dev_data = get_examples(dev_data, model.word_encoder, vocab)</span><br><span class="line">        self.test_data = get_examples(test_data, model.word_encoder, vocab)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># criterion</span></span><br><span class="line">        self.criterion = nn.CrossEntropyLoss()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># label name</span></span><br><span class="line">        self.target_names = vocab.target_names</span><br><span class="line"></span><br><span class="line">        <span class="comment"># optimizer</span></span><br><span class="line">        self.optimizer = Optimizer(model.all_parameters, steps=self.batch_num * epochs)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># count</span></span><br><span class="line">        self.step = <span class="number">0</span></span><br><span class="line">        self.early_stop = <span class="number">-1</span></span><br><span class="line">        self.best_train_f1, self.best_dev_f1 = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">        self.last_epoch = epochs</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">train</span><span class="params">(self)</span>:</span></span><br><span class="line">        logging.info(<span class="string">'Start training...'</span>)</span><br><span class="line">        <span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">1</span>, epochs + <span class="number">1</span>):</span><br><span class="line">            train_f1 = self._train(epoch)</span><br><span class="line"></span><br><span class="line">            dev_f1 = self._eval(epoch)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.best_dev_f1 &lt;= dev_f1:</span><br><span class="line">                logging.info(</span><br><span class="line">                    <span class="string">"Exceed history dev = %.2f, current dev = %.2f"</span> % (self.best_dev_f1, dev_f1))</span><br><span class="line">                torch.save(self.model.state_dict(), save_model)</span><br><span class="line"></span><br><span class="line">                self.best_train_f1 = train_f1</span><br><span class="line">                self.best_dev_f1 = dev_f1</span><br><span class="line">                self.early_stop = <span class="number">0</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.early_stop += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> self.early_stop == early_stops:</span><br><span class="line">                    logging.info(</span><br><span class="line">                        <span class="string">"Eearly stop in epoch %d, best train: %.2f, dev: %.2f"</span> % (</span><br><span class="line">                            epoch - early_stops, self.best_train_f1, self.best_dev_f1))</span><br><span class="line">                    self.last_epoch = epoch</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.model.load_state_dict(torch.load(save_model))</span><br><span class="line">        self._eval(self.last_epoch + <span class="number">1</span>, test=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_train</span><span class="params">(self, epoch)</span>:</span></span><br><span class="line">        self.optimizer.zero_grad()</span><br><span class="line">        self.model.train()</span><br><span class="line"></span><br><span class="line">        start_time = time.time()</span><br><span class="line">        epoch_start_time = time.time()</span><br><span class="line">        overall_losses = <span class="number">0</span></span><br><span class="line">        losses = <span class="number">0</span></span><br><span class="line">        batch_idx = <span class="number">1</span></span><br><span class="line">        y_pred = []</span><br><span class="line">        y_true = []</span><br><span class="line">        <span class="keyword">for</span> batch_data <span class="keyword">in</span> data_iter(self.train_data, train_batch_size, shuffle=<span class="literal">True</span>):</span><br><span class="line">            torch.cuda.empty_cache()</span><br><span class="line">            batch_inputs, batch_labels = self.batch2tensor(batch_data)</span><br><span class="line">            batch_outputs = self.model(batch_inputs)</span><br><span class="line">            loss = self.criterion(batch_outputs, batch_labels)</span><br><span class="line">            loss.backward()</span><br><span class="line"></span><br><span class="line">            loss_value = loss.detach().cpu().item()</span><br><span class="line">            losses += loss_value</span><br><span class="line">            overall_losses += loss_value</span><br><span class="line"></span><br><span class="line">            y_pred.extend(torch.max(batch_outputs, dim=<span class="number">1</span>)[<span class="number">1</span>].cpu().numpy().tolist())</span><br><span class="line">            y_true.extend(batch_labels.cpu().numpy().tolist())</span><br><span class="line"></span><br><span class="line">            nn.utils.clip_grad_norm_(self.optimizer.all_params, max_norm=clip)</span><br><span class="line">            <span class="keyword">for</span> optimizer, scheduler <span class="keyword">in</span> zip(self.optimizer.optims, self.optimizer.schedulers):</span><br><span class="line">                optimizer.step()</span><br><span class="line">                scheduler.step()</span><br><span class="line">            self.optimizer.zero_grad()</span><br><span class="line"></span><br><span class="line">            self.step += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> batch_idx % log_interval == <span class="number">0</span>:</span><br><span class="line">                elapsed = time.time() - start_time</span><br><span class="line"></span><br><span class="line">                lrs = self.optimizer.get_lr()</span><br><span class="line">                logging.info(</span><br><span class="line">                    <span class="string">'| epoch &#123;:3d&#125; | step &#123;:3d&#125; | batch &#123;:3d&#125;/&#123;:3d&#125; | lr&#123;&#125; | loss &#123;:.4f&#125; | s/batch &#123;:.2f&#125;'</span>.format(</span><br><span class="line">                        epoch, self.step, batch_idx, self.batch_num, lrs,</span><br><span class="line">                        losses / log_interval,</span><br><span class="line">                        elapsed / log_interval))</span><br><span class="line"></span><br><span class="line">                losses = <span class="number">0</span></span><br><span class="line">                start_time = time.time()</span><br><span class="line"></span><br><span class="line">            batch_idx += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        overall_losses /= self.batch_num</span><br><span class="line">        during_time = time.time() - epoch_start_time</span><br><span class="line"></span><br><span class="line">        <span class="comment"># reformat</span></span><br><span class="line">        overall_losses = reformat(overall_losses, <span class="number">4</span>)</span><br><span class="line">        score, f1 = get_score(y_true, y_pred)</span><br><span class="line"></span><br><span class="line">        logging.info(</span><br><span class="line">            <span class="string">'| epoch &#123;:3d&#125; | score &#123;&#125; | f1 &#123;&#125; | loss &#123;:.4f&#125; | time &#123;:.2f&#125;'</span>.format(epoch, score, f1,</span><br><span class="line">                                                                                  overall_losses,</span><br><span class="line">                                                                                  during_time))</span><br><span class="line">        <span class="keyword">if</span> set(y_true) == set(y_pred) <span class="keyword">and</span> self.report:</span><br><span class="line">            report = classification_report(y_true, y_pred, digits=<span class="number">4</span>, target_names=self.target_names)</span><br><span class="line">            logging.info(<span class="string">'\n'</span> + report)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> f1</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_eval</span><span class="params">(self, epoch, test=False)</span>:</span></span><br><span class="line">        self.model.eval()</span><br><span class="line">        start_time = time.time()</span><br><span class="line">        data = self.test_data <span class="keyword">if</span> test <span class="keyword">else</span> self.dev_data</span><br><span class="line">        y_pred = []</span><br><span class="line">        y_true = []</span><br><span class="line">        <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">            <span class="keyword">for</span> batch_data <span class="keyword">in</span> data_iter(data, test_batch_size, shuffle=<span class="literal">False</span>):</span><br><span class="line">                torch.cuda.empty_cache()</span><br><span class="line">                batch_inputs, batch_labels = self.batch2tensor(batch_data)</span><br><span class="line">                batch_outputs = self.model(batch_inputs)</span><br><span class="line">                y_pred.extend(torch.max(batch_outputs, dim=<span class="number">1</span>)[<span class="number">1</span>].cpu().numpy().tolist())</span><br><span class="line">                y_true.extend(batch_labels.cpu().numpy().tolist())</span><br><span class="line"></span><br><span class="line">            score, f1 = get_score(y_true, y_pred)</span><br><span class="line"></span><br><span class="line">            during_time = time.time() - start_time</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> test:</span><br><span class="line">                df = pd.DataFrame(&#123;<span class="string">'label'</span>: y_pred&#125;)</span><br><span class="line">                df.to_csv(save_test, index=<span class="literal">False</span>, sep=<span class="string">','</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                logging.info(</span><br><span class="line">                    <span class="string">'| epoch &#123;:3d&#125; | dev | score &#123;&#125; | f1 &#123;&#125; | time &#123;:.2f&#125;'</span>.format(epoch, score, f1,</span><br><span class="line">                                                                              during_time))</span><br><span class="line">                <span class="keyword">if</span> set(y_true) == set(y_pred) <span class="keyword">and</span> self.report:</span><br><span class="line">                    report = classification_report(y_true, y_pred, digits=<span class="number">4</span>, target_names=self.target_names)</span><br><span class="line">                    logging.info(<span class="string">'\n'</span> + report)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> f1</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">batch2tensor</span><span class="params">(self, batch_data)</span>:</span></span><br><span class="line">        <span class="string">'''</span></span><br><span class="line"><span class="string">            [[label, doc_len, [[sent_len, [sent_id0, ...], [sent_id1, ...]], ...]]</span></span><br><span class="line"><span class="string">        '''</span></span><br><span class="line">        batch_size = len(batch_data)</span><br><span class="line">        doc_labels = []</span><br><span class="line">        doc_lens = []</span><br><span class="line">        doc_max_sent_len = []</span><br><span class="line">        <span class="keyword">for</span> doc_data <span class="keyword">in</span> batch_data:</span><br><span class="line">            doc_labels.append(doc_data[<span class="number">0</span>])</span><br><span class="line">            doc_lens.append(doc_data[<span class="number">1</span>])</span><br><span class="line">            sent_lens = [sent_data[<span class="number">0</span>] <span class="keyword">for</span> sent_data <span class="keyword">in</span> doc_data[<span class="number">2</span>]]</span><br><span class="line">            max_sent_len = max(sent_lens)</span><br><span class="line">            doc_max_sent_len.append(max_sent_len)</span><br><span class="line"></span><br><span class="line">        max_doc_len = max(doc_lens)</span><br><span class="line">        max_sent_len = max(doc_max_sent_len)</span><br><span class="line"></span><br><span class="line">        batch_inputs1 = torch.zeros((batch_size, max_doc_len, max_sent_len), dtype=torch.int64)</span><br><span class="line">        batch_inputs2 = torch.zeros((batch_size, max_doc_len, max_sent_len), dtype=torch.int64)</span><br><span class="line">        batch_masks = torch.zeros((batch_size, max_doc_len, max_sent_len), dtype=torch.float32)</span><br><span class="line">        batch_labels = torch.LongTensor(doc_labels)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> b <span class="keyword">in</span> range(batch_size):</span><br><span class="line">            <span class="keyword">for</span> sent_idx <span class="keyword">in</span> range(doc_lens[b]):</span><br><span class="line">                sent_data = batch_data[b][<span class="number">2</span>][sent_idx]</span><br><span class="line">                <span class="keyword">for</span> word_idx <span class="keyword">in</span> range(sent_data[<span class="number">0</span>]):</span><br><span class="line">                    batch_inputs1[b, sent_idx, word_idx] = sent_data[<span class="number">1</span>][word_idx]</span><br><span class="line">                    batch_inputs2[b, sent_idx, word_idx] = sent_data[<span class="number">2</span>][word_idx]</span><br><span class="line">                    batch_masks[b, sent_idx, word_idx] = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> use_cuda:</span><br><span class="line">            batch_inputs1 = batch_inputs1.to(device)</span><br><span class="line">            batch_inputs2 = batch_inputs2.to(device)</span><br><span class="line">            batch_masks = batch_masks.to(device)</span><br><span class="line">            batch_labels = batch_labels.to(device)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (batch_inputs1, batch_inputs2, batch_masks), batch_labels</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># train</span></span><br><span class="line">trainer = Trainer(model, vocab)</span><br><span class="line">trainer.train()</span><br></pre></td></tr></table></figure>
+
+<pre><code>2020-08-04 21:09:42,141 INFO: Total 9000 docs.
+2020-08-04 21:09:46,220 INFO: Total 1000 docs.
+2020-08-04 21:13:16,817 INFO: Total 50000 docs.
+2020-08-04 21:13:16,818 INFO: Start training...
+C:\Users\16402\Anaconda3\envs\torch\lib\site-packages\torch\optim\lr_scheduler.py:231: UserWarning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`.
+  warnings.warn(&quot;To get the last learning rate computed by the scheduler, &quot;
+2020-08-04 21:18:31,349 INFO: | epoch   1 | step  50 | batch  50/563 | lr 0.00020 0.00005 | loss 2.0842 | s/batch 6.29
+2020-08-04 21:23:30,647 INFO: | epoch   1 | step 100 | batch 100/563 | lr 0.00020 0.00004 | loss 1.3136 | s/batch 5.99
+2020-08-04 21:28:09,804 INFO: | epoch   1 | step 150 | batch 150/563 | lr 0.00020 0.00004 | loss 0.8795 | s/batch 5.58
+2020-08-04 21:32:29,511 INFO: | epoch   1 | step 200 | batch 200/563 | lr 0.00020 0.00003 | loss 0.8083 | s/batch 5.19
+2020-08-04 21:37:23,139 INFO: | epoch   1 | step 250 | batch 250/563 | lr 0.00020 0.00003 | loss 0.7032 | s/batch 5.87
+2020-08-04 21:41:54,379 INFO: | epoch   1 | step 300 | batch 300/563 | lr 0.00020 0.00002 | loss 0.7255 | s/batch 5.42
+2020-08-04 21:46:54,413 INFO: | epoch   1 | step 350 | batch 350/563 | lr 0.00020 0.00002 | loss 0.4691 | s/batch 6.00
+2020-08-04 21:51:52,438 INFO: | epoch   1 | step 400 | batch 400/563 | lr 0.00020 0.00001 | loss 0.6759 | s/batch 5.96
+2020-08-04 21:56:39,501 INFO: | epoch   1 | step 450 | batch 450/563 | lr 0.00020 0.00001 | loss 0.5045 | s/batch 5.74
+2020-08-04 22:01:25,859 INFO: | epoch   1 | step 500 | batch 500/563 | lr 0.00020 0.00001 | loss 0.4234 | s/batch 5.73
+2020-08-04 22:06:26,352 INFO: | epoch   1 | step 550 | batch 550/563 | lr 0.00020 0.00000 | loss 0.5096 | s/batch 6.01
+2020-08-04 22:07:30,164 INFO: | epoch   1 | score (70.97, 58.94, 62.61) | f1 62.61 | loss 0.8152 | time 3253.28
+2020-08-04 22:07:30,209 INFO: 
+              precision    recall  f1-score   support
+
+          科技     0.7663    0.8156    0.7902      1697
+          股票     0.7096    0.8917    0.7903      1680
+          体育     0.8803    0.9210    0.9002      1405
+          娱乐     0.7736    0.8198    0.7960       971
+          时政     0.7661    0.7056    0.7346       710
+          社会     0.7122    0.7097    0.7110       558
+          教育     0.8329    0.7231    0.7741       455
+          财经     0.6778    0.3177    0.4326       384
+          家居     0.6568    0.5936    0.6236       374
+          游戏     0.7650    0.5018    0.6061       279
+          房产     0.6987    0.5000    0.5829       218
+          时尚     0.6506    0.3649    0.4675       148
+          彩票     0.8788    0.3625    0.5133        80
+          星座     0.1667    0.0244    0.0426        41
+
+    accuracy                         0.7639      9000
+   macro avg     0.7097    0.5894    0.6261      9000
+weighted avg     0.7607    0.7639    0.7538      9000
+
+C:\Users\16402\Anaconda3\envs\torch\lib\site-packages\sklearn\metrics\_classification.py:1221: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+2020-08-04 22:11:06,013 INFO: | epoch   1 | dev | score (77.81, 73.77, 74.78) | f1 74.78 | time 215.80
+2020-08-04 22:11:06,013 INFO: Exceed history dev = 0.00, current dev = 74.78</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># test</span></span><br><span class="line">trainer.test()</span><br></pre></td></tr></table></figure>
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/e39af9a7.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/93bfc68e.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">逆波兰表达式</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
