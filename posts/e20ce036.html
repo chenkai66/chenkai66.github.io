@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    受限玻尔兹曼机 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-受限玻尔兹曼机"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  受限玻尔兹曼机
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/e20ce036.html" class="article-date">
+  <time datetime="2020-08-06T01:06:25.056Z" itemprop="datePublished">2020-08-06</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">9 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="受限玻尔兹曼机模型"><a href="#受限玻尔兹曼机模型" class="headerlink" title="受限玻尔兹曼机模型"></a>受限玻尔兹曼机模型</h1><p>Restricted Boltzmann machines are some of the most common building blocks of <strong>deep probabilistic models</strong>. They are undirected probabilistic graphical models containing a layer of observable variables and a single layer of latent variables.</p>
+<p>RBM根据MLE原理来估计预定义分布中的参数，以便预定义分布能尽可能地逼近产生观测数据的未知分布。多个RBM分层堆叠而成的DBN(deep belief networks)构成深度学习的主要框架。如下图：</p>
+<p><img src="/Pic/%E5%8F%97%E9%99%90%E7%8E%BB%E5%B0%94%E5%85%B9%E6%9B%BC%E6%9C%BA/1.webp" alt></p>
+<p>具体模型为：</p>
+<p>$$p(v, h) = \frac{1}{Z}\text{exp}(-E(v,h))$$</p>
+<p>其中$E(v, h)$是能量函数，定义如下：</p>
+<p>$$E(v, h) = -b^Tv - c^Th - v^TWh$$</p>
+<p>$Z$为正规化函数，定义如下：</p>
+<p>$$Z = \sum_v\sum_h\text{exp}(-E(v, h))$$</p>
+<p>目标函数是极大化概率似然函数$\prod{p(v, h)}$，因此我们希望$E(v, h)$尽可能小，将能量中的点积写成求和式：</p>
+<p>$$E(v, h) = -b^Tv-c^Th-v^TWh = -\sum_kb_kv_k - \sum_jc_jh_j - \sum_j\sum_kW_{jk}h_jv_k$$</p>
+<p>如果$b_k&gt;0$，因为$v_k \in {0,1}$，那么要使得能量最小，我们更希望$v_k=1$；反之如果$b_k&lt;0$，我们更希望$v_k=0$。用同样的方式对$b_j,W_{jk}$进行分析，总结如下：</p>
+<table>
+<thead>
+<tr>
+<th>系数的情形</th>
+<th>我们倾向的选择</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$b_k&gt;0$</td>
+<td>$v_k=1$</td>
+</tr>
+<tr>
+<td>$b_k&lt;0$</td>
+<td>$v_k=0$</td>
+</tr>
+<tr>
+<td>$c_j&gt;0$</td>
+<td>$h_j =1$</td>
+</tr>
+<tr>
+<td>$c_j&lt;0$</td>
+<td>$h_j =0$</td>
+</tr>
+<tr>
+<td>$W_{jk} &gt; 0$</td>
+<td>$h_jv_k =1$</td>
+</tr>
+<tr>
+<td>$W_{jk} &lt; 0$</td>
+<td>$h_jv_k =0$</td>
+</tr>
+</tbody></table>
+<p>接着考虑如何最大化$\prod p(v,h)$，这个式子中有$Z$，而$Z$是指数的求和，不大好处理，所以我们不优化这个式子，考虑条件概率$p(h|v)$</p>
+<p>$$\begin{equation}\begin{split} p(h|v) &amp;=\frac{p(h,v)}{p(v)}\ &amp;= \frac{ \frac 1 Z \exp\Big(-E (v,h)\Big)}{ \sum_h \frac 1 Z \exp\Big(-E (v,h)\Big)}\ &amp;=\frac{ \exp\Big(-E (v,h)\Big)}{ \sum_h \exp\Big(-E (v,h)\Big)}\ &amp;=\frac{ \exp\Big( b^Tv + c^Th +v^TWh \Big)}{ \sum_h \exp\Big( b^Tv + c^Th +v^TWh \Big)} \ &amp;= \frac{\exp \Big( b^Tv \Big)\exp\Big( c^Th +v^TWh \Big)}{\exp \Big( b^Tv \Big) \sum_h \exp\Big( c^Th +v^TWh \Big)}\ &amp;= \frac{\exp\Big( c^Th +v^TWh \Big)}{\sum_h \exp\Big( c^Th +v^TWh \Big)}\ &amp;= \frac{\exp\Big( \sum_j c_jh_j +\sum_j v^T W_{:j}h_j \Big)}{Z^{‘}}\ &amp;= \frac{1}{Z^{‘}} \prod_{j=1}^n \exp \Big( c_jh_j +v^T W_{:j}h_j \Big) \end{split}\end{equation}$$</p>
+<p>这里$Z^{‘}=\sum_h \exp\Big( c^Th +v^TWh \Big),W_{:j}$是$W$的第$j$列</p>
+<p>注意$Z^{‘}$是常数，上式将概率分解为有关$h_1,…,h_n$项的乘积，所以这个式子告诉我们$p(h_1|v),…,p(h_n|v)$条件独立：<br>$$p(h|v) =\prod <em>{j=1}^n p(h_j|v)$$<br>并且<br>$$p(h_j|v) \propto \exp \Big( c_jh_j +v^T W</em>{:j}h_j \Big)$$<br>我们利用上式计算$p(h_j=1|v),p(h_j=0|v)$<br>$$\begin{aligned} p(h_j=1|v) &amp;= \frac{p(h_j=1,v)}{p(v)}\ &amp;= \frac{p(h_j=1,v)}{p(h_j=0,v)+p(h_j=1,v)}\ &amp;= \frac{ \exp \Big( c_j +v^T W_{:j} \Big)}{\exp(0)+\exp \Big( c_j +v^T W_{:j} \Big) }\ &amp;= \text{sigmoid} (c_j +v^TW_{:j}) \end{aligned}$$</p>
+<p>$$\begin{aligned} p(h_j=0|v) &amp;= 1-p(h_j=1|v) \ &amp;= 1 - \text{sigmoid} (c_j +v^TW_{:j}) \end{aligned}$$</p>
+<p>其中$\text{sigmoid}(z) = \frac{1}{1+e^{-z}}$<br>由$v,h$的对称性，同理可得<br>$$p(v|h) = \prod <em>{i=1}^n p(v_i|h)\ p(v_i=1|h) = \text{sigmoid} (b_i +W</em>{i:}h) \ p(v_i=0|h) =1- \text{sigmoid} (b_i +W_{i:}h)$$</p>
+<p>其中$W_{i:}$表示$W$的第$i$行</p>
+<h1 id="RBM-Gibbs-Sampling"><a href="#RBM-Gibbs-Sampling" class="headerlink" title="RBM Gibbs Sampling"></a>RBM Gibbs Sampling</h1><p>根据条件独立性，可以得到如下取样的方法：</p>
+<ul>
+<li><p>取样$h^{(l)} ∼ P(h|v^{(l)} )$：我们可以在给定$v^{(l)}$的条件下同时并且独立的对$h^{(l)}$中的每个元素取样。</p>
+</li>
+<li><p>取样$v^{(l+1)} ∼ P(v|h^{(l)} )$由条件独立性，我们可以在给定$h^{(l)}$的条件下同时并且独立的对$v^{(l+1)}$中的每个元素取样。</p>
+</li>
+</ul>
+<p>这种取样方法叫做<strong>Gibbs Sampling</strong></p>
+<h1 id="训练受限玻尔兹曼机"><a href="#训练受限玻尔兹曼机" class="headerlink" title="训练受限玻尔兹曼机"></a>训练受限玻尔兹曼机</h1><p>这里考虑如何训练受限玻尔兹曼机，我们的目标肯定是极大化概率似然函数，或者等价地，极大化对数概率似然函数，我们进行如下处理：</p>
+<p>$$\begin{aligned} \ell (W,b,c) &amp;= \sum_{t=1}^n \log P(v^{(t)})\ &amp;= \sum_{t=1}^n \log \sum <em>h P(v^{(t)},h)\ &amp;= \sum</em>{t=1}^n \log \sum <em>h \frac 1 Z \exp\Big(-E (v^{(t)},h)\Big)\ &amp;= \sum</em>{t=1}^n \log \frac 1 Z \sum <em>h \exp\Big(-E (v^{(t)},h)\Big)\ &amp;= \sum</em>{t=1}^n \log \sum <em>h \exp\Big(-E (v^{(t)},h)\Big) - \sum</em>{t=1}^n \log Z\ &amp;= \sum_{t=1}^n \log \sum <em>h \exp\Big(-E (v^{(t)},h)\Big) - n \log Z\ &amp;= \sum</em>{t=1}^n \log \sum _h \exp\Big(-E (v^{(t)},h)\Big) - n \log \sum _{v,h} \exp\Big(-E (v,h)\Big)\ \end{aligned}$$</p>
+<p>令$\theta ={b,c,W}$，我们来对上式关于$\theta$求梯度：</p>
+<p>$$\begin{aligned} \nabla_\theta \ell (W,b,c) &amp;=\nabla_\theta\sum_{t=1}^n \log \sum <em>h \exp\Big(-E (v^{(t)},h)\Big) - n \nabla_\theta\log \sum _{v,h} \exp\Big(-E (v,h)\Big)\ &amp;=\sum</em>{t=1}^n \frac{\nabla_\theta \sum <em>h \exp\Big(-E (v^{(t)},h)\Big)}{ \sum _h \exp\Big(-E (v^{(t)},h)\Big)} - n\frac{\nabla_\theta \sum _{v,h} \exp\Big(-E (v,h)\Big)}{ \sum _{v,h} \exp\Big(-E (v,h)\Big)}\ &amp;=\sum</em>{t=1}^n \frac{ \sum _h \exp\Big(-E (v^{(t)},h)\Big) \nabla_\theta \Big( -E (v^{(t)},h)\Big)}{ \sum _h \exp\Big(-E (v^{(t)},h)\Big)}- n\frac{ \sum _{v,h}\exp\Big(-E (v,h)\Big)\nabla_\theta \Big( -E (v,h)\Big)}{ \sum _{v,h}\exp\Big(-E (v,h)\Big)}\ \end{aligned}$$</p>
+<p>注意，所以上述两项都可以看成随机变量的期望，所以可以写成如下形式：</p>
+<p>$$\begin{aligned} \nabla_\theta \ell (W,b,c) &amp;= \sum_{t=1}^n \mathbb E_{P(h|v^{(t)})}\Big[ \nabla_\theta \Big( -E (v^{(t)},h)\Big)\Big] - n \mathbb E_{P(h,v)}\Big[ \nabla_\theta \Big( -E (v,h)\Big)\Big] \end{aligned}$$</p>
+<p>第一项可以理解关于data的，第二项可以理解为关于model的。</p>
+<p>我们利用能量的定义分别对上式再进行处理</p>
+<p>$$\begin{aligned} \nabla_W \Big( -E (v,h)\Big) &amp;= \frac{\partial}{\partial W} \Big(b^Tv + c^Th +v^TWh\Big)\ &amp;= hv^T \end{aligned}\ \begin{aligned} \nabla_b \Big( -E (v,h)\Big) &amp;= \frac{\partial}{\partial b} \Big(b^Tv + c^Th +v^TWh\Big)\ &amp;= v \end{aligned}\ \begin{aligned} \nabla_c \Big( -E (v,h)\Big) &amp;= \frac{\partial}{\partial c} \Big(b^Tv + c^Th +v^TWh\Big)\ &amp;=h \end{aligned}$$</p>
+<p>记</p>
+<p>$$\hat h^{(t)} = \mathbb E_{P(h|v^{(t)})}[h] =P(h=1|v^{(t)})= \text{sigmoid}(c+{v^{(t)}}^TW)$$</p>
+<p>带入上式可得</p>
+<p>$$\nabla_W \ell (W,b,c) = \sum_{t=1}^n \hat h^{(t)}{v^{(t)}}^T - n \mathbb E_{P(h,v)}[ hv^T] \ \nabla_b \ell (W,b,c) = \sum_{t=1}^n {v^{(t)}}^T - n \mathbb E_{P(h,v)}[ v] \ \nabla_c \ell (W,b,c) = \sum_{t=1}^n \hat h^{(t)} - n \mathbb E_{P(h,v)}[ h]$$</p>
+<p>但是注意$$\mathbb E_{P(h,v)}\Big[ \nabla_\theta \Big( -E (v,h)\Big)\Big]$$依旧涉及到$$Z = \sum_v \sum_h \exp\Big(-E (v,h)\Big)$$非常难计算，所以实际上我们会用如下近似：</p>
+<p>$$\mathbb E_{P(h,v)}\Big[ \nabla_\theta \Big( -E (v,h)\Big)\Big] \approx \nabla_\theta \Big( -E (v,h)\Big) \Big| _{v=\hat v ,h=\hat h}$$</p>
+<p>对上述式子运用此近似可得</p>
+<p>$$\nabla_W \ell (W,b,c) \approx \sum_{t=1}^n h(v^{(t)}){v^{(t)}}^T - n h(\tilde v ) \tilde v ^T \ \nabla_b \ell (W,b,c) \approx \sum_{t=1}^n {v^{(t)}}^T - n \tilde v \ \nabla_c \ell (W,b,c) \approx \sum_{t=1}^n h(v^{(t)}) - n h(\tilde v )$$</p>
+<p>实际中我们会使用随机梯度，所以更新式如下</p>
+<p>$$W = W+ \alpha \Big( h(v^{(t)}){v^{(t)}}^T - h(\tilde v ) \tilde v ^T\Big) \ b= b+ \alpha \Big( h(v^{(t)}) - h(\tilde v )\Big) \ c = c+ \alpha \Big( v^{(t)} -\tilde v\Big)$$</p>
+<p>注意这里之所以使用加号是因为这里要最大化目标和函数，所以使用梯度上升。</p>
+<p>算法总结<br>把上述内容总结起来，就可以得到如下算法：</p>
+<ul>
+<li><p>对每个训练数据v^{(t)}</p>
+<ul>
+<li>从$v^{(t)}$开始使用$k$步Gibbs Sampling生成样本$\tilde v$</li>
+<li>更新参数<br>$$W = W+ \alpha \Big( h(v^{(t)}){v^{(t)}}^T - h(\tilde v ) \tilde v ^T\Big) \ b= b+ \alpha \Big( h(v^{(t)}) - h(\tilde v )\Big) \ c = c+ \alpha \Big( v^{(t)} -\tilde v\Big)$$</li>
+</ul>
+</li>
+<li><p>返回至1直至停止条件满足</p>
+</li>
+</ul>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://uwaterloo.ca/data-analytics/sites/ca.data-analytics/files/uploads/files/dbn2.pdf" target="_blank" rel="noopener">https://uwaterloo.ca/data-analytics/sites/ca.data-analytics/files/uploads/files/dbn2.pdf</a></li>
+<li><a href="https://www.jianshu.com/p/378e4c93411a" target="_blank" rel="noopener">https://www.jianshu.com/p/378e4c93411a</a></li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/e20ce036.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/e39af9a7.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">新闻文本分类实战(二)</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
