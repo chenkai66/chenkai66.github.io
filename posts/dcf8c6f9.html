@@ -113,7 +113,7 @@
 <p>上面的多项式级的复杂度我们称为P问题，指数级复杂度为NP Hard或者NP Complete问题，其中NP Complete问题是NP Hard问题的子集（这两者较难区分这里不详述），NP的意思是可以在多项式复杂度内能验证的问题。</p>
 <h2 id="基于搜索的问答系统"><a href="#基于搜索的问答系统" class="headerlink" title="基于搜索的问答系统"></a>基于搜索的问答系统</h2><p>首先我们有一个知识库（问题答案对），预处理环节我们对用户提出的问题先做分词处理，然后做拼写纠错，然后将所有的语态转化为相同的语态（比如went和going转为go），这是Stemming环节，然后就是停用词过滤以及无用单词的过滤（Word Filtering），最后还可以考虑同义词替换。接着我们可以将用户提出的问题转换为向量表示（boolen vector——&gt;count vector——&gt; tf-idf——&gt;Word2Vector——&gt; Seq2Seq），转换完向量后我们就需要计算相似度（可以使用欧氏距离,Cosine距离或其他距离公式），然后按照相似度距离排序，获得最终结果，排序完之后也可能再进行最后一轮的过滤。如果文本数量太多可以通过建立倒排表降低时间复杂度加速过程。</p>
 <h1 id="NLP项目Pipeline"><a href="#NLP项目Pipeline" class="headerlink" title="NLP项目Pipeline"></a>NLP项目Pipeline</h1><p>下图为NLP项目的Pipeline：</p>
-<p><img src="/posts/.%5CPic%5CNLP%5C23.png" alt></p>
+<p><img src="/posts/Pic\NLP\23.png" alt></p>
 <p>下面介绍的前两个流程涉及的算法较多，后两个算法较少。下面分别进行介绍：</p>
 <h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><h3 id="Word-Segmentation"><a href="#Word-Segmentation" class="headerlink" title="Word Segmentation"></a>Word Segmentation</h3><p>常见的分词工具有Jieba分词，SnowNLP，LTP，HanNLP，目前较常用的是Jieba分词工具，Python调用直接impor jieba即可，可以通过cut语句切分，可以通过add_word函数加入希望其识别的专有名词，此时不会对其做切分。</p>
 <h4 id="前向最大匹配（forward-max-matching）"><a href="#前向最大匹配（forward-max-matching）" class="headerlink" title="前向最大匹配（forward-max matching）"></a>前向最大匹配（forward-max matching）</h4><p>首先我们举例：我们经常有意见分歧。我们第一步建立词典：[“我们”，”经常”，”有”，”有意见”，”意见”，”分歧”]，我们匹配方式是将整个句子不断剪掉后面的单词，然后匹配词典中的单词，最终得到的分词结果是：[“我们”，”经常”，”有意见”，”分歧”]，这种匹配法会尽量匹配更多的字符。这是一个贪心的算法。</p>
@@ -129,9 +129,9 @@
 <p>最大匹配算法只能看到我们前面说到的单词信息，是最简单的模型，而考虑不到语义和句子结构的信息。但我们考虑到这两个信息之后当然我们的复杂度也会随之提高。因此我们可以先试验简单地分词方法，效果还不错的话我们可以再提升为更复杂的模型（考虑到语义信息）。</p>
 <h4 id="Incorporate-Semantic（考虑语义）"><a href="#Incorporate-Semantic（考虑语义）" class="headerlink" title="Incorporate Semantic（考虑语义）"></a>Incorporate Semantic（考虑语义）</h4><p>我们希望有一个工具，能够将句子传入，返回一个语义的概率（不同分词法的概率），然后选取概率高的分法即可。<strong>也就是我们输入句子，根据词典库生成所有可能的分割，在其中选择最好的。</strong></p>
 <p>我们有一个工具（Language Model），最简单的算法就是根据条件概率假设（所有词出现概率不相关），将句子概率分解成单词的概率乘积，也就是：</p>
-<p>$$P(\text{经常，有，意见，分歧})=P(\text{经常})P(\text{有})P(\text{意见})P(\text{分歧}) v.s. P(\text{经常，有意见，分歧})=P(\text{经常})P(\text{有意见})P(\text{分歧})$$</p>
-<p>由于上面的计算中每个概率值都很低（在一个语料库中每个单词出现的次数都比较少），我们计算乘积时一般会计算$\text{log}P(\text{经常，有，意见，分歧})$，然后将取log之后的结果累加即可。由于$\text{log}$函数时严格递增的，因此可以保证比较是等同的，有时候我们也会加平滑项，这里先不讲。上面的计算方法是Unigram方法，我们当然还可以考虑两个或更多单词的联合概率分布。</p>
+<script type="math/tex; mode=display">P(\text{经常，有，意见，分歧})=P(\text{经常})P(\text{有})P(\text{意见})P(\text{分歧}) v.s. P(\text{经常，有意见，分歧})=P(\text{经常})P(\text{有意见})P(\text{分歧})</script><p>由于上面的计算中每个概率值都很低（在一个语料库中每个单词出现的次数都比较少），我们计算乘积时一般会计算$\text{log}P(\text{经常，有，意见，分歧})$，然后将取log之后的结果累加即可。由于$\text{log}$函数时严格递增的，因此可以保证比较是等同的，有时候我们也会加平滑项，这里先不讲。上面的计算方法是Unigram方法，我们当然还可以考虑两个或更多单词的联合概率分布。</p>
 <p>我们前面考虑的是先列出所有可能，然后找到其中最好的（概率最高的），我们可以将这两个步骤合并起来做优化，也就是我们常说的维特比算法（也是DP算法）。首先我们计算出每个分词的负log概率，如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -148,7 +148,8 @@
 <th>分</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>概率</td>
 <td>0.1</td>
 <td>0.05</td>
@@ -174,16 +175,16 @@
 <td>3</td>
 <td>2.3</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>可以转化为下图：</p>
-<p><img src="/posts/.%5CPic%5CNLP%5C24.png" alt></p>
+<p><img src="/posts/Pic\NLP\24.png" alt></p>
 <p>我们可以<strong>将分词目标转化为最小路径</strong>（路径为-log(x)），我们只需要找到最短的从第一个单词经过所有单词（按次序）直到最后一个单词的路径即可。我们定义$f(n)=\text{从节点1到节点n的最短路径的值}$，这个过程我们完全可以通过递归实现，但我们可以想道斐波那契数列用这种方法来计算的话会很浪费计算资源，我们可以维护一个$f(n)$数组来简化运算。其中$f(1)=0,f(2)=3,f(3)=2.3$等等得到第一个节点到最后一个节点的最短路径值，同时也可以得到其路径（需要反推 ），读者不妨自己推一下，最终我们得到最优路径为1——&gt;3——&gt;6——&gt;8（上面的概率是随意取的不代表真实概率 ）。具体代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">sys.setrecursionlimit(<span class="number">9000000</span>)</span><br><span class="line">    <span class="comment">## 请编写word_segment_viterbi函数来实现对输入字符串的分词</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">word_segment_viterbi</span><span class="params">(input_str)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    1. 基于输入字符串，词典，以及给定的unigram概率来创建DAG(有向图）。</span></span><br><span class="line"><span class="string">    2. 编写维特比算法来寻找最优的PATH</span></span><br><span class="line"><span class="string">    3. 返回分词结果</span></span><br><span class="line"><span class="string">    """</span> </span><br><span class="line">    <span class="keyword">if</span> len(input_str) == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 第一步： 构建图                 </span></span><br><span class="line">    n = len(input_str)</span><br><span class="line">    path = np.zeros([n+<span class="number">1</span>,n+<span class="number">1</span>])</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</span><br><span class="line">        <span class="keyword">if</span> input_str[i] <span class="keyword">in</span> word_prob:</span><br><span class="line">            path[i,i+<span class="number">1</span>] = word_prob[input_str[i]]</span><br><span class="line">        <span class="keyword">elif</span> input_str[i] <span class="keyword">in</span> dic_words:</span><br><span class="line">            path[i,i+<span class="number">1</span>] = <span class="number">0.00001</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(i+<span class="number">1</span>,n+<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> input_str[i:j] <span class="keyword">in</span> word_prob:</span><br><span class="line">                path[i,j] = word_prob[input_str[i:j]]</span><br><span class="line">            <span class="keyword">elif</span> input_str[i:j] <span class="keyword">in</span> dic_words:</span><br><span class="line">                    path[i,i+<span class="number">1</span>] = <span class="number">0.00001</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 第二步： 利用维特比算法来找出最好的PATH， 这个PATH是P(sentence)最大或者 -log P(sentence)最小的PATH。</span></span><br><span class="line">    <span class="comment"># hint: 思考为什么不用相乘: p(w1)p(w2)...而是使用negative log sum:  -log(w1)-log(w2)-...  </span></span><br><span class="line">    minPath = np.zeros(n+<span class="number">1</span>)</span><br><span class="line">    score = [sys.maxsize]*(n+<span class="number">1</span>)</span><br><span class="line">    score[<span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">    seg = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,n+<span class="number">1</span>):</span><br><span class="line">        p = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>,n):</span><br><span class="line">            <span class="keyword">if</span> path[j,i] != <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">if</span> score[i] &gt; -np.log(path[j,i])+score[j]:</span><br><span class="line">                    score[i] = -np.log(path[j,i])+score[j]</span><br><span class="line">                    minPath[i] = j</span><br><span class="line">                     </span><br><span class="line">    <span class="comment"># 第三步： 根据最好的PATH, 返回最好的切分</span></span><br><span class="line"></span><br><span class="line">    i = n</span><br><span class="line">    <span class="keyword">while</span> i &gt; <span class="number">0</span>:</span><br><span class="line">        seg.append(input_str[int(minPath[i]):i])</span><br><span class="line">        i = int(minPath[i])</span><br><span class="line">    seg = seg[::<span class="number">-1</span>]</span><br><span class="line">    <span class="keyword">return</span> seg</span><br></pre></td></tr></table></figure>
-
-
-
 <h3 id="Spell-Correction"><a href="#Spell-Correction" class="headerlink" title="Spell Correction"></a>Spell Correction</h3><p>由于用户输入内容可能错误，我们需要有一个算法可以将错误的输入修改为正确的，这里有一个重要的概念是编辑距离。错误的输入可能是错别字，而有些则可能是输入的词不适合，这里可以使用语言模型来纠正。</p>
 <p>编辑距离是两个字符串的距离有多长（要多少个操作才能转换为目标字符串），我们以therr这个错误拼写为例求得以下编辑距离：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -195,7 +196,8 @@
 <th>the</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>编辑距离</strong></td>
 <td>1</td>
 <td>1</td>
@@ -203,20 +205,19 @@
 <td>2</td>
 <td>2</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>而我们具体要返回哪个词需要根据上下文（结合语义）来判断，而计算编辑距离我们会使用DP算法。</p>
 <p>最笨的选择方法就是遍历词典库的所有单词，然后选择其中编辑距离最小的（实际上就是ASM近似串匹配算法），编辑距离的DP算法如下 ：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">normal_leven</span><span class="params">(str1, str2)</span>:</span></span><br><span class="line">    len_str1 = len(str1) + <span class="number">1</span></span><br><span class="line">    len_str2 = len(str2) + <span class="number">1</span></span><br><span class="line">    <span class="comment"># 创建矩阵</span></span><br><span class="line">    matrix = [<span class="number">0</span> <span class="keyword">for</span> n <span class="keyword">in</span> range(len_str1 * len_str2)]</span><br><span class="line">    <span class="comment"># 矩阵的第一行</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len_str1):</span><br><span class="line">        matrix[i] = i</span><br><span class="line">    <span class="comment"># 矩阵的第一列</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>, len(matrix), len_str1):</span><br><span class="line">        <span class="keyword">if</span> j % len_str1 == <span class="number">0</span>:</span><br><span class="line">            matrix[j] = j // len_str1</span><br><span class="line">    <span class="comment"># 根据状态转移方程逐步得到编辑距离</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, len_str1):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">1</span>, len_str2):</span><br><span class="line">            <span class="keyword">if</span> str1[i - <span class="number">1</span>] == str2[j - <span class="number">1</span>]:</span><br><span class="line">                cost = <span class="number">0</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                cost = <span class="number">1</span></span><br><span class="line">            matrix[j * len_str1 + i] = min(matrix[(j - <span class="number">1</span>) * len_str1 + i] + <span class="number">1</span>,</span><br><span class="line">                                           matrix[j * len_str1 + (i - <span class="number">1</span>)] + <span class="number">1</span>,</span><br><span class="line">                                           matrix[(j - <span class="number">1</span>) * len_str1 + (i - <span class="number">1</span>)] + cost)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> matrix[<span class="number">-1</span>]  <span class="comment"># 返回矩阵的最后一个值，也就是编辑距离</span></span><br><span class="line"></span><br><span class="line">str1=<span class="string">'谁是谁的谁的谁'</span></span><br><span class="line">str2=<span class="string">'你爱我们谁的是'</span></span><br><span class="line"></span><br><span class="line">a=normal_leven(str1, str2)</span><br><span class="line">print(a)</span><br></pre></td></tr></table></figure>
-
 <p>另外一种简洁写法：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">edit</span><span class="params">(str1, str2)</span>:</span></span><br><span class="line">    matrix = [[i + j <span class="keyword">for</span> j <span class="keyword">in</span> range(len(str2) + <span class="number">1</span>)] <span class="keyword">for</span> i <span class="keyword">in</span> range(len(str1) + <span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, len(str1) + <span class="number">1</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">1</span>, len(str2) + <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> str1[i - <span class="number">1</span>] == str2[j - <span class="number">1</span>]:</span><br><span class="line">                d = <span class="number">0</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                d = <span class="number">1</span></span><br><span class="line">            matrix[i][j] = min(matrix[i - <span class="number">1</span>][j] + <span class="number">1</span>, matrix[i][j - <span class="number">1</span>] + <span class="number">1</span>, matrix[i - <span class="number">1</span>][j - <span class="number">1</span>] + d)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> matrix[len(str1)][len(str2)]</span><br></pre></td></tr></table></figure>
-
 <p>a=edit(‘谁是谁的谁的谁’,’你爱我们谁的是’)<br>print(a)</p>
 <p>我们可以直接调包：import Levenshtein，使用包中的distance函数计算编辑距离，</p>
 <p>实际上我们不必遍历词典选择编辑距离最小的，我们可以反过来，使用用户输入字符串生成编辑距离为1或2的字符串（Replace，Add，Delete），然后过滤后返回结果（不会依赖于词典库大小）。</p>
 <p>我们得到了一个备选较小编辑距离字符串集合后，可以通过计算$\hat c=argmax_{c\in condidates}p(c|s)$计算得到最可能成为正确的字符串c。上式可以通过贝叶斯定理稍作转换：</p>
-<p>$$\hat c = argmax_{c\in candidates}p(c|s) = argmax_{c\in candidates}\frac{p(s|c)<em>p(c)}{p(s)}= argmax_{c\in candidates}p(s|c)</em>p(c)$$</p>
-<p>其中$p(s|c)$应理解为对于apple这个正确的单词，有多少用户将apple写程appla（或者之类的），此数据我们可以从历史数据统计得到，而第二项$p(c)$是一个Unigram的概率，可以通过直接统计apple这个单词在所有文章中出现的次数计算得到（偏向于选择更常用的单词）。</p>
+<script type="math/tex; mode=display">\hat c = argmax_{c\in candidates}p(c|s) = argmax_{c\in candidates}\frac{p(s|c)*p(c)}{p(s)}= argmax_{c\in candidates}p(s|c)*p(c)</script><p>其中$p(s|c)$应理解为对于apple这个正确的单词，有多少用户将apple写程appla（或者之类的），此数据我们可以从历史数据统计得到，而第二项$p(c)$是一个Unigram的概率，可以通过直接统计apple这个单词在所有文章中出现的次数计算得到（偏向于选择更常用的单词）。</p>
 <h3 id="Stop-Words-Removal"><a href="#Stop-Words-Removal" class="headerlink" title="Stop Words Removal"></a>Stop Words Removal</h3><p>对于NLP的应用，我们通常先把停用词、出现频率低的词汇过滤掉，这其实类似于特征筛选的过程。在英文里，“the“，”an“，”their“这些都可以作为停用词来处理（不绝对），<strong>需要考虑把自己的应用场景</strong>。一般做法是拿别人做好的停用词库然后做一些删改，对于很大文本的项目我们可以将出现次数低于10或20之类的词去掉。</p>
 <h3 id="Stemming"><a href="#Stemming" class="headerlink" title="Stemming"></a>Stemming</h3><p>词的标准化操作（主要针对英文）有两种常用技术：Stemming和Lemmazation。Stemming不能保证转换出来的单词是正常的英文单词，需要进一步转换，而Lemmazation则比Stemming更严格，可以保证转换出来的单词是一个出现在词库的单词。目前最广泛使用的Stemming操作时Porter Stemmer，其主要分为四个模块：</p>
 <ul>
@@ -245,6 +246,7 @@
 <h2 id="加速方式（倒排表）"><a href="#加速方式（倒排表）" class="headerlink" title="加速方式（倒排表）"></a>加速方式（倒排表）</h2><p>用户输入了一个问题，我们首先要匹配到知识库中的问题集，计算其相似度，返回其中最匹配的问题，其时间复杂度为$O(n)$，计算量很大。我们先讨论解决这个问题的思路——”层次过滤思想“</p>
 <p>我们不需要计算所有问题集与用户输入的问题的余弦相似度，可以通过简单的方法层层过滤，最终得到较低数量级的备选问题得到较少的新备选问题集。我们需要保证：复杂度（过滤器1）&lt;复杂度（过滤器2）&lt;…….&lt;复杂度（过滤器N）。过滤的方式我们通常会使用倒排表来做。</p>
 <p>比如我们文档中有如下关键词：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -255,15 +257,19 @@
 <th>Doc4</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>关键词</td>
 <td>我们，今天，运动</td>
 <td>我们，昨天，运动</td>
 <td>你们，上，课</td>
 <td>你们上什么课</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>我们可以构建以下词典：[我们，今天，运动，昨天，上，课，什么]，然后给每个词标注所在的文档：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -271,7 +277,8 @@
 <th>文档</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>我们</td>
 <td>Doc1，Doc2</td>
 </tr>
@@ -299,10 +306,11 @@
 <td>什么</td>
 <td>Doc4</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>当我们输入我们”运动“，就可以直接返回Doc1与Doc2，我们输入“我们上课”时，由于两个单词没有交集，我们就可以采用并集操作得出结果。我们的过滤器就可以由倒排表的一系列规则组合而成，比如最低层的倒排表过滤结果可以是包含问句中所有单词中任意一个的返回结果，而层数越高则需要的规则也就越苛刻，比如需要包含更多的单词。</p>
-<h1 id="语言模型"><a href="#语言模型" class="headerlink" title="语言模型"></a>语言模型</h1><h2 id="Noisy-Channel-Model"><a href="#Noisy-Channel-Model" class="headerlink" title="Noisy Channel Model"></a>Noisy Channel Model</h2><p>$$\text{p(text|source)}\text{p(source|text)~p(text)}$$</p>
-<p>上面这个公式只需要简单地应用贝叶斯公式就可以得到，这个公式看起来简单，应用场景却很多，语音识别、机器翻译、拼写纠错、OCR、密码破解等领域都用到了这个公式。其共同点都是要将一段信号转换为一个文本。</p>
+<h1 id="语言模型"><a href="#语言模型" class="headerlink" title="语言模型"></a>语言模型</h1><h2 id="Noisy-Channel-Model"><a href="#Noisy-Channel-Model" class="headerlink" title="Noisy Channel Model"></a>Noisy Channel Model</h2><script type="math/tex; mode=display">\text{p(text|source)}\text{p(source|text)~p(text)}</script><p>上面这个公式只需要简单地应用贝叶斯公式就可以得到，这个公式看起来简单，应用场景却很多，语音识别、机器翻译、拼写纠错、OCR、密码破解等领域都用到了这个公式。其共同点都是要将一段信号转换为一个文本。</p>
 <p><strong>机器翻译</strong>：$\text{P(中文|英文)}\text{~}\text{P(英文|中文)}*\text{P(中文)}$，其中$\text{P(英文|中文)}$为Translation模型，$P(\text{中文})$为语言模型</p>
 <p><strong>拼写纠错</strong>：$\text{P(正确的写法|错误的写法)}\text{~}\text{P(错误的写法|正确的写法)}*\text{P(正确的写法)}$</p>
 <p><strong>语音识别</strong>：输入为波形，希望将波形转为文本。$\text{P(文本|语音信息)}\text{~}\text{P(语音信息|文本)}*\text{P(文本)}$</p>
@@ -310,9 +318,7 @@
 <p>语言模型的作用就是保证转化后的信号是符合常理的，将<strong>判断一句话从语法上是否通顺</strong>（是否是人话）。</p>
 <h2 id="Markov-Assumption"><a href="#Markov-Assumption" class="headerlink" title="Markov Assumption"></a>Markov Assumption</h2><p>我们在计算一个语言模型的时候，首先考虑到的就是使用整个句子除了最后一个单词的所有单词来预测这个句子发生的概率，举个例子我们要预测今天是春节，我们都休息这句话的概率，那么我们会计算$P(休息|今天，是，春节，我们，都)$，我们可以想到在一个语料库中出现这样句子的概率肯定是极低的，因此我们会使用到Markov假设， 将上面这个条件概率简化为$P(休息|都)$这里使用的是1st order markov assumption，我们当然也可以使用2rd order……，根据自己的需要调整即可，但需要注意到的是随着加入单词的长度越多概率会越低。再举个例子：</p>
 <p>比较今天是周日与今天周日是这两个句子的概率：</p>
-<p>$$P_{LM}(今天是周日)=P(今天)P(是|今天)P(周日|是)$$</p>
-<p>$$P_{LM}(今天周日是)=P(今天)P(周日|今天)P(是|周日)$$</p>
-<p>我们使用不同的order，就可以得到N-gram的语言模型，其中Unigram就是不考虑前后文信息，无法分析单词依赖性，我们最常用的还是Bigram的语言模型。</p>
+<script type="math/tex; mode=display">P_{LM}(今天是周日)=P(今天)P(是|今天)P(周日|是)</script><script type="math/tex; mode=display">P_{LM}(今天周日是)=P(今天)P(周日|今天)P(是|周日)</script><p>我们使用不同的order，就可以得到N-gram的语言模型，其中Unigram就是不考虑前后文信息，无法分析单词依赖性，我们最常用的还是Bigram的语言模型。</p>
 <h2 id="平滑项"><a href="#平滑项" class="headerlink" title="平滑项"></a>平滑项</h2><p>往往我们的概率值某一项是0，此时会导致整个句子的概率为0，为了避免这种情况发生，我们需要在每次计算概率的时候加一个平滑项，一般来说，语言模型的平滑处理可分为以下三类：</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Discounting（折扣）：通过给概率不为0的项打折扣，来提高概率为0的项的概率；</span><br><span class="line">Interpolation（插值）：在使用N-gram模型计算某一项的概率时，同时结合低阶的模型所计算出的概率；</span><br><span class="line">Back‐off：approximate counts of unobserved N‐gram based on the proportion of back‐off events (e.g., N‐1 gram)。</span><br></pre></td></tr></table></figure>
 <h4 id="Discounting"><a href="#Discounting" class="headerlink" title="Discounting"></a>Discounting</h4><p><em>Discounting 包括 Add‐One Smoothing、Add‐K Smoothing、Good-Turing Smoothing等。</em></p>
@@ -324,12 +330,11 @@
 <p>举例来说，假设使用Bigram模型，$V=20，count(我们)=3，count(我们,是)=0$。若不使用平滑处理，则$P(是|我们)=0$；若使用上述处理，则$P(是|我们)=(0+1)/(3+20)=1/23$。</p>
 <h5 id="Add‐K-Smoothing-Laplace-Smoothing"><a href="#Add‐K-Smoothing-Laplace-Smoothing" class="headerlink" title="Add‐K Smoothing(Laplace Smoothing)"></a>Add‐K Smoothing(Laplace Smoothing)</h5><p>对于这种方式，有$P_L(w_i|w_{i-1})=\frac{count(w_iw_{i-1})+K}{count(w_{i-1})+KV}$。可以看出，Add‐One Smoothing就是$K=1$的情况。<br>在使用Add‐K Smoothing的时候，可以使用优化的方法来寻找最佳的$K$。具体来说，先计算文本的perplexity，由于perplexity是关于$K$的函数，因此通过优化得到最小的perplexity时也同时得到了最佳的$K$。</p>
 <h5 id="Good-Turing"><a href="#Good-Turing" class="headerlink" title="Good-Turing"></a>Good-Turing</h5><p>Good-Turing技术是在1953年由古德（I.J.Good）引用图灵（Turing）的方法而提出来的，其基本思想是<strong>用观察计数较高的N元语法数重新估计概率量的大小，并把它指派给那些具有零计数或者较低计数的N元语法</strong>，具体使用公式如下：</p>
-<p>$$c^∗=(c+1)\frac{N_{c+1}}{N_c}$$</p>
-<p>其中，$c$代表某个单词出现的频数，$N_c$代表出现$c$次的单词的个数，而$c^∗$是频数为$c$的单词经过Good-Turing处理后的新的频数。例如，在某个语料库中，单词“love”出现了20次，而出现20次的单词共有100个，经过处理后，这100个出现过20次单词的频数可能变成18.2。</p>
+<script type="math/tex; mode=display">c^∗=(c+1)\frac{N_{c+1}}{N_c}</script><p>其中，$c$代表某个单词出现的频数，$N_c$代表出现$c$次的单词的个数，而$c^∗$是频数为$c$的单词经过Good-Turing处理后的新的频数。例如，在某个语料库中，单词“love”出现了20次，而出现20次的单词共有100个，经过处理后，这100个出现过20次单词的频数可能变成18.2。</p>
 <h4 id="Interpolation："><a href="#Interpolation：" class="headerlink" title="Interpolation："></a>Interpolation：</h4><p>Interpolation 包括 Linear Interpolation等。这种方式的思路为：在使用N-gram模型计算某一项的概率时，同时结合低阶的模型所计算出的概率。 以Trigram模型来说，使用interpolation方式后，计算每一项的概率公式为：</p>
-<p>$$\hat P(w_i|w_{i-1},w_{i-2})=\lambda_1P_{ML}(w_i|w_{i-1},w_{i-2})+\lambda_2P_{ML}(w_i|w_{i-1})+\lambda_3P_{ML}(w_i)$$</p>
-<p>其中$\lambda_1+\lambda_2+\lambda_3=1$，其核心思想是：<strong>现在没有出现不代表未来不会出现</strong>。</p>
+<script type="math/tex; mode=display">\hat P(w_i|w_{i-1},w_{i-2})=\lambda_1P_{ML}(w_i|w_{i-1},w_{i-2})+\lambda_2P_{ML}(w_i|w_{i-1})+\lambda_3P_{ML}(w_i)</script><p>其中$\lambda_1+\lambda_2+\lambda_3=1$，其核心思想是：<strong>现在没有出现不代表未来不会出现</strong>。</p>
 <h2 id="评估语言模型"><a href="#评估语言模型" class="headerlink" title="评估语言模型"></a>评估语言模型</h2><p>评估语言模型的核心思路是做填空题，我们给定第一个单词让语言模型预测下一个单词，如此往复可以评估出语言模型的效果如何，其中的评估方法为Perplexity：Perplexity$=2^{-x},x:\text{average log likehood}$，我们训练语言模型的时候自然会希望$x$越小越好，于是Perplexity越小越好，因此我们训练出来的Perplexity应该是不断下降的，最后达到一个均衡值。Perplexity之于我们目前的训练目标就如同召回率精确率之于推荐系统，后面根据不同的任务还有不同的评估方法，但Perplexity是其中很重要的一个评估方法。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -339,13 +344,16 @@
 <th>Trigram</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Perplexity</td>
 <td>962</td>
 <td>170</td>
 <td>109</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
  
       <!-- reward -->
       

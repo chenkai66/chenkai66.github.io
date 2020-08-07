@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.8k</span>
+            <span class="post-count">1.7k</span>
         </span>
     </span>
 
@@ -103,15 +103,13 @@
        
   <h1 id="BeautifulSoup-库的安装"><a href="#BeautifulSoup-库的安装" class="headerlink" title="BeautifulSoup 库的安装"></a>BeautifulSoup 库的安装</h1><p>安装beautiful soup 库可以直接使用命令 pip install beautifulsoup4，安装完成之后可以通过演示 HTML 页面地址：<a href="http://python123.io/ws/demo.html" target="_blank" rel="noopener">http://python123.io/ws/demo.html</a> 进行测试。我们打开这个网址，查询源代码，得到下面的结果：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span><span class="tag">&lt;<span class="name">head</span>&gt;</span><span class="tag">&lt;<span class="name">title</span>&gt;</span>This is a python demo page<span class="tag">&lt;/<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"title"</span>&gt;</span><span class="tag">&lt;<span class="name">b</span>&gt;</span>The demo python introduces several python courses.<span class="tag">&lt;/<span class="name">b</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"course"</span>&gt;</span>Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://www.icourse163.org/course/BIT-268001"</span> <span class="attr">class</span>=<span class="string">"py1"</span> <span class="attr">id</span>=<span class="string">"link1"</span>&gt;</span>Basic Python<span class="tag">&lt;/<span class="name">a</span>&gt;</span> and <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://www.icourse163.org/course/BIT-1001870001"</span> <span class="attr">class</span>=<span class="string">"py2"</span> <span class="attr">id</span>=<span class="string">"link2"</span>&gt;</span>Advanced Python<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>我们刚刚查看源代码是直接右键查看源代码进行拷贝的，除此之外，我们还可以使用 requests 库自动获得该链接的源代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line">r = requests.get(<span class="string">"http://python123.io/ws/demo.html"</span>)</span><br><span class="line">demo = r.text</span><br><span class="line">soup = BeautifulSoup(demo, <span class="string">"html.parser"</span>)</span><br><span class="line">print(soup.prettify())</span><br></pre></td></tr></table></figure>
-
 <p>这是上述代码的返回结果：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span></span><br><span class="line">   This is a python demo page</span><br><span class="line">  <span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"title"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">b</span>&gt;</span></span><br><span class="line">    The demo python introduces several python courses.</span><br><span class="line">   <span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"course"</span>&gt;</span></span><br><span class="line">   Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:</span><br><span class="line">   <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"py1"</span> <span class="attr">href</span>=<span class="string">"http://www.icourse163.org/course/BIT-268001"</span> <span class="attr">id</span>=<span class="string">"link1"</span>&gt;</span></span><br><span class="line">    Basic Python</span><br><span class="line">   <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">   and</span><br><span class="line">   <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"py2"</span> <span class="attr">href</span>=<span class="string">"http://www.icourse163.org/course/BIT-1001870001"</span> <span class="attr">id</span>=<span class="string">"link2"</span>&gt;</span></span><br><span class="line">    Advanced Python</span><br><span class="line">   <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>看得出来，这个效果还是蛮好看的。实际上，Beautiful Soup 库是解析、遍历和维护“标签树”的功能库，可以理解为：BeautifulSoup 对应一个 HTML/XML 文档的全部内容。</p>
 <h1 id="BeautifulSoup-库详解"><a href="#BeautifulSoup-库详解" class="headerlink" title="BeautifulSoup 库详解"></a>BeautifulSoup 库详解</h1><p>BeautifulSoup 库的解析器一共有四种，分别列举如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -120,28 +118,18 @@
 <th>条件</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>bs4 的 HTML 解析器</td>
 <td>BeautifulSoup(mk, “html.parser”)</td>
 <td>pip install bs4</td>
 </tr>
-<tr>
-<td>lxml 的 HTML 解析器</td>
-<td>BeautifulSoup(mk, “lxml”)</td>
-<td>pip install lxml</td>
-</tr>
-<tr>
-<td>lxml 的 XML 解析器</td>
-<td>BeautifulSoup(mk, “xml”)</td>
-<td>pip install lxml</td>
-</tr>
-<tr>
-<td>html5lib 的解析器</td>
-<td>BeautifulSoup(mk, “html5lib”)</td>
-<td>pip install html5lib</td>
-</tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
+<p>lxml 的 HTML 解析器|BeautifulSoup(mk, “lxml”)|pip install lxml|<br>|lxml 的 XML 解析器|BeautifulSoup(mk, “xml”)|pip install lxml|<br>|html5lib 的解析器|BeautifulSoup(mk, “html5lib”)|pip install html5lib|</p>
 <p>BeautifulSoup 类的基本元素列举如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -149,45 +137,48 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Tag</td>
-<td>标签，最基本的信息组织单元，分别用 &lt;&gt; 和 &lt;/&gt;标明开头和结尾</td>
+<td>标签，最基本的信息组织单元，分别用 <> 和 </>标明开头和结尾</td>
 </tr>
 <tr>
 <td>Name</td>
-<td>标签的名字，获取格式：&lt;tag&gt;.name</td>
+<td>标签的名字，获取格式：\<tag>.name</tag></td>
 </tr>
 <tr>
 <td>Attributes</td>
-<td>标签的属性，获取格式：&lt;tag&gt;.attrs</td>
+<td>标签的属性，获取格式：\<tag>.attrs</tag></td>
 </tr>
 <tr>
 <td>NavigableString</td>
-<td>标签内非属性字符串，获取格式：&lt;tag&gt;.string</td>
+<td>标签内非属性字符串，获取格式：\<tag>.string</tag></td>
 </tr>
 <tr>
 <td>Comment</td>
 <td>标签内字符串的注释部分，一种特殊的Comment类型</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>我们可以对前面获得的 soup 进行 尝试：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">print(soup.title)</span><br><span class="line"><span class="comment"># 返回 &lt;title&gt;This is a python demo page&lt;/title&gt;</span></span><br><span class="line">tag = soup.a</span><br><span class="line">print(tag)</span><br><span class="line"><span class="comment"># 返回 &lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt; </span></span><br><span class="line">print(soup.a.parent.name)	<span class="comment"># 返回 'p'</span></span><br><span class="line">print(soup.a.parent.parent.name)	<span class="comment"># 返回 'body'</span></span><br><span class="line">print(tag.attrs)</span><br><span class="line"><span class="comment"># 返回 &#123;'href': 'http://www.icourse163.org/course/BIT-268001', 'class': ['py1'], 'id': 'link1'&#125;</span></span><br><span class="line">prin(soup.a.string)	<span class="comment"># 返回 Basic Python</span></span><br></pre></td></tr></table></figure>
-
 <p>我们需要注意的是，当我们的 HTML 存在多个相同的标签时，只会返回第一个。我们再来看一下 Comment 元素的使用：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">newsoup = Beautiful(<span class="string">"&lt;b&gt;&lt;!--This is a comment--&gt;&lt;/b&gt;&lt;p&gt;This is not a comment&lt;/p&gt;"</span>, <span class="string">"html.parser"</span>)</span><br><span class="line">print(newsoup.b.string) <span class="comment"># 返回 'This is a comment'</span></span><br><span class="line">print(newsoup.p.string)	<span class="comment"># 返回 'This is not a comment'</span></span><br></pre></td></tr></table></figure>
-
-<p>我们总结一下，对于 &lt; p class=”title”&gt; … &lt;/p&gt;，若要得到 p ，我们使用： <strong>.name</strong>，若要得到 class=”title”，我们使用：<strong>属性.attrs</strong>，若要得到 title，我们使用<strong>标签.&lt;tag&gt; **，若要得到…(文本)，我们使用：</strong>非属性字符串/注释.string**</p>
+<p>我们总结一下，对于 &lt; p class=”title”&gt; … \&lt;/p&gt;，若要得到 p ，我们使用： <strong>.name</strong>，若要得到 class=”title”，我们使用：<strong>属性.attrs</strong>，若要得到 title，我们使用<strong>标签.\<tag> </tag></strong>，若要得到…(文本)，我们使用：<strong>非属性字符串/注释.string</strong></p>
 <h1 id="基于-bs4-库的-HTML-内容遍历方法"><a href="#基于-bs4-库的-HTML-内容遍历方法" class="headerlink" title="基于 bs4 库的 HTML 内容遍历方法"></a>基于 bs4 库的 HTML 内容遍历方法</h1><p>在 HTML 中我们有三种遍历方式 —— 上行遍历、下行遍历和平行遍历，下面分别介绍这几种遍历的直接方法。</p>
-<h3 id="标签树的下行遍历"><a href="#标签树的下行遍历" class="headerlink" title="标签树的下行遍历"></a>标签树的下行遍历</h3><table>
+<h3 id="标签树的下行遍历"><a href="#标签树的下行遍历" class="headerlink" title="标签树的下行遍历"></a>标签树的下行遍历</h3><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>属性</th>
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>.contents</td>
-<td>子节点的列表，将 &lt;tag&gt; 所有儿子节点存入列表</td>
+<td>子节点的列表，将 \<tag> 所有儿子节点存入列表</tag></td>
 </tr>
 <tr>
 <td>.children</td>
@@ -197,18 +188,21 @@
 <td>.descendants</td>
 <td>子孙节点的迭代类型，包括所有子孙节点，用于循环遍历</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>例如：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup = BeautifulSoup(demo, <span class="string">"html.parser"</span>)</span><br><span class="line">&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.head</span><br><span class="line">&lt;head&gt;&lt;title&gt;This is a python demo page&lt;/title&gt;&lt;/head&gt;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;soup.head.contents</span><br><span class="line">[&lt;title&gt;This is a python demo page&lt;/title&gt;]</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.body.contents</span><br><span class="line">['\n', &lt;p class="title"&gt;&lt;b&gt;The demo python introduces several python courses.&lt;/b&gt;&lt;/p&gt;, '\n', &lt;p class="course"&gt;Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:</span><br><span class="line"></span><br><span class="line">&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt; and &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;.&lt;/p&gt;, '\n']</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>len(soup.body.contents)</span><br><span class="line"><span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.body.contents[<span class="number">1</span>]</span><br><span class="line">&lt;p class="title"&gt;&lt;b&gt;The demo python introduces several python courses.&lt;/b&gt;&lt;/p&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="标签树的上行遍历"><a href="#标签树的上行遍历" class="headerlink" title="标签树的上行遍历"></a>标签树的上行遍历</h3><table>
+<h3 id="标签树的上行遍历"><a href="#标签树的上行遍历" class="headerlink" title="标签树的上行遍历"></a>标签树的上行遍历</h3><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>属性</th>
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>.parent</td>
 <td>节点的父亲标签</td>
 </tr>
@@ -216,18 +210,21 @@
 <td>.parents</td>
 <td>节点父辈标签的迭代类型，用于循环遍历先辈节点</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>下面是上行遍历的代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup = BeautifulSoup(demo, <span class="string">"html.parser"</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> parent <span class="keyword">in</span> soup.a.parents:</span><br><span class="line">		<span class="keyword">if</span> parent <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">			print(parent)</span><br><span class="line">		<span class="keyword">else</span>:</span><br><span class="line">			print(parent.name)</span><br><span class="line">			</span><br><span class="line">p</span><br><span class="line">body</span><br><span class="line">html</span><br><span class="line">[document]</span><br></pre></td></tr></table></figure>
-
-<h3 id="标签树的平行遍历"><a href="#标签树的平行遍历" class="headerlink" title="标签树的平行遍历"></a>标签树的平行遍历</h3><table>
+<h3 id="标签树的平行遍历"><a href="#标签树的平行遍历" class="headerlink" title="标签树的平行遍历"></a>标签树的平行遍历</h3><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>属性</th>
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>.next_sibling</td>
 <td>返回按照 HTML 文本顺序的下一个平行节点标签</td>
 </tr>
@@ -243,19 +240,17 @@
 <td>.previous_siblings</td>
 <td>返回按照 HTML 文本顺序的前续所有平行节点标签</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>需要注意的是：平行遍历发生在同一个父节点下的各节点间。<br>还记得我们前面的那个标签树吗？我们截取一部分来回顾一下：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"course"</span>&gt;</span></span><br><span class="line">   Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:</span><br><span class="line">   <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"py1"</span> <span class="attr">href</span>=<span class="string">"http://www.icourse163.org/course/BIT-268001"</span> <span class="attr">id</span>=<span class="string">"link1"</span>&gt;</span></span><br><span class="line">    Basic Python</span><br><span class="line">   <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">   and</span><br><span class="line">   <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"py2"</span> <span class="attr">href</span>=<span class="string">"http://www.icourse163.org/course/BIT-1001870001"</span> <span class="attr">id</span>=<span class="string">"link2"</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>我们接下来对 a 标签进行简单的平行遍历尝试：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup = BeautifulSoup(demo, <span class="string">"html.parser"</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.a.next_sibling</span><br><span class="line"><span class="string">' and '</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.a.next_sibling.next_sibling</span><br><span class="line">&lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.a.previous_sibling</span><br><span class="line"><span class="string">'Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\r\n'</span></span><br></pre></td></tr></table></figure>
-
 <p>我们可以通过以下代码做标签树的平行遍历：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> sibling <span class="keyword">in</span> soup.a.next_siblings:</span><br><span class="line">	print(sibling)</span><br><span class="line"><span class="keyword">for</span> sibling <span class="keyword">in</span> soup.a.previous_siblings:</span><br><span class="line">	print(sibling)</span><br></pre></td></tr></table></figure>
-
-<h1 id="基于-bs4-库的-HTML-格式输出"><a href="#基于-bs4-库的-HTML-格式输出" class="headerlink" title="基于 bs4 库的 HTML 格式输出"></a>基于 bs4 库的 HTML 格式输出</h1><p>我们应该如何让 &lt;html&gt; 内容更加友好地输出呢？就是我们前面使用的 BeautifulSoup.prettify() 函数来实现。</p>
+<h1 id="基于-bs4-库的-HTML-格式输出"><a href="#基于-bs4-库的-HTML-格式输出" class="headerlink" title="基于 bs4 库的 HTML 格式输出"></a>基于 bs4 库的 HTML 格式输出</h1><p>我们应该如何让 \<html> 内容更加友好地输出呢？就是我们前面使用的 BeautifulSoup.prettify() 函数来实现。</html></p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup = BeautifulSoup(<span class="string">"&lt;p&gt; 中文 china &lt;/p&gt;"</span>,<span class="string">"html.parser"</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.prettify()</span><br><span class="line"><span class="string">'&lt;p&gt;\n 中文 china\n&lt;/p&gt;'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(soup.prettify())</span><br><span class="line">&lt;p&gt;</span><br><span class="line"> 中文 china</span><br><span class="line">&lt;/p&gt;</span><br></pre></td></tr></table></figure>
-
 <p>下面附上一张总结（截）图：<br><img src="https://img-blog.csdnimg.cn/20200420105036148.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="总结图"></p>
  
       <!-- reward -->

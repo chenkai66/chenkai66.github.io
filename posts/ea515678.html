@@ -104,6 +104,7 @@
   <p>前一篇文章的末尾我们提到，可以使用 lxml + xpath 提取文章内容，在这篇文章中，我们将对 lxml 与 xpath 进行详细阐述，在这之前我们使用 pip install lxml 安装 lxml 库。</p>
 <h1 id="Xpath-语法"><a href="#Xpath-语法" class="headerlink" title="Xpath 语法"></a>Xpath 语法</h1><p>XPath 即为 XML 路径语言（XML Path Language），它是一种用来确定 XML 文档中某部分位置的语言。而 XML 我们在<a href="https://blog.csdn.net/ChenKai_164/article/details/105635357" target="_blank" rel="noopener">这篇文章</a>中已经提到了，它的语法与 HTML 基本一致，可以说是通过 HTML发展而来的通用表达形式。</p>
 <h3 id="路径表达式"><a href="#路径表达式" class="headerlink" title="路径表达式"></a>路径表达式</h3><p>XPath 使用路径表达式在 XML 文档中选取节点，节点是通过沿着路径选取的。下面列出了最常用的路径表达式：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -111,7 +112,8 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>nodename</td>
 <td>选取此节点的所有节点</td>
 </tr>
@@ -135,8 +137,11 @@
 <td>@</td>
 <td>选取属性</td>
 </tr>
-</tbody></table>
-<h3 id="Predicates"><a href="#Predicates" class="headerlink" title="Predicates"></a>Predicates</h3><table>
+</tbody>
+</table>
+</div>
+<h3 id="Predicates"><a href="#Predicates" class="headerlink" title="Predicates"></a>Predicates</h3><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>表达式</th>
@@ -145,7 +150,8 @@
 <th>解释</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>[n]</td>
 <td>选择某节点的第n(n&gt;=1)个子节点</td>
 <td>xpath(“//h//a[1]”)</td>
@@ -175,8 +181,11 @@
 <td>xpath(“//a/“),xpath(“//a[@]”)</td>
 <td>选择a节点下的所有子节点,选择带有属性的a节点</td>
 </tr>
-</tbody></table>
-<h3 id="模糊搜索与匹配"><a href="#模糊搜索与匹配" class="headerlink" title="模糊搜索与匹配"></a>模糊搜索与匹配</h3><table>
+</tbody>
+</table>
+</div>
+<h3 id="模糊搜索与匹配"><a href="#模糊搜索与匹配" class="headerlink" title="模糊搜索与匹配"></a>模糊搜索与匹配</h3><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>函数</th>
@@ -184,7 +193,8 @@
 <th>解释</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>starts-with</td>
 <td>xpath(“//div[starts-with(@id,’user’)]”)</td>
 <td>选择id值以user开头的div节点</td>
@@ -204,8 +214,11 @@
 <td>xpath(“//div[starts-with(text(),”mytest”)]”)</td>
 <td>选取节点文本包含myest的div节点</td>
 </tr>
-</tbody></table>
-<h3 id="xpath轴"><a href="#xpath轴" class="headerlink" title="xpath轴"></a>xpath轴</h3><table>
+</tbody>
+</table>
+</div>
+<h3 id="xpath轴"><a href="#xpath轴" class="headerlink" title="xpath轴"></a>xpath轴</h3><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>轴名称</th>
@@ -213,7 +226,8 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>ancestor</td>
 <td>xpath(“./ancestor:: *”)</td>
 <td>选取当前节点的所有父辈节点</td>
@@ -248,19 +262,14 @@
 <td>xpath(“./preceding:: *”)</td>
 <td>选取当前开始标签前的所有节点</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h1 id="lxml-使用"><a href="#lxml-使用" class="headerlink" title="lxml 使用"></a>lxml 使用</h1><p>首先需要导入库：from lxml import etree，下面这行代码 lxml 会将 html 文本转成 xml 对象</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree = etree.HTML(html)</span><br></pre></td></tr></table></figure>
-<p>我们要使用 lxml + Xpath 从源代码直接获取信息时，会使用 tree.xpath() 语句，括号内的是所需获取内容的一些形式，具体形式在上面已经列出了，比如我们要获取<a href="http://www.dxy.cn/bbs/topic/43201486" target="_blank" rel="noopener">丁香园</a>页面的用户名称信息，首先查看该页面源代码：<br><img src="https://img-blog.csdnimg.cn/20200425135042154.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70" alt="用户信息">我们可以使用：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree.xpath(<span class="string">'//div[@class=“auth”]/a/text()'</span>)</span><br></pre></td></tr></table></figure>
-<p>我们想要获取评论信息：<br><img src="https://img-blog.csdnimg.cn/20200425135042227.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70" alt="评论信息"><br>我们可以使用</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree.xpath(<span class="string">'//td[@class=“postbody”]'</span>)</span><br></pre></td></tr></table></figure>
-<p>我们需要注意的是，当我们将文本对象转换为了 lxml 对象后，实际获取内容的方式也发生了改变，参看下面代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line">text = <span class="string">'''</span></span><br><span class="line"><span class="string">&lt;div&gt;</span></span><br><span class="line"><span class="string">    &lt;ul&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-0"&gt;&lt;a href="link1.html"&gt;first item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-1"&gt;&lt;a href="link2.html"&gt;second item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-inactive"&gt;&lt;a href="link3.html"&gt;third item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-1"&gt;&lt;a href="link4.html"&gt;fourth item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-0"&gt;&lt;a href="link5.html"&gt;fifth item&lt;/a&gt;</span></span><br><span class="line"><span class="string">     &lt;/ul&gt;</span></span><br><span class="line"><span class="string"> &lt;/div&gt;</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line">html = etree.HTML(text)</span><br><span class="line"><span class="comment"># 返回 &lt;Element html at 0x233468e5788&gt;</span></span><br><span class="line">result = etree.tostring(html)</span><br><span class="line">print(result)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回 text 中信息</span></span><br></pre></td></tr></table></figure>
+<p>我们要使用 lxml + Xpath 从源代码直接获取信息时，会使用 tree.xpath() 语句，括号内的是所需获取内容的一些形式，具体形式在上面已经列出了，比如我们要获取<a href="http://www.dxy.cn/bbs/topic/43201486" target="_blank" rel="noopener">丁香园</a>页面的用户名称信息，首先查看该页面源代码：<br><img src="https://img-blog.csdnimg.cn/20200425135042154.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70" alt="用户信息">我们可以使用：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree.xpath(<span class="string">'//div[@class=“auth”]/a/text()'</span>)</span><br></pre></td></tr></table></figure><br>我们想要获取评论信息：<br><img src="https://img-blog.csdnimg.cn/20200425135042227.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70" alt="评论信息"><br>我们可以使用<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree.xpath(<span class="string">'//td[@class=“postbody”]'</span>)</span><br></pre></td></tr></table></figure><br>我们需要注意的是，当我们将文本对象转换为了 lxml 对象后，实际获取内容的方式也发生了改变，参看下面代码：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line">text = <span class="string">'''</span></span><br><span class="line"><span class="string">&lt;div&gt;</span></span><br><span class="line"><span class="string">    &lt;ul&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-0"&gt;&lt;a href="link1.html"&gt;first item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-1"&gt;&lt;a href="link2.html"&gt;second item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-inactive"&gt;&lt;a href="link3.html"&gt;third item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-1"&gt;&lt;a href="link4.html"&gt;fourth item&lt;/a&gt;&lt;/li&gt;</span></span><br><span class="line"><span class="string">         &lt;li class="item-0"&gt;&lt;a href="link5.html"&gt;fifth item&lt;/a&gt;</span></span><br><span class="line"><span class="string">     &lt;/ul&gt;</span></span><br><span class="line"><span class="string"> &lt;/div&gt;</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line">html = etree.HTML(text)</span><br><span class="line"><span class="comment"># 返回 &lt;Element html at 0x233468e5788&gt;</span></span><br><span class="line">result = etree.tostring(html)</span><br><span class="line">print(result)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回 text 中信息</span></span><br></pre></td></tr></table></figure></p>
 <h1 id="代理-IP-爬取"><a href="#代理-IP-爬取" class="headerlink" title="代理 IP 爬取"></a>代理 IP 爬取</h1><p>介绍完 xpath 的基本内容，我们下面来实战一个非常有用的爬虫 —— 爬取代理IP，其具体页面内容如下：<br><img src="https://img-blog.csdnimg.cn/20200425133902765.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="西刺代理IP主页"><br>我们点击查看源代码，可以发现相关的IP地址直接出现在页面中，因此我们能够通过现有知识进行爬取：</p>
-<p><img src="https://img-blog.csdnimg.cn/20200425134041233.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="西刺代理IP主页源代码"><br>下面是测试代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> requests</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>url = <span class="string">"https://www.xicidaili.com/"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>headers = &#123;<span class="string">"user-agent"</span>:<span class="string">"Mozilla/5.0"</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res = requests.get(url, headers=headers)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res.status_code</span><br><span class="line"><span class="number">200</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res.encoding = res.apparent_encoding</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>text = res.text</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>html = etree.HTML(text)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>html.xpath(<span class="string">'/html/body/div[1]/div[2]/div[1]/div[1]/table/tbody/tr[3]/td[2]'</span>)</span><br><span class="line">[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ip_ = html.xpath(<span class="string">'/html/body/div[1]/div[2]/div[1]/div[1]/table//tr[3]/td[2]'</span>)</span><br><span class="line">[&lt;Element td at <span class="number">0x233473b8d08</span>&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = etree.tostring(ip_[<span class="number">0</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result</span><br><span class="line"><span class="string">b'&lt;td&gt;119.4.13.26&lt;/td&gt;\n</span></span><br></pre></td></tr></table></figure>
-
+<p><img src="https://img-blog.csdnimg.cn/20200425134041233.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="西刺代理IP主页源代码"><br>下面是测试代码：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> requests</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>url = <span class="string">"https://www.xicidaili.com/"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>headers = &#123;<span class="string">"user-agent"</span>:<span class="string">"Mozilla/5.0"</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res = requests.get(url, headers=headers)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res.status_code</span><br><span class="line"><span class="number">200</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res.encoding = res.apparent_encoding</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>text = res.text</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>html = etree.HTML(text)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>html.xpath(<span class="string">'/html/body/div[1]/div[2]/div[1]/div[1]/table/tbody/tr[3]/td[2]'</span>)</span><br><span class="line">[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ip_ = html.xpath(<span class="string">'/html/body/div[1]/div[2]/div[1]/div[1]/table//tr[3]/td[2]'</span>)</span><br><span class="line">[&lt;Element td at <span class="number">0x233473b8d08</span>&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = etree.tostring(ip_[<span class="number">0</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result</span><br><span class="line"><span class="string">b'&lt;td&gt;119.4.13.26&lt;/td&gt;\n</span></span><br></pre></td></tr></table></figure></p>
 <p>事实上，我们在实际使用时，想要获得 Xpath 不一定会直接一行行代码看过去，更可能直接复制 Xpath：</p>
 <p><img src="https://img-blog.csdnimg.cn/20200425140302427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoZW5LYWlfMTY0,size_16,color_FFFFFF,t_70#pic_center" alt="查看器获取 Xpath"></p>
 <p>我们右键移至复制，会出现一个名为“复制Xpath”的选项，点击复制Xpath 后即可得到相应的 Xpath，但在这里有一点需要注意的是，Xpath 会给页面 HTML 树进行自动补齐，也就是说会出现一些原来没有的东西，就会出现上面代码中倒数第六行出现空返回的问题，这时候就需要我们去仔细检查哪里的信息可能是多余的。</p>

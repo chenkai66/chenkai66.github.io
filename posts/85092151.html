@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">8 分钟</span>
+            <span class="post-count">7 分钟</span>
         </span>
     </span>
 </div>
@@ -104,16 +104,13 @@
   <h1 id="信息标记的三种形式"><a href="#信息标记的三种形式" class="headerlink" title="信息标记的三种形式"></a>信息标记的三种形式</h1><blockquote>
 <p>信息的标记：<br>标记后的信息可形成信息组织结构，增加信息维度<br>标记后的信息可用于通信、存储或展示<br>标记的结构和信息一样具有重要价值<br>标记后的信息更利于程序理解和运用</p>
 </blockquote>
-<p>国际公认的信息标记的三种形式分别是 XML、JSON、YAML，下面分别介绍这三者：<br><strong>XML 即 eXtensible Markup Language</strong>，采用了以标签为主来构建信息和表达信息的方式，比如：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"china.jpg size="</span><span class="attr">10</span>"&gt;</span> ... <span class="tag">&lt;/<span class="name">img</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"china.jpg size="</span><span class="attr">10</span>" /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- This is a comment --&gt;</span></span><br></pre></td></tr></table></figure>
-
+<p>国际公认的信息标记的三种形式分别是 XML、JSON、YAML，下面分别介绍这三者：<br><strong>XML 即 eXtensible Markup Language</strong>，采用了以标签为主来构建信息和表达信息的方式，比如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"china.jpg size="</span><span class="attr">10</span>"&gt;</span> ... <span class="tag">&lt;/<span class="name">img</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"china.jpg size="</span><span class="attr">10</span>" /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- This is a comment --&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>我们不难发现，XML 的形式与 HTML 几乎完全一致，可以说 XML 是通过 HTML发展而来的通用表达形式。<br>另一种信息标记形式是 <strong>JSON (JavaScript Object Notation)</strong>，它是 JavaScript 语言中对面向对象的信息的一种表达形式，简单来讲，JSON 是由有类型的键值对构建的信息表达方式，具体形式如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"key1":"value1"</span><br><span class="line">"key2":["value2", "value3"]</span><br><span class="line">"key3":&#123;"subkey":"subvalue"&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>YAML(YAML Ain’t Markup Language)</strong> 是一种递归的定义，采用的是五类型的键值对来组织信息，和 Python 语言类似，YAML 通过缩进的方式表达所属关系比如：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span>	<span class="comment"># 用 tab 表示所属关系</span></span><br><span class="line">	<span class="attr">newName :</span> <span class="string">abc</span></span><br><span class="line">	<span class="attr">oldName :</span> <span class="string">ABC</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span>	<span class="comment"># 用-表示并列关系</span></span><br><span class="line">	<span class="string">-abc</span></span><br><span class="line">	<span class="string">-ABC</span></span><br><span class="line"></span><br><span class="line"><span class="attr">text:</span> <span class="string">|</span>	<span class="comment"># 用 | 表示整块数据</span></span><br><span class="line">	<span class="string">简介：汉武帝刘彻（前156年7月7日—前87年3月29日），</span></span><br><span class="line">	<span class="string">西汉第七位皇帝（含前后少帝），政治家、文学家。</span></span><br><span class="line">	<span class="string">汉武帝在位期间（前141年—前87年），在政治上，创设中外朝制、刺史制、察举制，</span></span><br><span class="line">	<span class="string">颁行推恩令，加强君主专制与中央集权。</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="三种信息标记形式的比较"><a href="#三种信息标记形式的比较" class="headerlink" title="三种信息标记形式的比较"></a>三种信息标记形式的比较</h1><table>
+<h1 id="三种信息标记形式的比较"><a href="#三种信息标记形式的比较" class="headerlink" title="三种信息标记形式的比较"></a>三种信息标记形式的比较</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>信息标记形式</th>
@@ -121,7 +118,8 @@
 <th>应用情况</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>XML</td>
 <td>是最早的通用信息标记语言，可扩展性好，但较为繁琐</td>
 <td>Internet 上的信息交互与传递</td>
@@ -136,8 +134,11 @@
 <td>信息无类型，文本信息比例最高，可读性好</td>
 <td>各类系统的配置文件，有注释易读，应用相对较广泛</td>
 </tr>
-</tbody></table>
-<h1 id="信息提取的一般方法"><a href="#信息提取的一般方法" class="headerlink" title="信息提取的一般方法"></a>信息提取的一般方法</h1><table>
+</tbody>
+</table>
+</div>
+<h1 id="信息提取的一般方法"><a href="#信息提取的一般方法" class="headerlink" title="信息提取的一般方法"></a>信息提取的一般方法</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>方法</th>
@@ -146,7 +147,8 @@
 <th>缺点</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>完整解析信息标记形式，再提取关键信息，需要标记解析器</td>
 <td>bs4 库的标签树遍历</td>
 <td>信息解析准确</td>
@@ -158,34 +160,30 @@
 <td>提取过程简介，速度较快</td>
 <td>提取结果准确性与信息内容相关</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>实际上更常用的是两者结合的融合方法：即结合形式解析与搜索方法，提取关键信息，这需要标记解析器及文本查找函数。下面我们考虑实例：提取 HTML 中所有的 URL 链接，具体思路是：</p>
 <blockquote>
-<p>  1） 搜索所有 &lt;a&gt; 标签<br>  2） 解析 &lt;a&gt; 标签格式，提取 href 后的链接内容</p>
+<p>  1） 搜索所有 \<a> 标签<br>  2） 解析 \<a> 标签格式，提取 href 后的链接内容</a></a></p>
 </blockquote>
 <p>具体代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> requests</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>url = <span class="string">"http://python123.io/ws/demo.html"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>res = requests.get(url)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>demo = res.text</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>demo</span><br><span class="line"><span class="string">'&lt;html&gt;&lt;head&gt;&lt;title&gt;This is a python demo page&lt;/title&gt;&lt;/head&gt;\r\n&lt;body&gt;\r\n&lt;p class="title"&gt;&lt;b&gt;The demo python introduces several python courses.&lt;/b&gt;&lt;/p&gt;\r\n&lt;p class="course"&gt;Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\r\n&lt;a href="http://www.icourse163.org/course/BIT-268001" class="py1" id="link1"&gt;Basic Python&lt;/a&gt; and &lt;a href="http://www.icourse163.org/course/BIT-1001870001" class="py2" id="link2"&gt;Advanced Python&lt;/a&gt;.&lt;/p&gt;\r\n&lt;/body&gt;&lt;/html&gt;'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup = BeautifulSoup(demo, <span class="string">"html.parser"</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> link <span class="keyword">in</span> soup.find_all(<span class="string">"a"</span>):</span><br><span class="line">	print(link.get(<span class="string">"href"</span>))</span><br><span class="line"></span><br><span class="line">http://www.icourse163.org/course/BIT<span class="number">-268001</span></span><br><span class="line">http://www.icourse163.org/course/BIT<span class="number">-1001870001</span></span><br></pre></td></tr></table></figure>
-
 <h1 id="基于-BeautifulSoup-库的内容查找方法"><a href="#基于-BeautifulSoup-库的内容查找方法" class="headerlink" title="基于 BeautifulSoup 库的内容查找方法"></a>基于 BeautifulSoup 库的内容查找方法</h1><p>由前例我们可以看见， find_all 方法可以返回一个列表类型，存储查找的结果，find_all 的具体使用方法为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;&gt;.find_all(name, attrs, recursive, string, **kwargs)</span><br></pre></td></tr></table></figure>
 <p>其中，name 为对标签的检索字符串，如果我们希望查找两个标签，可以以列表形式传入：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"a"</span>)</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all([<span class="string">"a"</span>,<span class="string">"b"</span>])</span><br><span class="line">[&lt;b&gt;The demo python introduces several python courses.&lt;/b&gt;, &lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> tag <span class="keyword">in</span> soup.find_all(true):</span><br><span class="line">		print(tag.name)</span><br><span class="line">	</span><br><span class="line">html</span><br><span class="line">head</span><br><span class="line">title</span><br><span class="line">body</span><br><span class="line">p</span><br><span class="line">b</span><br><span class="line">p</span><br><span class="line">a</span><br><span class="line">a</span><br></pre></td></tr></table></figure>
-
 <p>我们看到，若 find_all(true) ，则会返回所有标签。若希望只显示所有以 b 开头的标签，包括 b 和 body 标签，我们应该怎么办呢？这时我们应该使用正则表达式：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> tag <span class="keyword">in</span> soup.find_all(re.compile(<span class="string">'b'</span>)):</span><br><span class="line">	print(tag.name)</span><br><span class="line">	</span><br><span class="line">body</span><br><span class="line">b</span><br></pre></td></tr></table></figure>
-
 <p>find_all 的第二个参数 attrs 是对标签属性值的检索字符串，可标注属性检索。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"p"</span>, <span class="string">"course"</span>)</span><br><span class="line">[&lt;p class="course"&gt;Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:</span><br><span class="line">&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt; and &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;.&lt;/p&gt;]</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(id=<span class="string">"link1"</span>)</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(id=<span class="string">"link"</span>)</span><br><span class="line">[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(id=re.compile(<span class="string">"link"</span>))</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br></pre></td></tr></table></figure>
-
 <p>find_all 的第三个参数是 recursive，即是否对子孙进行全部检索，默认为 True。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"a"</span>)</span><br><span class="line">[&lt;a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1"&gt;Basic Python&lt;/a&gt;, &lt;a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2"&gt;Advanced Python&lt;/a&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(<span class="string">"a"</span>,recursive=<span class="literal">False</span>)</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
-
-<p>上述代码说明，soup 的根节点下是没有 a 标签的， a 标签在其子孙节点中。<br>find_all 的第四个参数是 string，是对 &lt;&gt;…&lt;/&gt; 中字符串区域的检索字符串，下面看一个例子：</p>
+<p>上述代码说明，soup 的根节点下是没有 a 标签的， a 标签在其子孙节点中。<br>find_all 的第四个参数是 string，是对 <>...</> 中字符串区域的检索字符串，下面看一个例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re </span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(string=<span class="string">"Basic Python"</span>)</span><br><span class="line">[<span class="string">'Basic Python'</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(string=<span class="string">"Python"</span>)</span><br><span class="line">[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>soup.find_all(string=re.compile(<span class="string">"Python"</span>))</span><br><span class="line">[<span class="string">'Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\r\n'</span>, <span class="string">'Basic Python'</span>, <span class="string">'Advanced Python'</span>]</span><br></pre></td></tr></table></figure>
-
 <p>事实上，我们有一个简写的形式，即：</p>
 <blockquote>
-<p>&lt;tag&gt;(…)  等价于 &lt;tag&gt;.find_all(…)<br>soup(…) 等价于 soup.find_all(…)</p>
+<p>\<tag>(…)  等价于 \<tag>.find_all(…)<br>soup(…) 等价于 soup.find_all(…)</tag></tag></p>
 </blockquote>
 <p>BeautifulSoup 库有八个常用方法，都是顾名思义的，就不在此做详细介绍了，方法列举为：find_all, find, find_parent, find_parents, find_next_siblings, find_next_sibling, find_previous_sibling, find_previous_siblings </p>
  

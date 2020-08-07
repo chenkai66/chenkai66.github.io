@@ -108,18 +108,15 @@
 <p><img src="/posts/CV/4.jpg" alt></p>
 <p>执行以下代码，即可获得人脸检测的结果：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">img = cv2.imread(<span class="string">"Pic/1.jpg"</span>)</span><br><span class="line"></span><br><span class="line">face_engine = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_frontalface_default.xml'</span>)</span><br><span class="line"></span><br><span class="line">faces = face_engine.detectMultiScale(img,scaleFactor=<span class="number">1.3</span>,minNeighbors=<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (x,y,w,h) <span class="keyword">in</span> faces:</span><br><span class="line">    img = cv2.rectangle(img,(x,y),(x+w,y+h),(<span class="number">255</span>,<span class="number">0</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">cv2.imshow(<span class="string">'img'</span>,img)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
-
 <p>检测结果不负众望：</p>
 <p><img src="/posts/CV/reba.png" alt></p>
 <p>我们留意到以上代码的face_engine步骤，其作用是导入人脸级联分类器引擎，’.xml’文件里包含训练出来的人脸特征。随后用人脸级联分类器引擎进行人脸识别，返回的faces为人脸坐标列表，1.3是放大比例，5是重复识别次数。</p>
 <h2 id="人脸检测和人眼检测"><a href="#人脸检测和人眼检测" class="headerlink" title="人脸检测和人眼检测"></a>人脸检测和人眼检测</h2><p>我们也可以尝试前面xml文件中的人眼检测：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导入opencv</span></span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入人脸级联分类器引擎，'.xml'文件里包含训练出来的人脸特征，cv2.data.haarcascades即为存放所有级联分类器模型文件的目录</span></span><br><span class="line">face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_frontalface_default.xml'</span>)</span><br><span class="line"><span class="comment"># 导入人眼级联分类器引擎吗，'.xml'文件里包含训练出来的人眼特征</span></span><br><span class="line">eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_eye.xml'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读入一张图片，引号里为图片的路径，需要你自己手动设置</span></span><br><span class="line">img = cv2.imread(<span class="string">'image3.png'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用人脸级联分类器引擎进行人脸识别，返回的faces为人脸坐标列表，1.3是放大比例，5是重复识别次数</span></span><br><span class="line">faces = face_cascade.detectMultiScale(img, <span class="number">1.3</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对每一张脸，进行如下操作</span></span><br><span class="line"><span class="keyword">for</span> (x,y,w,h) <span class="keyword">in</span> faces:</span><br><span class="line">    <span class="comment"># 画出人脸框，蓝色（BGR色彩体系），画笔宽度为2</span></span><br><span class="line">    img = cv2.rectangle(img,(x,y),(x+w,y+h),(<span class="number">255</span>,<span class="number">0</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line">    <span class="comment"># 框选出人脸区域，在人脸区域而不是全图中进行人眼检测，节省计算资源</span></span><br><span class="line">    face_area = img[y:y+h, x:x+w]</span><br><span class="line">    eyes = eye_cascade.detectMultiScale(face_area)</span><br><span class="line">    <span class="comment"># 用人眼级联分类器引擎在人脸区域进行人眼识别，返回的eyes为眼睛坐标列表</span></span><br><span class="line">    <span class="keyword">for</span> (ex,ey,ew,eh) <span class="keyword">in</span> eyes:</span><br><span class="line">        <span class="comment">#画出人眼框，绿色，画笔宽度为1</span></span><br><span class="line">        cv2.rectangle(face_area,(ex,ey),(ex+ew,ey+eh),(<span class="number">0</span>,<span class="number">255</span>,<span class="number">0</span>),<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在"img2"窗口中展示效果图</span></span><br><span class="line">cv2.imshow(<span class="string">'img2'</span>,img)</span><br><span class="line"><span class="comment"># 监听键盘上任何按键，如有案件即退出并关闭窗口，并将图片保存为output.jpg</span></span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br><span class="line">cv2.imwrite(<span class="string">'output.jpg'</span>,img)</span><br></pre></td></tr></table></figure>
-
 <p>上面的代码最值得注意的就是face_area = img[y:y+h, x:x+w]，这一步会将人脸区域框出来，在其中执行人眼检测。同样对上图进行检测，结果如下：</p>
 <p><img src="/posts/CV/output.jpg" alt></p>
 <p>结果还行吧。</p>
 <h2 id="调用电脑摄像头进行实时人脸识别和人眼识别"><a href="#调用电脑摄像头进行实时人脸识别和人眼识别" class="headerlink" title="调用电脑摄像头进行实时人脸识别和人眼识别"></a>调用电脑摄像头进行实时人脸识别和人眼识别</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_frontalface_default.xml'</span>)</span><br><span class="line"></span><br><span class="line">eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+<span class="string">'haarcascade_eye.xml'</span>)</span><br><span class="line"><span class="comment"># 调用摄像头摄像头</span></span><br><span class="line">cap = cv2.VideoCapture(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">True</span>):</span><br><span class="line">    <span class="comment"># 获取摄像头拍摄到的画面</span></span><br><span class="line">    ret, frame = cap.read()</span><br><span class="line">    faces = face_cascade.detectMultiScale(frame, <span class="number">1.3</span>, <span class="number">5</span>)</span><br><span class="line">    img = frame</span><br><span class="line">    <span class="keyword">for</span> (x,y,w,h) <span class="keyword">in</span> faces:</span><br><span class="line">    	<span class="comment"># 画出人脸框，蓝色，画笔宽度微</span></span><br><span class="line">        img = cv2.rectangle(img,(x,y),(x+w,y+h),(<span class="number">255</span>,<span class="number">0</span>,<span class="number">0</span>),<span class="number">2</span>)</span><br><span class="line">    	<span class="comment"># 框选出人脸区域，在人脸区域而不是全图中进行人眼检测，节省计算资源</span></span><br><span class="line">        face_area = img[y:y+h, x:x+w]</span><br><span class="line">        eyes = eye_cascade.detectMultiScale(face_area)</span><br><span class="line">    	<span class="comment"># 用人眼级联分类器引擎在人脸区域进行人眼识别，返回的eyes为眼睛坐标列表</span></span><br><span class="line">        <span class="keyword">for</span> (ex,ey,ew,eh) <span class="keyword">in</span> eyes:</span><br><span class="line">            <span class="comment">#画出人眼框，绿色，画笔宽度为1</span></span><br><span class="line">            cv2.rectangle(face_area,(ex,ey),(ex+ew,ey+eh),(<span class="number">0</span>,<span class="number">255</span>,<span class="number">0</span>),<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment"># 实时展示效果画面</span></span><br><span class="line">    cv2.imshow(<span class="string">'frame2'</span>,img)</span><br><span class="line">    <span class="comment"># 每5毫秒监听一次键盘动作</span></span><br><span class="line">    <span class="keyword">if</span> cv2.waitKey(<span class="number">5</span>) &amp; <span class="number">0xFF</span> == ord(<span class="string">'q'</span>):</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 最后，关闭所有窗口</span></span><br><span class="line">cap.release()</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
-
 <p>以上我们都可以通过调整参数调整精度要求。</p>
 <h1 id="Haar原理解析"><a href="#Haar原理解析" class="headerlink" title="Haar原理解析"></a>Haar原理解析</h1><h2 id="Haar特征"><a href="#Haar特征" class="headerlink" title="Haar特征"></a>Haar特征</h2><p>Haar特征包含三种：边缘特征、线性特征、中心特征和对角线特征。每种分类器都从图片中提取出对应的特征。有点类似于卷积神经网络中的卷积核，每个卷积核提取出对应的特征。</p>
 <p>我们最基础的卷积核（划掉），哦不haar特征为下图中的Basic Haar Set：</p>
@@ -138,29 +135,35 @@
 <p><img src="/posts/CV/haar6.png" alt></p>
 <p>总而言之，Haar特征就是利用一些固定的特征来模拟人脸中的相关特征。</p>
 <p>矩形特征可位于图像任意位置，大小也可以任意改变，所以矩形特征值是矩形模版类别、矩形位置和矩形大小这三个因素的函数。故类别、大小和位置的变化，使得很小的检测窗口含有非常多的矩形特征，如：在24*24像素大小的检测窗口内矩形特征数量可以达到16万个。这样就有两个问题需要解决了：</p>
-<p>（1）如何快速计算那么多的特征？—积分图大显神通；</p>
-<p>（2）哪些矩形特征才是对分类器分类最有效的？—如通过AdaBoost算法来训练。</p>
+<p>（1）如何快速计算那么多的特征？—-积分图大显神通；</p>
+<p>（2）哪些矩形特征才是对分类器分类最有效的？—-如通过AdaBoost算法来训练。</p>
 <h2 id="积分图构建"><a href="#积分图构建" class="headerlink" title="积分图构建"></a>积分图构建</h2><p>在一个图像窗口中，可以提取出大量的Haar矩形特征区域，如果在计算Haar特征值时，每次都遍历矩形特征区域，将会造成大量重复计算，严重浪费时间。积分图是一种快速计算矩形特征的方法，主要思想是将图像起始像素点到每一个像素点之间所形成的矩形区域的像素值的和，作为一个元素保存下来，即将原始图像转换为积分图(或者求和图)，当求某一矩形区域的像素和时，只需要索引矩形区域4个角点在积分图中的取值，进行普通的加减运算，即可求得Haar特征值，整个过程只需遍历一次图像，计算特征的时间复杂度为常数(O(1))(O(1))，可以大大提升计算效率。<br>积分图中元素的公式定义如下：</p>
-<p>$$ii(x,y) = \sum_{k\le x,l\le y}f(k,l)$$</p>
-<p>上式含义是在$(x,y)$位置处，积分图中元素为原图像中对应像素左上角所有像素值之和，$ii(x,y)$表示一个积分图像。在具体实现时，可用下式进行迭代运算:</p>
-<p>$$s(x,y) = s(x,y-1)+i(x,y)$$<br>$$ii(x,y) = ii(x-1,y)+s(x,y)$$</p>
-<p>其中$s$是行方向的累加和，初始值$s(x,-1)=0,ii(-1,y)=0$，但这个公式不是很好（为什么？），一个比较好的替代是下面这个公式：</p>
-<p>$$ii(x,y) = ii(x-1,y)+ii(x,y-1)+f(x,y)-ii(i-1,j-1)$$</p>
-<h2 id="计算Haar特征值"><a href="#计算Haar特征值" class="headerlink" title="计算Haar特征值"></a>计算Haar特征值</h2><h3 id="矩形特征"><a href="#矩形特征" class="headerlink" title="矩形特征"></a>矩形特征</h3><p>构建好积分图后，图像中任何矩形区域的像素值累加和都可以通过简单的加减运算快速得到，如下图所示，矩形区域D的像素和值计算公式如下：</p>
+<script type="math/tex; mode=display">ii(x,y) = \sum_{k\le x,l\le y}f(k,l)</script><p>上式含义是在$(x,y)$位置处，积分图中元素为原图像中对应像素左上角所有像素值之和，$ii(x,y)$表示一个积分图像。在具体实现时，可用下式进行迭代运算:</p>
+<script type="math/tex; mode=display">s(x,y) = s(x,y-1)+i(x,y)</script><script type="math/tex; mode=display">ii(x,y) = ii(x-1,y)+s(x,y)</script><p>其中$s$是行方向的累加和，初始值$s(x,-1)=0,ii(-1,y)=0$，但这个公式不是很好（为什么？），一个比较好的替代是下面这个公式：</p>
+<script type="math/tex; mode=display">ii(x,y) = ii(x-1,y)+ii(x,y-1)+f(x,y)-ii(i-1,j-1)</script><h2 id="计算Haar特征值"><a href="#计算Haar特征值" class="headerlink" title="计算Haar特征值"></a>计算Haar特征值</h2><h3 id="矩形特征"><a href="#矩形特征" class="headerlink" title="矩形特征"></a>矩形特征</h3><p>构建好积分图后，图像中任何矩形区域的像素值累加和都可以通过简单的加减运算快速得到，如下图所示，矩形区域D的像素和值计算公式如下：</p>
 <p>$\operatorname{Sum}(D)=i i\left(x_{4}, y_{4}\right)-i i\left(x_{2}, y_{2}\right)-i i\left(x_{3}, y_{3}\right)+i i\left(x_{1}, y_{1}\right)$</p>
 <p><img src="/posts/CV/haar7.png" alt></p>
-<p>矩形区域求和示意图 在下图中，以水平向右为$x$轴正方向，垂直向下为$y$轴正方向，可定义积分图公式Summed Area Table$(S A T(x, y))$<br>$$<br>S A T(x, y)=\Sigma_{x^{\prime} \leq x, y^{\prime} \leq y} i\left(x^{\prime}, y^{\prime}\right)<br>$$<br>以及迭代求解式<br>$$<br>\begin{array}{c}<br>S A T(x, y)=S A T(x, y-1)+S A T(x-1, y)-S A T(x-1, y-1)+I(x, y) \<br>S A T(-1, y)=0, S A T(x,-1)=0<br>\end{array}<br>$$<br>对于左上角坐标为$(x, y),$宽高为$(w, h)$的矩形区域$r(x, y, w, h, 0),$可利用积分图$S A T(x, y)$求取像素和值<br>$$<br>\operatorname{RecSum}(r)=S A T(x+w-1, y+h-1)+S A T(x-1, y-1)-S A T(x+w-1, y-1)-S A T(x-1, y+h-1)<br>$$</p>
-<p><img src="/posts/CV/haar8.png" alt></p>
+<p>矩形区域求和示意图 在下图中，以水平向右为$x$轴正方向，垂直向下为$y$轴正方向，可定义积分图公式Summed Area Table$(S A T(x, y))$</p>
+<script type="math/tex; mode=display">
+S A T(x, y)=\Sigma_{x^{\prime} \leq x, y^{\prime} \leq y} i\left(x^{\prime}, y^{\prime}\right)</script><p>以及迭代求解式</p>
+<script type="math/tex; mode=display">
+\begin{array}{c}
+S A T(x, y)=S A T(x, y-1)+S A T(x-1, y)-S A T(x-1, y-1)+I(x, y) \\
+S A T(-1, y)=0, S A T(x,-1)=0
+\end{array}</script><p>对于左上角坐标为$(x, y),$宽高为$(w, h)$的矩形区域$r(x, y, w, h, 0),$可利用积分图$S A T(x, y)$求取像素和值</p>
+<script type="math/tex; mode=display">
+\operatorname{RecSum}(r)=S A T(x+w-1, y+h-1)+S A T(x-1, y-1)-S A T(x+w-1, y-1)-S A T(x-1, y+h-1)</script><p><img src="/posts/CV/haar8.png" alt></p>
 <h3 id="旋转矩形特征"><a href="#旋转矩形特征" class="headerlink" title="旋转矩形特征"></a>旋转矩形特征</h3><p>对于旋转矩形特征，相应的有$45$°倾斜积分图用于快速计算Haar特征值，如下图所示，倾斜积分图的定义为像素点左上角$45$°区域和左下角$45$°区域的像素和，公式表示如下：</p>
-<p>$$RSAT(x, y)=\Sigma_{x^{\prime} \leq x, x^{\prime} \leq x-\left|y-y^{\prime}\right|} i\left(x^{\prime}, y^{\prime}\right)$$</p>
-<p>其递推公式计算如下：</p>
-<p>$$\begin{array}{c}<br>R S A T(x, y)=R S A T(x-1, y-1)+R S A T(x-1, y)-R S A T(x-2, y-1)+I(x, y) \<br>R S A T(x, y)=R S A T(x, y)+R S A T(x-1, y+1)-R S A T(x-2, y) \<br>\end{array}$$</p>
-<p>其中$R S A T(-1, y)=R S A T(-2, y)=R S A T(x,-1)=0$</p>
-<p>也可直接通过下式递归计算:<br>$$R S A T(x, y)=R S A T(x-1, y-1)+R S A T(x+1, y-1)-R S A T(x, y-2)+I(x-1, y)+I(x, y)$$<br>以上3个积分图计算公式是等价的。</p>
+<script type="math/tex; mode=display">RSAT(x, y)=\Sigma_{x^{\prime} \leq x, x^{\prime} \leq x-\left|y-y^{\prime}\right|} i\left(x^{\prime}, y^{\prime}\right)</script><p>其递推公式计算如下：</p>
+<script type="math/tex; mode=display">\begin{array}{c}
+R S A T(x, y)=R S A T(x-1, y-1)+R S A T(x-1, y)-R S A T(x-2, y-1)+I(x, y) \\
+R S A T(x, y)=R S A T(x, y)+R S A T(x-1, y+1)-R S A T(x-2, y) \\
+\end{array}</script><p>其中$R S A T(-1, y)=R S A T(-2, y)=R S A T(x,-1)=0$</p>
+<p>也可直接通过下式递归计算:</p>
+<script type="math/tex; mode=display">R S A T(x, y)=R S A T(x-1, y-1)+R S A T(x+1, y-1)-R S A T(x, y-2)+I(x-1, y)+I(x, y)</script><p>以上3个积分图计算公式是等价的。</p>
 <p>如下图所示，构建好倾斜积分图后，可快速计算倾斜矩形区域r$=\left(x, y, w, h, 45^{\circ}\right)$的像素和值</p>
 <p><img src="/posts/CV/haar9.png" alt></p>
-<p>$$\operatorname{RecSum}(r)=R S A T(x+w, y+w)+R S A T(x-h, y+h)-R S A T(x, y)-R S A T(x+w-h, y+w+h)$$</p>
-<h3 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h3><p>了解了特征值的计算之后，我们来看看不同的特征值的含义是什么。我们选取MIT人脸库中2706个大小为$20*20$的人脸正样本图像，计算如下图所示的Haar特征：</p>
+<script type="math/tex; mode=display">\operatorname{RecSum}(r)=R S A T(x+w, y+w)+R S A T(x-h, y+h)-R S A T(x, y)-R S A T(x+w-h, y+w+h)</script><h3 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h3><p>了解了特征值的计算之后，我们来看看不同的特征值的含义是什么。我们选取MIT人脸库中2706个大小为$20*20$的人脸正样本图像，计算如下图所示的Haar特征：</p>
 <p><img src="/posts/CV/haar10.jpg" alt></p>
 <p>左边对应的人眼区域，右边无具体意义。</p>
 <p><img src="/posts/CV/harr11.png" alt></p>
@@ -174,15 +177,12 @@
 <ol>
 <li>计算检测窗口中图像的灰度值和灰度值平方和：$sum=\sum i(x,y)$</li>
 </ol>
-<p>$$sq_{sum}=\sum i^2(x,y)$$</p>
-<ol start="2">
+<script type="math/tex; mode=display">sq_{sum}=\sum i^2(x,y)</script><ol>
 <li>计算平均值：</li>
 </ol>
-<p>$$mean = \frac{sum}{w*h}$$</p>
-<p>$$ sq_{mean}=\frac{sq_{sum}}{w*h} $$</p>
-<ol start="3">
-<li><p>计算归一化因子：<br>$$varNormFactor=\sqrt{sq_{mean}-mean^2}$$</p>
-</li>
+<script type="math/tex; mode=display">mean = \frac{sum}{w*h}</script><script type="math/tex; mode=display">sq_{mean}=\frac{sq_{sum}}{w*h}</script><ol>
+<li><p>计算归一化因子：</p>
+<script type="math/tex; mode=display">varNormFactor=\sqrt{sq_{mean}-mean^2}</script></li>
 <li><p>归一化特征值：$normValue=\frac{featureValue}{varNormFactor}$之后使用归一化的特征值$normValue$与阈值对比。</p>
 </li>
 </ol>
@@ -218,8 +218,7 @@
 </li>
 <li>选取当前元素的特征值$F_{k,j}$和它前面的一个特征值$F_{k,j−1}$之间的数作为阈值，所得到的弱分类器就在当前元素处把样本分开 —— 也就是说这个阈值对应的弱分类器将当前元素前的所有元素分为人脸（或非人脸），而把当前元素后（含）的所有元素分为非人脸（或人脸）。该阈值的分类误差为：</li>
 </ol>
-<p>$$e=min(S^++(T^−−S^−),S^−+(T^+−S^+))$$</p>
-<p>于是，通过把这个排序表从头到尾扫描一遍就可以为弱分类器选择使分类误差最小的阈值（最优阈值），也就是选取了一个最佳弱分类器。</p>
+<script type="math/tex; mode=display">e=min(S^++(T^−−S^−),S^−+(T^+−S^+))</script><p>于是，通过把这个排序表从头到尾扫描一遍就可以为弱分类器选择使分类误差最小的阈值（最优阈值），也就是选取了一个最佳弱分类器。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="训练步骤"><a href="#训练步骤" class="headerlink" title="训练步骤"></a>训练步骤</h3><p>从上面所述内容我们可以总结Haar分类器训练的五大步骤：</p>
 <ol>
 <li>准备人脸、非人脸样本集；</li>

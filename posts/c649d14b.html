@@ -107,10 +107,8 @@
 <li><p>原来$[a,b]$上Riemann可积的函数按新的积分定义也是可积的；</p>
 </li>
 <li><p>如果按新的积分定义是可积的函数列$f_k(x)$，且存在极限：</p>
-<p>$$f(x)=\lim\limits_{k\rightarrow\infty}f_k(x)$$</p>
-<p>则按新的积分定义的$f(x)$的积分也存在，且有积分号下取极限成立，即：</p>
-<p>$$\lim\limits_{k\rightarrow\infty}\int_a^bf_k(x)\text{d}x=\int_a^bf(x)\text{d}x$$</p>
-</li>
+<script type="math/tex; mode=display">f(x)=\lim\limits_{k\rightarrow\infty}f_k(x)</script><p>则按新的积分定义的$f(x)$的积分也存在，且有积分号下取极限成立，即：</p>
+<script type="math/tex; mode=display">\lim\limits_{k\rightarrow\infty}\int_a^bf_k(x)\text{d}x=\int_a^bf(x)\text{d}x</script></li>
 </ol>
 <p>这个新的积分就是我们将要介绍的Lebesgue积分。</p>
 <h2 id="集合与测度"><a href="#集合与测度" class="headerlink" title="集合与测度"></a>集合与测度</h2><p>首先我们回忆一个很著名的悖论——芝诺悖论：一支飞驰的箭，在每一个确定的时刻都静止在一个确定的位置上，为什么经过一段时间后会移动一段距离？我们在测度这一节会解答这个问题。</p>
@@ -123,7 +121,7 @@
 <li>任何集合的测度非负</li>
 </ol>
 <p>而如果我们希望它满足“长度”的性质（强行符合我们过往熟知的概念），我们可以为测度增加一个性质，也就是</p>
-<ol start="4">
+<ol>
 <li>实数轴上从a到b的线段的测度应等于b-a</li>
 </ol>
 <p>只要有了以上四条性质，我们可以很自然地得出唯一满足这四条性质的测度——Lebesgue测度，我们需要注意的是，并不是直线上所有点集我们都可以定义测度，而是只有在Lebesgue可测集上我们才能做如上定义，而如果我们不加入第四条性质，我们同样是可以定义出许许多多种测度，不过这些测度的性质与我们熟知的长度的概念不同，而且单点集的长度也未必是0，仅此而已，但他们同样可以在许许多多其他领域发挥作用，比如我们将要讨论的概率论正是直接在博雷尔测度上发展的。</p>
@@ -134,7 +132,7 @@
 <p>Borel测度的定义相对于Lebesgue测度简单多了：任何定义在Borel集上的测度都是Borel测度，Lebesgue测度是由外侧度定义（以“长度”为度量标准），因此作用在Lebesgue可测集上的Lebesgue测度必然作用在该Lebesgue可测集内部的Borel集上，因此可以说$R^n$上的Lebesgue测度是一种Borel测度（以“长度”为度量标准的测度），这里我们也可以看见，Borel测度其实并不唯一，因为只需要满足在Borel集上有定义的测度都可以成为Borel测度，Lebesgue测度在Borel集上自然也成为Borel测度。</p>
 <h2 id="Lebesgue可测函数及其积分"><a href="#Lebesgue可测函数及其积分" class="headerlink" title="Lebesgue可测函数及其积分"></a>Lebesgue可测函数及其积分</h2><h3 id="Lebesgue可测函数"><a href="#Lebesgue可测函数" class="headerlink" title="Lebesgue可测函数"></a>Lebesgue可测函数</h3><p>教材中开篇说到了Lebesgue可测函数的定义：</p>
 <blockquote>
-<p>设$E\subset \text{R}^n$可测，$f$是定义于$E$上的广义实值函数。若对于任意实数a，点集${x|x\in E,f(x)&gt;a}$是$\text{R}^n$内的可测集，则$f$称为$E$上的Lebesgue可测函数，简称$f$是$E$上的可测函数，或$f$在$E$上可测。</p>
+<p>设$E\subset \text{R}^n$可测，$f$是定义于$E$上的广义实值函数。若对于任意实数a，点集$\{x|x\in E,f(x)&gt;a\}$是$\text{R}^n$内的可测集，则$f$称为$E$上的Lebesgue可测函数，简称$f$是$E$上的可测函数，或$f$在$E$上可测。</p>
 </blockquote>
 <p>但这个定义与Rudin的《Real and Complex Analysis》中可测函数的定义有所不同:</p>
 <blockquote>
@@ -148,12 +146,11 @@
 </ul>
 <p>这两条原则分别对应的是Egorov定理与Lusin定理，这里就不再重复了。</p>
 <h3 id="Lebesgue积分"><a href="#Lebesgue积分" class="headerlink" title="Lebesgue积分"></a>Lebesgue积分</h3><p><strong>Lebesgue积分的定义</strong>：对于可测集$E\subset \mathbb{R}^n$上的非负可测函数$\phi$，若其标准式为</p>
-<p>$$\phi(x)=\sum_{i=1}^k c_i\chi_{E_i}(x),\quad (x\in E = \bigcup_{i=1}^kE_i)$$</p>
-<p>其中$c_i$为非负实数，$E_i$为可测集，当$i\neq j$时有$E_i\bigcap E_j=\emptyset$，称广义实数$\sum_{i=1}^kc_imE_i$为$\phi$在$E$上的Lebesgue积分，记为$\int_E\phi(x)\text{d}x$</p>
+<script type="math/tex; mode=display">\phi(x)=\sum_{i=1}^k c_i\chi_{E_i}(x),\quad (x\in E = \bigcup_{i=1}^kE_i)</script><p>其中$c_i$为非负实数，$E_i$为可测集，当$i\neq j$时有$E_i\bigcap E_j=\emptyset$，称广义实数$\sum_{i=1}^kc_imE_i$为$\phi$在$E$上的Lebesgue积分，记为$\int_E\phi(x)\text{d}x$</p>
 <p>Lebesgue积分中最重要的三条定理是Levi引理、Fatou引理、控制收敛定理，这三者相互等价且可相互证明。</p>
-<p><strong>Levi引理</strong>：设${f_k}$是$E$上的非负可测函数的递增列，记$f(x)=\lim\limits_{k\rightarrow\infty}f_k(x)(x\in E)$，则$\int_Ef(x)\text{d}x=\lim\limits_{k\rightarrow\infty}\int_Ef_k(x)$</p>
-<p><strong>Fatou引理</strong>：设${f_k}$是$E$上的非负可测函数列，则$\int_E \lim\limits_{\substack{- \k\to\infty } }f_k(x)\text{d}x\leq \lim\limits_{\substack{- \k\to\infty } }\int_Ef_k(x)\text{d}x$</p>
-<p><strong>Lebesgue控制收敛定理</strong>：设${f_k}$是$E\subset \mathbb{R}^n$上几乎处处收敛地可测函数列，$\lim\limits_{k\rightarrow\infty}f_k(x)=f(x)$，若存在非负函数$F$使得$F\in L(E)$并且$|f_k(x)|\leq F(x)\quad (x\in E,k=1,2,…)$，则函数$f$及所有的$f_k$都在$E$上可积，且$\lim\limits_{k\rightarrow \infty}\int_E f_k(x)\text{d}x$存在并等于$\int_Ef(x)\text{d}x$.</p>
+<p><strong>Levi引理</strong>：设$\{f_k\}$是$E$上的非负可测函数的递增列，记$f(x)=\lim\limits_{k\rightarrow\infty}f_k(x)(x\in E)$，则$\int_Ef(x)\text{d}x=\lim\limits_{k\rightarrow\infty}\int_Ef_k(x)$</p>
+<p><strong>Fatou引理</strong>：设$\{f_k\}$是$E$上的非负可测函数列，则$\int_E \lim\limits_{\substack{- \\k\to\infty } }f_k(x)\text{d}x\leq \lim\limits_{\substack{- \\k\to\infty } }\int_Ef_k(x)\text{d}x$</p>
+<p><strong>Lebesgue控制收敛定理</strong>：设$\{f_k\}$是$E\subset \mathbb{R}^n$上几乎处处收敛地可测函数列，$\lim\limits_{k\rightarrow\infty}f_k(x)=f(x)$，若存在非负函数$F$使得$F\in L(E)$并且$|f_k(x)|\leq F(x)\quad (x\in E,k=1,2,…)$，则函数$f$及所有的$f_k$都在$E$上可积，且$\lim\limits_{k\rightarrow \infty}\int_E f_k(x)\text{d}x$存在并等于$\int_Ef(x)\text{d}x$.</p>
 <p>借助最后提到的期望的单调连续性定理我们可以很容易地分别证出Levi引理和Fatou引理。</p>
 <h3 id="Lebesgue积分与Riemann积分的比较"><a href="#Lebesgue积分与Riemann积分的比较" class="headerlink" title="Lebesgue积分与Riemann积分的比较"></a>Lebesgue积分与Riemann积分的比较</h3><p>直观上比较Lebesgue积分与Riemann积分，我们可以看出Riemann积分主要是针对连续函数的，而Lebesgue积分和连续函数关系不大。</p>
 <ul>
@@ -201,14 +198,14 @@
 <li>如果$E_1,E_2,…,E_i\in F$，则$\bigcup_{i=1}^\infty E_i \in F$</li>
 </ol>
 <p>我们可以看到事件域$F$的定义与概率空间中的$P$的定义几乎一一对应，但我们有了事件域还不够，因为事实上我们现实世界中的事件是五花八门的，我们需要建立一个从样本空间（基本事件全体）到实数轴的一一对应（实数集$\R$相对于普通集合的优势在于它上面的元素可以做精彩的运算），而这个映射我们定义为随机变量。将上述叙述顺过来说即：集合$X$+该集合上的一个$\sigma$代数$F$就定义了一个可测空间$(X,F)$，($F$中任一集合都可以定义其测度），再在这个可测空间上定义一个测度$\mu$，那么$(X,F,\mu)$就是一个测度空间，其中概率测度就是满足$P(\Omega)=1$的测度，因此$(\Omega,F,P)$就是一个概率测度空间。</p>
-<p>由于我们前面已经定义了随机事件${\omega\in\Omega:x(\omega)\in B}\subset F$，因此可以定义随机事件的概率为$P{\omega\in\Omega:x(\omega)\in B}=P(X\in B)$，我们可以由此推出概率密度函数的定义，令$B=(-\infty,x)$：$P(X\in B)=P(X\leq x)=F(x)$，同理很容易得到：$P(X\in (a,b])=F(b)-F(a)$，因此由这样定义的区间（集合）的可数次交并补运算都可以通过$F(x)$给出其概率。</p>
+<p>由于我们前面已经定义了随机事件$\{\omega\in\Omega:x(\omega)\in B\}\subset F$，因此可以定义随机事件的概率为$P\{\omega\in\Omega:x(\omega)\in B\}=P(X\in B)$，我们可以由此推出概率密度函数的定义，令$B=(-\infty,x)$：$P(X\in B)=P(X\leq x)=F(x)$，同理很容易得到：$P(X\in (a,b])=F(b)-F(a)$，因此由这样定义的区间（集合）的可数次交并补运算都可以通过$F(x)$给出其概率。</p>
 <h2 id="随机变量与期望"><a href="#随机变量与期望" class="headerlink" title="随机变量与期望"></a>随机变量与期望</h2><h4 id="随机变量"><a href="#随机变量" class="headerlink" title="随机变量"></a>随机变量</h4><p>前面说明了随机变量是样本空间到实数轴的一一对应，下面我们根据可测函数的定义给出随机变量的严格定义：</p>
 <ul>
 <li>由$(\Omega,\mathbb{F})$到$(\mathbb{R},\mathbb{B})$的可测映照称为<strong>可测函数</strong>，特别，当$(\Omega,\mathbb{F})$为概率可测空间时，  $(\Omega,\mathbb{F})$到 $(\mathbb{R},\mathbb{B})$的可测映照 $X$称为(有限值)<strong>随机变量</strong>(或广义实值随机变量)，也记为$X\in \mathbb{F}$.</li>
 </ul>
 <p>我们如何检验一个变量是随机变量呢？我们有验证随机变量定理：</p>
 <ul>
-<li><strong>验证随机变量定理</strong>：$X$是一个$(\Omega,\mathbb{F})$到$(\mathbb{R},\mathbb{B})$的随机变量$\leftrightarrow {X\leq a}=X^{-1}((-\infty,a])\in \mathbb{F}$</li>
+<li><strong>验证随机变量定理</strong>：$X$是一个$(\Omega,\mathbb{F})$到$(\mathbb{R},\mathbb{B})$的随机变量$\leftrightarrow \{X\leq a\}=X^{-1}((-\infty,a])\in \mathbb{F}$</li>
 </ul>
 <p>在此不罗列随机变量的其他结论，我们可以将随机变量推广至$n$维形式：</p>
 <ul>
@@ -232,11 +229,12 @@
 <li>$X\geq Y\rightarrow EX\geq EY$</li>
 </ol>
 <p>最后我们以证明期望的单调连续性作为结束：</p>
-<p><strong>期望的单调连续性：</strong>$\left{X_{n}, n \geq 1\right}$ 是非负递增的简单随机变量序列, 则 $\lim <em>{n} X</em>{n}=X$ 是非负随机变量，且<br>$$E \lim <em>{n} X</em>{n}=\lim <em>{n} E X</em>{n}$$<br>证明：若对每个 $m,$ 当 $n \rightarrow \infty$ 时, $Y_{m n} \uparrow X_{m}$, 其中 $Y_{m n}$ 是非负简单随机变量, 令$Z_{n}=\sup <em>{m \leq n} Y</em>{m n},$ 则 $Z_{n}$ 也是非负简单随机变量, $\quad\left{Z_{n}, n \geq 1\right}$ 是递增的。我们有<br>$$Y_{m n} \leq Z_{n} \leq X_{n}, m \leq n$$</p>
-<p>进而有：</p>
-<p>$$E Y_{m n} \leq E Z_{n} \leq E X_{n}, m \leq n$$<br>接下来对第一个公式先令 $n \rightarrow \infty,$ 得到 $X_{m} \leq \lim <em>{n \rightarrow \infty} Z</em>{n} \leq \lim <em>{n \rightarrow \infty} X</em>{n},$ 再令 $m \rightarrow \infty,$ 得到<br>$$\lim <em>{m \rightarrow \infty} X</em>{m} \leq \lim <em>{n \rightarrow \infty} Z</em>{n} \leq \lim <em>{n \rightarrow \infty} X</em>{n}$$</p>
-<p>即$\lim <em>{n \rightarrow \infty} X</em>{n}=\lim <em>{n \rightarrow \infty} Z</em>{n}$<br>同样的方式处理第二个公式，得到 $\lim <em>{n \rightarrow \infty} E X</em>{n}=\lim <em>{n \rightarrow \infty} E Z</em>{n}$<br>上式中的 $\lim <em>{n \rightarrow \infty} E Z</em>{n}$ 可以写成 $E \lim <em>{n \rightarrow \infty} Z</em>{n},$ 进而我们得到了<br>$$\lim <em>{n \rightarrow \infty} E X</em>{n}=\lim <em>{n \rightarrow \infty} E Z</em>{n}=E \lim <em>{n \rightarrow \infty} Z</em>{n}=E \lim <em>{n \rightarrow \infty} X</em>{n}$$</p>
- 
+<p><strong>期望的单调连续性：</strong>$\left\{X_{n}, n \geq 1\right\}$ 是非负递增的简单随机变量序列, 则 $\lim _{n} X_{n}=X$ 是非负随机变量，且</p>
+<script type="math/tex; mode=display">E \lim _{n} X_{n}=\lim _{n} E X_{n}</script><p>证明：若对每个 $m,$ 当 $n \rightarrow \infty$ 时, $Y_{m n} \uparrow X_{m}$, 其中 $Y_{m n}$ 是非负简单随机变量, 令$Z_{n}=\sup _{m \leq n} Y_{m n},$ 则 $Z_{n}$ 也是非负简单随机变量, $\quad\left\{Z_{n}, n \geq 1\right\}$ 是递增的。我们有</p>
+<script type="math/tex; mode=display">Y_{m n} \leq Z_{n} \leq X_{n}, m \leq n</script><p>进而有：</p>
+<script type="math/tex; mode=display">E Y_{m n} \leq E Z_{n} \leq E X_{n}, m \leq n</script><p>接下来对第一个公式先令 $n \rightarrow \infty,$ 得到 $X_{m} \leq \lim _{n \rightarrow \infty} Z_{n} \leq \lim _{n \rightarrow \infty} X_{n},$ 再令 $m \rightarrow \infty,$ 得到</p>
+<script type="math/tex; mode=display">\lim _{m \rightarrow \infty} X_{m} \leq \lim _{n \rightarrow \infty} Z_{n} \leq \lim _{n \rightarrow \infty} X_{n}</script><p>即$\lim _{n \rightarrow \infty} X_{n}=\lim _{n \rightarrow \infty} Z_{n}$<br>同样的方式处理第二个公式，得到 $\lim _{n \rightarrow \infty} E X_{n}=\lim _{n \rightarrow \infty} E Z_{n}$<br>上式中的 $\lim _{n \rightarrow \infty} E Z_{n}$ 可以写成 $E \lim _{n \rightarrow \infty} Z_{n},$ 进而我们得到了</p>
+<script type="math/tex; mode=display">\lim _{n \rightarrow \infty} E X_{n}=\lim _{n \rightarrow \infty} E Z_{n}=E \lim _{n \rightarrow \infty} Z_{n}=E \lim _{n \rightarrow \infty} X_{n}</script> 
       <!-- reward -->
       
     </div>

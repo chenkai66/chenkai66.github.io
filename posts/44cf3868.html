@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">971</span>
+            <span class="post-count">975</span>
         </span>
     </span>
 
@@ -104,8 +104,7 @@
   <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><h2 id="语音学"><a href="#语音学" class="headerlink" title="语音学"></a>语音学</h2><p>Phonology假定了一组或多组独特的分类单元：音素（作为独特的特征存在）。声音本身在语言中没有意义，Subword是音素的下一级的形态学，是具有意义的最低级别</p>
 <p><img src="/posts/NLP/15.png" alt></p>
 <p>传统上，（morphemes）词素是最小的语义单位（semantic unit），长得像下面这样：</p>
-<p>$$\left[\left[\text {un}\left[[\text { fortun }(\mathrm{e})]<em>{\text { Root }} \text { ate }\right]</em>{\text { STEM }}\right]<em>{\text { STEM }} \text {ly}\right]</em>{\text { WORD }}$$</p>
-<h2 id="进击的词汇处理"><a href="#进击的词汇处理" class="headerlink" title="进击的词汇处理"></a>进击的词汇处理</h2><p><strong>深度学习</strong>中的递归神经网络是一种尝试处理更大词汇量的一种方法，更大的词汇量比如一些网络词汇，或者是字符与数字的组合（火星文），例如下面这样：</p>
+<script type="math/tex; mode=display">\left[\left[\text {un}\left[[\text { fortun }(\mathrm{e})]_{\text { Root }} \text { ate }\right]_{\text { STEM }}\right]_{\text { STEM }} \text {ly}\right]_{\text { WORD }}</script><h2 id="进击的词汇处理"><a href="#进击的词汇处理" class="headerlink" title="进击的词汇处理"></a>进击的词汇处理</h2><p><strong>深度学习</strong>中的递归神经网络是一种尝试处理更大词汇量的一种方法，更大的词汇量比如一些网络词汇，或者是字符与数字的组合（火星文），例如下面这样：</p>
 <p><img src="/posts/NLP/16.png" alt></p>
 <p><strong>Character-Level Models</strong>：我们可以拓展词嵌入为字符嵌入，这样我们可以为未知单词生成词嵌入，相似的拼写单词将共享相似的词嵌入，同时能够解决OOV问题。也就是说：连续语言可以作为字符来处理，我们将所有的语言处理均建立在字符序列上，不考虑 word-level。上面两种方法事实上都是可行的（深度学习方法与字符嵌入方法）。</p>
 <p>下面是一个简单地Character-Level Model:</p>

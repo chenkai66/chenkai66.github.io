@@ -113,29 +113,49 @@
 <h2 id="什么是支持向量"><a href="#什么是支持向量" class="headerlink" title="什么是支持向量"></a>什么是支持向量</h2><p><img src="/posts/Alg/svm_2.jpg" alt></p>
 <p>在蓝色样本中存在一些距离我们的超平面最近的一些点，这些点叫做支撑向量。</p>
 <h2 id="svm的最优化问题是什么"><a href="#svm的最优化问题是什么" class="headerlink" title="svm的最优化问题是什么"></a>svm的最优化问题是什么</h2><p>首先我们想要最优化的是各类样本点到超平面的距离最远（其实也就是找到最大间隔超平面），任意一个超平面可以用下面这个线性方程来描述：</p>
-<p>$$w^Tx+b = 0$$</p>
-<p><strong>n维空间距离又是怎么算的呢？</strong></p>
+<script type="math/tex; mode=display">w^Tx+b = 0</script><p><strong>n维空间距离又是怎么算的呢？</strong></p>
 <p>我们看二维空间点$(x,y)$到直线$Ax+By+C=0$的的距离计算公式是：</p>
-<p>$$\frac{|Ax+By+C|}{\sqrt{A^2+B^2}}$$</p>
-<p>拓展到$n$维也是同样的，点$x$到直线$w^Tx+b=0$的距离为：</p>
-<p>$$\frac{|w^Tx+b|}{||w||}$$</p>
-<p>其中$||w||=\sqrt{w_i^2+…+w_d^2}$</p>
+<script type="math/tex; mode=display">\frac{|Ax+By+C|}{\sqrt{A^2+B^2}}</script><p>拓展到$n$维也是同样的，点$x$到直线$w^Tx+b=0$的距离为：</p>
+<script type="math/tex; mode=display">\frac{|w^Tx+b|}{||w||}</script><p>其中$||w||=\sqrt{w_i^2+…+w_d^2}$</p>
 <p><img src="/posts/Alg/svm_3.jpg" alt></p>
 <p>支撑向量是样本中离超平面最近的点，所以所有的其他的红色点距离超平面的距离一定大于$d$，那么我们有这样一个公式：</p>
-<p>$$\left{\begin{array}{ll}<br>\frac{w^{T} x_{i}+b}{|w|} \geq d &amp; y_{i}=1 \<br>\frac{w^{T} x_{i}+b}{|w|} \leq-d &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>稍作转化可以得到：<br>$$<br>\left{\begin{array}{ll}<br>\frac{w^{T} x_{i}+b}{|w| d} \geq 1 &amp; y_{i}=1 \<br>\frac{w^{T} x_{i}+b}{|w| d} \leq-1 &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>由于$||w_i||d$为常数，可在所有系数上同时消去之，然后有（仍以原变量名命名）：<br>$$<br>\left{\begin{array}{ll}<br>w^{T} x_{i}+b \geq 1 &amp; y_{i}=1 \<br>w^{T} x_{i}+b \leq-1 &amp; y_{i}=-1<br>\end{array}\right.<br>$$<br>对于上面这个方程我们还能简写一下：<br>$$<br>y_{i}\left(w^{T} x_{i}+b\right) \geq 1<br>$$<br>超平面方程为：<br>$$<br>w^{T} x_{i}+b = \pm1<br>$$<br>有下图：<br><img src="/posts/Alg/svm_4.jpg" alt></p>
+<script type="math/tex; mode=display">\left\{\begin{array}{ll}
+\frac{w^{T} x_{i}+b}{\|w\|} \geq d & y_{i}=1 \\
+\frac{w^{T} x_{i}+b}{\|w\|} \leq-d & y_{i}=-1
+\end{array}\right.</script><p>稍作转化可以得到：</p>
+<script type="math/tex; mode=display">
+\left\{\begin{array}{ll}
+\frac{w^{T} x_{i}+b}{\|w\| d} \geq 1 & y_{i}=1 \\
+\frac{w^{T} x_{i}+b}{\|w\| d} \leq-1 & y_{i}=-1
+\end{array}\right.</script><p>由于$||w_i||d$为常数，可在所有系数上同时消去之，然后有（仍以原变量名命名）：</p>
+<script type="math/tex; mode=display">
+\left\{\begin{array}{ll}
+w^{T} x_{i}+b \geq 1 & y_{i}=1 \\
+w^{T} x_{i}+b \leq-1 & y_{i}=-1
+\end{array}\right.</script><p>对于上面这个方程我们还能简写一下：</p>
+<script type="math/tex; mode=display">
+y_{i}\left(w^{T} x_{i}+b\right) \geq 1</script><p>超平面方程为：</p>
+<script type="math/tex; mode=display">
+w^{T} x_{i}+b = \pm1</script><p>有下图：<br><img src="/posts/Alg/svm_4.jpg" alt></p>
 <p>并且每个支撑向量到超平面的距离可以写为：</p>
-<p>$$d=\frac{|w^Tx_i+b|}{||w||}$$</p>
-<p>我们要最大化这个距离，也就是<br>$$max\frac{|w^Tx_i+b|}{||w||}$$</p>
-<p>在样本点确定以后，$|w^Tx_i+b|$是一个常数，所以这个式子就变成了：<br>$$max\frac{1}{||w||}$$</p>
-<p>也就是：<br>$$min||w||$$<br>为了方便，我们取<br>$$min\frac12||w||^2$$</p>
-<p>所以得到最后的优化问题是：<br>$$min\frac12||w||^2$$<br>$$s.t. y_i(w^Tx_i+b)\ge1$$</p>
-<h1 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h1><h2 id="约束条件下的目标函数如何求解最优化问题"><a href="#约束条件下的目标函数如何求解最优化问题" class="headerlink" title="约束条件下的目标函数如何求解最优化问题"></a>约束条件下的目标函数如何求解最优化问题</h2><p>可以使用拉格朗日乘子法进行求解，将原本有约束的优化问题转化为对拉格朗日函数的无约束优化问题。<br>拉格朗日乘子法的定义（以三维空间为例）：<br>$$L(x,y,\lambda)=f(x,y)+\lambda g(x,y)$$<br>其中$\lambda$是拉格朗日乘子</p>
+<script type="math/tex; mode=display">d=\frac{|w^Tx_i+b|}{||w||}</script><p>我们要最大化这个距离，也就是</p>
+<script type="math/tex; mode=display">max\frac{|w^Tx_i+b|}{||w||}</script><p>在样本点确定以后，$|w^Tx_i+b|$是一个常数，所以这个式子就变成了：</p>
+<script type="math/tex; mode=display">max\frac{1}{||w||}</script><p>也就是：</p>
+<script type="math/tex; mode=display">min||w||</script><p>为了方便，我们取</p>
+<script type="math/tex; mode=display">min\frac12||w||^2</script><p>所以得到最后的优化问题是：</p>
+<script type="math/tex; mode=display">min\frac12||w||^2</script><script type="math/tex; mode=display">s.t. y_i(w^Tx_i+b)\ge1</script><h1 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h1><h2 id="约束条件下的目标函数如何求解最优化问题"><a href="#约束条件下的目标函数如何求解最优化问题" class="headerlink" title="约束条件下的目标函数如何求解最优化问题"></a>约束条件下的目标函数如何求解最优化问题</h2><p>可以使用拉格朗日乘子法进行求解，将原本有约束的优化问题转化为对拉格朗日函数的无约束优化问题。<br>拉格朗日乘子法的定义（以三维空间为例）：</p>
+<script type="math/tex; mode=display">L(x,y,\lambda)=f(x,y)+\lambda g(x,y)</script><p>其中$\lambda$是拉格朗日乘子</p>
 <p>拉格朗日函数把原本的目标函数和其限制条件整合成了一个函数，这样子约束问题就不存在了，我<br>们可以直接对该目标函数求解其极值。</p>
-<h2 id="怎么理解对偶问题"><a href="#怎么理解对偶问题" class="headerlink" title="怎么理解对偶问题"></a>怎么理解对偶问题</h2><p>首先，原问题是：<br>$$min_{w,b}\frac12||w||^2$$<br>$$s.t. g_i(w,b)=1-y_i(wx_i+b)\le0,i=1,2,…,m$$<br>拉格朗日乘子法转化后，变成了：<br>$$L(w,b,\lambda)=\frac12||w||^2+\sum_{i=1}^m\lambda_i[1-y_i(wx_i+b)]$$<br>于是原问题变成：<br>$$min_{w,b}max_\lambda L(w,b,\lambda)$$<br>$$s.t. \lambda_i\ge0$$<br>我们首先直观的看一下，为什么转化后的下面的式子，可以替代上面的式子。<br>由于$\lambda_i\ge 0$<br>当$1-y_i(wx_i+b)\gt0$时，$max_\lambda L(w,b,\lambda)$是无穷，无意义<br>当$1-y_i(wx_i+b)\le0$时，$max_\lambda L(w,b,\lambda)$是$\frac12||w||^2$<br>所以$min(\infty,\frac12 ||w||^2) = \frac12||w||^2$</p>
+<h2 id="怎么理解对偶问题"><a href="#怎么理解对偶问题" class="headerlink" title="怎么理解对偶问题"></a>怎么理解对偶问题</h2><p>首先，原问题是：</p>
+<script type="math/tex; mode=display">min_{w,b}\frac12||w||^2</script><script type="math/tex; mode=display">s.t. g_i(w,b)=1-y_i(wx_i+b)\le0,i=1,2,...,m</script><p>拉格朗日乘子法转化后，变成了：</p>
+<script type="math/tex; mode=display">L(w,b,\lambda)=\frac12||w||^2+\sum_{i=1}^m\lambda_i[1-y_i(wx_i+b)]</script><p>于是原问题变成：</p>
+<script type="math/tex; mode=display">min_{w,b}max_\lambda L(w,b,\lambda)</script><script type="math/tex; mode=display">s.t. \lambda_i\ge0</script><p>我们首先直观的看一下，为什么转化后的下面的式子，可以替代上面的式子。<br>由于$\lambda_i\ge 0$<br>当$1-y_i(wx_i+b)\gt0$时，$max_\lambda L(w,b,\lambda)$是无穷，无意义<br>当$1-y_i(wx_i+b)\le0$时，$max_\lambda L(w,b,\lambda)$是$\frac12||w||^2$<br>所以$min(\infty,\frac12 ||w||^2) = \frac12||w||^2$</p>
 <p>所以转化后的式子实际上和原来想表达的是的一样的。</p>
-<h2 id="什么是对偶问题"><a href="#什么是对偶问题" class="headerlink" title="什么是对偶问题"></a>什么是对偶问题</h2><p>对偶问题实际上就是将<br>$$min_{w,b}max_\lambda L(w,b,\lambda)$$<br>$$s.t. \lambda_i \ge 0$$<br>变成了<br>$$min_\lambda max_{w,b} L(w,b,\lambda)$$<br>$$s.t. \lambda_i \ge 0$$</p>
-<p>我们假设有一个函数$f$，则一定有：<br>$$min maxf\ge max minf$$</p>
-<p>也就是说，最大的里面挑出来的最小的，也要比最小的里面挑出来的最大的要大。这个关系实际上就是弱对偶关系，那什么是强对偶关系呢？<br>$$min maxf =  max minf$$<br>此即为强对偶的关系。</p>
+<h2 id="什么是对偶问题"><a href="#什么是对偶问题" class="headerlink" title="什么是对偶问题"></a>什么是对偶问题</h2><p>对偶问题实际上就是将</p>
+<script type="math/tex; mode=display">min_{w,b}max_\lambda L(w,b,\lambda)</script><script type="math/tex; mode=display">s.t. \lambda_i \ge 0</script><p>变成了</p>
+<script type="math/tex; mode=display">min_\lambda max_{w,b} L(w,b,\lambda)</script><script type="math/tex; mode=display">s.t. \lambda_i \ge 0</script><p>我们假设有一个函数$f$，则一定有：</p>
+<script type="math/tex; mode=display">min maxf\ge max minf</script><p>也就是说，最大的里面挑出来的最小的，也要比最小的里面挑出来的最大的要大。这个关系实际上就是弱对偶关系，那什么是强对偶关系呢？</p>
+<script type="math/tex; mode=display">min maxf =  max minf</script><p>此即为强对偶的关系。</p>
 <p>至于为什么我们这里可以使用强对偶关系，是由于：</p>
 <p>如果主问题是凸优化问题，也就是说当：</p>
 <ol>

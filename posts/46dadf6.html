@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">990</span>
+            <span class="post-count">989</span>
         </span>
     </span>
 
@@ -103,11 +103,35 @@
        
   <h1 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h1><p>我们常说的变量关系有两种——函数关系和变量关系。线性回归是回归分析中的一个特例，回归分析研究的是变量间的相互关系，我们下面简要说明线性回归的推导。</p>
 <p>首先设$Y$与$X$的关系为：$Y=\theta^{T} X+\epsilon$，上式中，$\epsilon$是$m×1$维向量，代表$m$个样本相对于线性回归方程的上下浮动程度。$\epsilon$是独立同分布的，由中心极限定理，$\epsilon$分布服从均值为0，方差为$\sigma^2$的正态分布。</p>
-<p>结合上面的公式，对每个样本来说，有：$\varepsilon^{(j)}=y^{(j)}-\theta^{T} x^{(j)}$<br>上式中， $j \in(1,2, \cdots, m)$，$\varepsilon$分布服从均值为0，方差为$\sigma^{2}$的正态分布，所以:<br>$$f\left(\varepsilon^{(j)}\right)=\frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{\left(\epsilon^{(j)})^{2}\right.}{2 \sigma^{2}}}$$<br>将 $\varepsilon^{(j)}=y^{(j)}-\theta^{T} x^{(j)}$ 代入上式, 有:<br>$$f(y^{(j)} | x^{(j)} ; \theta)=\frac{1}{\sqrt{2 \pi \sigma}} e^{-\frac{(y^{(j)}-\theta^Tx^{(j)})^2}{2 \sigma^{2}}}$$<br>下面的公式推导用到了如下对数转换公式：<br>$$\log a+\log b=\log a b$$<br>$$\log a b=\log a+\log b$$<br>似然函数：<br>$$L(\theta)=\prod_{j=1}^{m} f\left(y^{(j)} | x^{(j)} ; \theta\right)=\prod_{j=1}^{m} \frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{(y^{(j)}-\theta^Tx^{(j)})}{2 \sigma^{2}}^2}$$<br>两边取对数, $\Leftrightarrow l(\theta)=\log L(\theta)$<br>$$\begin{array}{l}<br>l(\theta)=\log \prod_{j=1}^{m} \frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{\left(y^{(j)}-g^{T} r^{(1)}\right)^{2}}{2 \sigma^{2}}} =\sum_{j=1}^{m} \log \frac{1}{\sqrt{2 \pi \sigma}} e^{-\frac{\left(y^{(j)}-b^{T} z^{(j)}\right)^{2}}{2 \sigma^{2}}} \<br>l_{\theta}(\theta)=m \log \frac{1}{\sqrt{2 \pi} \sigma}-\frac{1}{\sigma^{2}} \cdot \frac{1}{2} \sum_{j=1}^{m}\left(y^{(j)}-\theta^{T} x^{(j)}\right)^{2}<br>\end{array}<br>$$<br>上式中，去掉常数项, 去掉负号，貝将求极大似然函数最大值转换为求成本函数最小值：<br>$$J(\theta)=\frac{1}{2} \sum_{j=1}^{m}\left(y^{(j)}-\theta^{T} x^{(j)}\right)^{2}$$<br>即：<br>$$J(\theta)=\frac{1}{2} \sum_{j=1}^{m}\left(y^{(j)}-h_{\theta}\left(x^{(j)}\right)\right)^{2}$$</p>
-<p>这不就是最小二乘法吗~要解之获得最小值，即求导置0即可，当数据量大时需采用梯度下降法等算法以解之：</p>
-<p>$$<br>\begin{array}{l}<br>J(\theta)=\frac{1}{2}(X \theta-Y)^{T}(X \theta-Y) \<br>J(\theta)=\frac{1}{2}\left(\theta^{T} X^{T}-Y^{T}\right)(X \theta-Y) \<br>J(\theta)=\frac{1}{2}\left(\theta^{T} X^{T} X \theta-\left(\theta^{T} X^{T} Y-Y^{T} X \theta+Y^{T} Y\right)\right.<br>\end{array}<br>$$<br>对上式求导数：<br>$$<br>\nabla J(\theta)=\frac{1}{2}\left(2 X^{T} X \theta-X^{T} Y-\left(Y^{T} X\right)^{T}\right)<br>$$<br>$$<br>\begin{array}{l}<br>\nabla J(\theta)=\frac{1}{2}\left(2 X^{T} X \theta-X^{T} Y-X^{T} Y\right) \<br>\nabla J(\theta)=\frac{1}{2}\left(2 X^{T} X \theta-2 X^{T} Y\right) \<br>\nabla J(\theta)=X^{T} X \theta-X^{T} Y<br>\end{array}<br>$$<br>令上式 $=0$，即：<br>$$\nabla J(\theta)=X^{T} X \theta-X^{T} Y=0$$<br>可求得：<br>$$\theta=\left(X^{T} X\right)^{-1} X^{T} Y$$</p>
-<p>以上就是线性回归，下面我们介绍逻辑回归。</p>
-<h1 id="逻辑回归"><a href="#逻辑回归" class="headerlink" title="逻辑回归"></a>逻辑回归</h1><p>逻辑回归虽然名字有回归二字，但其重点是在解决二分类问题，即找一条决策边界来完成分类的决策，我们熟知的线性回归的决策函数是：<br>$$h_\theta(x) = \theta^Tx$$<br>而逻辑回归则是把线性回归的决策函数做一个softmax输出：<br>$$h_\theta(x)=\frac{1}{1+e^{-\theta^Tx}}$$<br>这个决策函数可以将$(-\infty,+\infty)$的数映射到$(0,1)$之间，成为一个概率输出。</p>
+<p>结合上面的公式，对每个样本来说，有：$\varepsilon^{(j)}=y^{(j)}-\theta^{T} x^{(j)}$<br>上式中， $j \in(1,2, \cdots, m)$，$\varepsilon$分布服从均值为0，方差为$\sigma^{2}$的正态分布，所以:</p>
+<script type="math/tex; mode=display">f\left(\varepsilon^{(j)}\right)=\frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{\left(\epsilon^{(j)})^{2}\right.}{2 \sigma^{2}}}</script><p>将 $\varepsilon^{(j)}=y^{(j)}-\theta^{T} x^{(j)}$ 代入上式, 有:</p>
+<script type="math/tex; mode=display">f(y^{(j)} | x^{(j)} ; \theta)=\frac{1}{\sqrt{2 \pi \sigma}} e^{-\frac{(y^{(j)}-\theta^Tx^{(j)})^2}{2 \sigma^{2}}}</script><p>下面的公式推导用到了如下对数转换公式：</p>
+<script type="math/tex; mode=display">\log a+\log b=\log a b</script><script type="math/tex; mode=display">\log a b=\log a+\log b</script><p>似然函数：</p>
+<script type="math/tex; mode=display">L(\theta)=\prod_{j=1}^{m} f\left(y^{(j)} | x^{(j)} ; \theta\right)=\prod_{j=1}^{m} \frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{(y^{(j)}-\theta^Tx^{(j)})}{2 \sigma^{2}}^2}</script><p>两边取对数, $\Leftrightarrow l(\theta)=\log L(\theta)$</p>
+<script type="math/tex; mode=display">\begin{array}{l}
+l(\theta)=\log \prod_{j=1}^{m} \frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{\left(y^{(j)}-g^{T} r^{(1)}\right)^{2}}{2 \sigma^{2}}} =\sum_{j=1}^{m} \log \frac{1}{\sqrt{2 \pi \sigma}} e^{-\frac{\left(y^{(j)}-b^{T} z^{(j)}\right)^{2}}{2 \sigma^{2}}} \\
+l_{\theta}(\theta)=m \log \frac{1}{\sqrt{2 \pi} \sigma}-\frac{1}{\sigma^{2}} \cdot \frac{1}{2} \sum_{j=1}^{m}\left(y^{(j)}-\theta^{T} x^{(j)}\right)^{2}
+\end{array}</script><p>上式中，去掉常数项, 去掉负号，貝将求极大似然函数最大值转换为求成本函数最小值：</p>
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{2} \sum_{j=1}^{m}\left(y^{(j)}-\theta^{T} x^{(j)}\right)^{2}</script><p>即：</p>
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{2} \sum_{j=1}^{m}\left(y^{(j)}-h_{\theta}\left(x^{(j)}\right)\right)^{2}</script><p>这不就是最小二乘法吗~要解之获得最小值，即求导置0即可，当数据量大时需采用梯度下降法等算法以解之：</p>
+<script type="math/tex; mode=display">
+\begin{array}{l}
+J(\theta)=\frac{1}{2}(X \theta-Y)^{T}(X \theta-Y) \\
+J(\theta)=\frac{1}{2}\left(\theta^{T} X^{T}-Y^{T}\right)(X \theta-Y) \\
+J(\theta)=\frac{1}{2}\left(\theta^{T} X^{T} X \theta-\left(\theta^{T} X^{T} Y-Y^{T} X \theta+Y^{T} Y\right)\right.
+\end{array}</script><p>对上式求导数：</p>
+<script type="math/tex; mode=display">
+\nabla J(\theta)=\frac{1}{2}\left(2 X^{T} X \theta-X^{T} Y-\left(Y^{T} X\right)^{T}\right)</script><script type="math/tex; mode=display">
+\begin{array}{l}
+\nabla J(\theta)=\frac{1}{2}\left(2 X^{T} X \theta-X^{T} Y-X^{T} Y\right) \\
+\nabla J(\theta)=\frac{1}{2}\left(2 X^{T} X \theta-2 X^{T} Y\right) \\
+\nabla J(\theta)=X^{T} X \theta-X^{T} Y
+\end{array}</script><p>令上式 $=0$，即：</p>
+<script type="math/tex; mode=display">\nabla J(\theta)=X^{T} X \theta-X^{T} Y=0</script><p>可求得：</p>
+<script type="math/tex; mode=display">\theta=\left(X^{T} X\right)^{-1} X^{T} Y</script><p>以上就是线性回归，下面我们介绍逻辑回归。</p>
+<h1 id="逻辑回归"><a href="#逻辑回归" class="headerlink" title="逻辑回归"></a>逻辑回归</h1><p>逻辑回归虽然名字有回归二字，但其重点是在解决二分类问题，即找一条决策边界来完成分类的决策，我们熟知的线性回归的决策函数是：</p>
+<script type="math/tex; mode=display">h_\theta(x) = \theta^Tx</script><p>而逻辑回归则是把线性回归的决策函数做一个softmax输出：</p>
+<script type="math/tex; mode=display">h_\theta(x)=\frac{1}{1+e^{-\theta^Tx}}</script><p>这个决策函数可以将$(-\infty,+\infty)$的数映射到$(0,1)$之间，成为一个概率输出。</p>
 <p>除了这一点（决策函数）和线性回归不一样，逻辑回归的本质还是线性回归。</p>
 <p>逻辑回归自然是能实现多分类的，实现方式分为一对一和一对多两种：</p>
 <p>其中一对一分类是每两个类之间构建一个分类器，共需要$\frac{N(N-1)}{2}$个分类器；一对多顾名思义需要$N$个分类器</p>

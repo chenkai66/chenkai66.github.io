@@ -102,7 +102,8 @@
     <div class="article-entry" itemprop="articleBody">
        
   <p>正则表达式，即 RE，是 regular expression 的简称，是用来简洁表达一组字符串的表达式。</p>
-<h1 id="正则表达式的语法"><a href="#正则表达式的语法" class="headerlink" title="正则表达式的语法"></a>正则表达式的语法</h1><table>
+<h1 id="正则表达式的语法"><a href="#正则表达式的语法" class="headerlink" title="正则表达式的语法"></a>正则表达式的语法</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>操 作 符</th>
@@ -110,8 +111,9 @@
 <th>正 则 表 达 式 样 例</th>
 </tr>
 </thead>
-<tbody><tr>
-<td>.</td>
+<tbody>
+<tr>
+<td> .</td>
 <td>匹配任何字符（换行符除外）</td>
 <td>b.b</td>
 </tr>
@@ -136,9 +138,11 @@
 <td>abc?</td>
 </tr>
 <tr>
-<td>|</td>
+<td>\</td>
+<td></td>
 <td>匹配左或右任意一个正则表达式</td>
 <td>re1</td>
+<td>re2</td>
 </tr>
 <tr>
 <td>{A}</td>
@@ -166,9 +170,9 @@
 <td>[0-9],[A-Za-z]</td>
 </tr>
 <tr>
-<td>[^…]</td>
+<td><sup><a href="#fn_..." id="reffn_...">...</a></sup></td>
 <td>不匹配此字符集中出现的任何一个字符， 包括某一范围的字符</td>
-<td>[^abc], [^a-z]</td>
+<td><sup><a href="#fn_abc" id="reffn_abc">abc</a></sup>, <sup><a href="#fn_a-z" id="reffn_a-z">a-z</a></sup></td>
 </tr>
 <tr>
 <td>(…)</td>
@@ -183,7 +187,7 @@
 <tr>
 <td>\w</td>
 <td>匹配任何数字字母字符（包括_),\W与\w作用相反</td>
-<td>\w?</td>
+<td>\w? </td>
 </tr>
 <tr>
 <td>\s</td>
@@ -197,25 +201,25 @@
 </tr>
 <tr>
 <td>\nn</td>
-<td>匹配已保存的子组</td>
-<td></td>
+<td>匹配已保存的子组      </td>
 </tr>
 <tr>
 <td>\c</td>
-<td>逐一匹配特殊字符c</td>
-<td></td>
+<td>逐一匹配特殊字符c      </td>
 </tr>
 <tr>
 <td>\A(\Z)</td>
 <td>匹配字符串的起始（结束）</td>
 <td>\ATest</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>我们可以举一些其他常用例子：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">^[A - Z a - z]+$ 表示由26个字母组成的字符串</span><br><span class="line">^[A - Z a - z 0 - 9]+$ 表示由26个字母和数字组成的字符串</span><br><span class="line">^-?\d+$ 表示整数形式的字符串（有正负）</span><br><span class="line">[1-9]\d&#123;5&#125; 表示中国境内邮政编码，6位</span><br><span class="line">[\u4e00 - \u9fa5] 匹配中文字符</span><br><span class="line">\d&#123;3&#125; - \d&#123;8&#125; | \d&#123;4&#125; - \d&#123;7&#125; 匹配国外电话号码</span><br></pre></td></tr></table></figure>
-
 <p>我们思考一下，我们应该怎么匹配 IP 地址呢？<br>我们知道，IP 地址分为4段，每段取值范围是 0-255，那么我们会考虑到根据这256个数字的特殊性进行划分，比如：<br>1、当取值为 0-99 时，我们可以记为 [1-9] ? \d<br>2、当取值为 100-199 时，我们可以记为 1\d{2}<br>3、当取值为 200-249 时，我们可以记为 2[0-4]\d<br>4、当取值为 250-255 时，我们可以记为 25[0-5]<br>我们只需要将每个区间按 | 预算符进行划分即可获得每段 IP 地址的正确表达式。</p>
 <h1 id="Re-库的基本使用"><a href="#Re-库的基本使用" class="headerlink" title="Re 库的基本使用"></a>Re 库的基本使用</h1><p>我们先介绍 Re 库的主要功能函数：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -223,7 +227,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>re.search()</td>
 <td>在一个字符串中搜索匹配正则表达式的第一个位置，返回 match 对象</td>
 </tr>
@@ -247,9 +252,12 @@
 <td>re.sub()</td>
 <td>在一个字符串中替换所有匹配正则表达式的子串，返回替换后的字符串</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>下面一一介绍这六个函数：</p>
 <h3 id="re-search-pattern-string-flags-0"><a href="#re-search-pattern-string-flags-0" class="headerlink" title="re.search(pattern, string, flags=0)"></a>re.search(pattern, string, flags=0)</h3><p>其中 pattern 是正则表达式的字符串或原生字符串表示，string 是待匹配字符串，flags 是正则表达式使用时的控制标记。<br>flags 的控制常用标记如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -257,7 +265,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>re.I re.IGNORECASE</td>
 <td>忽略正则表达式的大小写，[A-Z] 能够匹配小写字符</td>
 </tr>
@@ -269,39 +278,33 @@
 <td>re.S re.DOTAIL</td>
 <td>正则表达式中的 . 操作能够匹配所有字符，默认匹配除换行外的所有字符</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>下面是一个例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = re.search(<span class="string">r'[1-9]\d&#123;5&#125;'</span>,<span class="string">'BIT 100081'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">if</span> match:</span><br><span class="line">		print(match.group(<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line"><span class="number">100081</span></span><br></pre></td></tr></table></figure>
 <h3 id="re-match-pattern-string-flags-0"><a href="#re-match-pattern-string-flags-0" class="headerlink" title="re.match(pattern, string, flags=0)"></a>re.match(pattern, string, flags=0)</h3><p>match 对象的三个参数和标记都与 search 对象相同，我们直接看一个例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = re.match(<span class="string">r'[0-9]\d&#123;5&#125;'</span>, <span class="string">'BIT 100081'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">if</span> match:</span><br><span class="line">	match.group(<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 无结果</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match.group(<span class="number">0</span>)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;pyshell#15&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    match.group(<span class="number">0</span>)</span><br><span class="line">AttributeError: <span class="string">'NoneType'</span> object has no attribute <span class="string">'group'</span></span><br></pre></td></tr></table></figure>
-
 <p>我们发现上述代码的 match 对象并没有任何结果返回，也就是说这个对象是空的，因为我们知道 match 是从头开始匹配，而字符串的头为 ‘BIT’，自然匹配错误。我们换一下字符串的表示，看看是否能匹配出相关结果：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = re.match(<span class="string">r'[1-9]\d&#123;5&#125;'</span>,<span class="string">'100081 BIT'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">if</span> match:</span><br><span class="line">	match.group(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="string">'100081'</span></span><br></pre></td></tr></table></figure>
-
 <p>这印证了我们上面的讨论</p>
 <h3 id="re-findall-pattern-string-flags-0"><a href="#re-findall-pattern-string-flags-0" class="headerlink" title="re.findall(pattern, string, flags=0)"></a>re.findall(pattern, string, flags=0)</h3><p>我们直接看例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ls = re.findall(<span class="string">r'[1-9]\d&#123;5&#125;'</span>, <span class="string">'BIT100081 TSU100084'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ls</span><br><span class="line">[<span class="string">'100081'</span>, <span class="string">'100084'</span>]</span><br></pre></td></tr></table></figure>
-
 <h3 id="re-split-pattern-string-maxsplit-0-flags-0"><a href="#re-split-pattern-string-maxsplit-0-flags-0" class="headerlink" title="re.split(pattern, string, maxsplit=0, flags=0)"></a>re.split(pattern, string, maxsplit=0, flags=0)</h3><p>split 函数的三个参数我们都已经熟知，中间新增加的参数 maxsplit 表示最大分割数，剩余部分作为最后一个元素输出，下面看看例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ls = re.findall(<span class="string">r'[1-9]\d&#123;5&#125;'</span>, <span class="string">'BIT100081 TSU100084'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ls</span><br><span class="line">[<span class="string">'100081'</span>, <span class="string">'100084'</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>re.split(<span class="string">r'[1-9]\d&#123;5&#125;'</span>, <span class="string">'BIT100081 TSU100084'</span>)</span><br><span class="line">[<span class="string">'BIT'</span>, <span class="string">' TSU'</span>, <span class="string">''</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>re.split(<span class="string">r'[1-9]\d&#123;5&#125;'</span>, <span class="string">'BIT100081 TSU100084'</span>, maxsplit=<span class="number">1</span>)</span><br><span class="line">[<span class="string">'BIT'</span>, <span class="string">' TSU100084'</span>]</span><br></pre></td></tr></table></figure>
-
 <h3 id="re-finditer-pattern-string-flags-0"><a href="#re-finditer-pattern-string-flags-0" class="headerlink" title="re.finditer(pattern, string, flags=0)"></a>re.finditer(pattern, string, flags=0)</h3><p>我们直接看代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> m <span class="keyword">in</span> re.finditer(<span class="string">r'[1-9]\d&#123;5&#125;'</span>, <span class="string">'BIT100081 TSU100084'</span>):</span><br><span class="line">	<span class="keyword">if</span> m:</span><br><span class="line">		print(m.group(<span class="number">0</span>))</span><br><span class="line"><span class="number">100081</span></span><br><span class="line"><span class="number">100084</span></span><br></pre></td></tr></table></figure>
-
 <h3 id="re-sub-pattern-repl-string-count-0-flags-0"><a href="#re-sub-pattern-repl-string-count-0-flags-0" class="headerlink" title="re.sub(pattern, repl, string, count=0, flags=0)"></a>re.sub(pattern, repl, string, count=0, flags=0)</h3><p>我们可以看到所有参数中新增了两个参数，repl 是指替换匹配字符串的字符串，而 count 是匹配的最大替换次数，下面我们看一个例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>re.sub(<span class="string">r'[1-9]\d&#123;5&#125;'</span>, <span class="string">'zipcode'</span>, <span class="string">'BIT100081 TSU100084'</span>)</span><br><span class="line"><span class="string">'BITzipcode TSUzipcode'</span></span><br></pre></td></tr></table></figure>
-
 <h3 id="Re-库的另一种等价用法"><a href="#Re-库的另一种等价用法" class="headerlink" title="Re 库的另一种等价用法"></a>Re 库的另一种等价用法</h3><p>我们上面给出的函数例子都是函数使用法，也就是仅支持一次性操作的用法，这是什么意思呢，我们对比一下下面的面向对象用法就知道了：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pat = re.compile(<span class="string">r'[1-9]\d&#123;5&#125;'</span>)</span><br><span class="line">rst = pat.search(<span class="string">'BIT 100081'</span>)</span><br></pre></td></tr></table></figure>
-
 <p>re.compile 函数的完整形式是：re.compile(pattern, flags=0)，该函数将正则表达式的字符串形式编译成正则表达式对象。编译后才是一个正则表达式，表示一组字符串。</p>
 <h1 id="Re-库的-Match-对象"><a href="#Re-库的-Match-对象" class="headerlink" title="Re 库的 Match 对象"></a>Re 库的 Match 对象</h1><p>Match 就是一次匹配的结果，它返回了匹配的相关信息，我们直接看前面的一个代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = re.match(<span class="string">r'[1-9]\d&#123;5&#125;'</span>,<span class="string">'100081 BIT'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">if</span> match:</span><br><span class="line">	match.group(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="string">'100081'</span></span><br></pre></td></tr></table></figure>
-
 <p>在这里我们想看一下 match 的类型：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>type(match)</span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">re</span>.<span class="title">Match</span>'&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>Match 对象有很多属性，下面我们重点介绍4个属性：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -309,7 +312,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>.string</td>
 <td>待匹配的文本</td>
 </tr>
@@ -325,8 +329,11 @@
 <td>.endpos</td>
 <td>正则表达式搜索文本的结束位置</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>Match 对象有很多方法，下面列举4个常用对象：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -334,7 +341,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>.group(0)</td>
 <td>获得匹配后的字符串</td>
 </tr>
@@ -350,17 +358,15 @@
 <td>.span()</td>
 <td>返回 (.start(), .end())</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>我们看一下相关例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m = re.search(<span class="string">r'[1-9]\d&#123;5&#125;'</span>, <span class="string">'BIT100081 TSU100084'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.string</span><br><span class="line"><span class="string">'BIT100081 TSU100084'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.re</span><br><span class="line">re.compile(<span class="string">'[1-9]\\d&#123;5&#125;'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.pos</span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.endpos</span><br><span class="line"><span class="number">19</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.group(<span class="number">0</span>)</span><br><span class="line"><span class="string">'100081'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.start()</span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.end()</span><br><span class="line"><span class="number">9</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.span()</span><br><span class="line">(<span class="number">3</span>, <span class="number">9</span>)</span><br></pre></td></tr></table></figure>
-
 <h1 id="Re-库的贪婪匹配和最小匹配"><a href="#Re-库的贪婪匹配和最小匹配" class="headerlink" title="Re 库的贪婪匹配和最小匹配"></a>Re 库的贪婪匹配和最小匹配</h1><p>首先我们看一个例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = re.search(<span class="string">r'PY.*N'</span>, <span class="string">'PYANBNCNDN'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match.group(<span class="number">0</span>)</span><br><span class="line"><span class="string">'PYANBNCNDN'</span></span><br></pre></td></tr></table></figure>
-
-<p>其中的 ‘.*‘ 表示匹配任意字符串，这里我们应该留意到， Re 库默认采用贪婪匹配，即输出匹配最长的子串。那么我们应该如何实现输出最短的子串呢？</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = re.search(<span class="string">r'PY.*?N'</span>, <span class="string">'PYANBNCNDN'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match.group(<span class="number">0</span>)</span><br><span class="line"><span class="string">'PYAN'</span></span><br></pre></td></tr></table></figure>
-
-<p>最小匹配操作符有下面四种：<br>操作符 | 说明<br>——|——<br>*? | 前一个字符0次或无限次扩展<br>+? | 前一个字符1次或无限次扩展<br>?? | 前一个字符0次或1次扩展<br>{m,n}? | 扩展前一个字符 m 至 n 次（含 n）</p>
+<p>其中的 ‘.*‘ 表示匹配任意字符串，这里我们应该留意到， Re 库默认采用贪婪匹配，即输出匹配最长的子串。那么我们应该如何实现输出最短的子串呢？<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = re.search(<span class="string">r'PY.*?N'</span>, <span class="string">'PYANBNCNDN'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match.group(<span class="number">0</span>)</span><br><span class="line"><span class="string">'PYAN'</span></span><br></pre></td></tr></table></figure></p>
+<p>最小匹配操作符有下面四种：<br>操作符 | 说明<br>———|———<br>*? | 前一个字符0次或无限次扩展<br>+? | 前一个字符1次或无限次扩展<br>?? | 前一个字符0次或1次扩展<br>{m,n}? | 扩展前一个字符 m 至 n 次（含 n）</p>
  
       <!-- reward -->
       

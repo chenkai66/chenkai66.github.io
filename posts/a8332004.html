@@ -104,8 +104,8 @@
   <h1 id="requests-模块的导入"><a href="#requests-模块的导入" class="headerlink" title="requests 模块的导入"></a>requests 模块的导入</h1><p>request 函数的导入可以直接使用 import requests 来实现，当然，若事先没有安装可以直接在命令行输入 pip install reqeusts 来进行安装。<br>requests 模块中包含了七个主要的方法，下面将进行一一解析和尝试调用。</p>
 <h1 id="requests-get-函数"><a href="#requests-get-函数" class="headerlink" title="requests.get() 函数"></a>requests.get() 函数</h1><p>requests.get() 函数是一个用于向服务器构造请求资源的 Requests 对象，具体实例如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url = www.baidu.com</span><br><span class="line">r = requests.get(url)</span><br><span class="line">print(r.status_code)	<span class="comment"># 返回200表示爬取成功</span></span><br><span class="line">r.encoding = <span class="string">"utf-8"</span>	<span class="comment"># 转换编码</span></span><br><span class="line">print(r.text)			<span class="comment"># 打印对应的HTML文本</span></span><br><span class="line">print(type(r))			<span class="comment"># 应返回 &lt;class 'requests.model.Response'&gt;</span></span><br><span class="line">print(r.headers)		<span class="comment"># 应返回&#123;'Cache-Control': 'private （省略）</span></span><br></pre></td></tr></table></figure>
-
 <p>其中 r 是一个 response 对象，即存储了服务器返回本地的数据，我们对数据的操作即对 r 的操作，response 对象有五个属性，这五个属性是爬虫处理数据的重中之重，其具体含义如下表所示：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -113,7 +113,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>r.status_code</td>
 <td>HTTP请求的返回状态，202表示连接成功，404表示失败</td>
 </tr>
@@ -133,15 +134,16 @@
 <td>r.content</td>
 <td>HTTP相应内容的二进制形式</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>在我们使用 get 方法从网上获取资源时有基本流程如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">A((r.status_code)) -- 返回值为 200 --&gt; B[可以使用 r.text 和 r.encoding 等方法]</span><br><span class="line">A -- 返回值为 404 或其他--&gt; C[某些原因出错将产生异常]</span><br></pre></td></tr></table></figure>
-
 <p>我们要怎么区分 response 的两种编码方式呢？我们来看一个简单的例子：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">r = requests.get(<span class="string">"http://www.baidu.com"</span>)</span><br><span class="line">print(r.status_code)			<span class="comment"># 返回200表示正常运行,可以继续</span></span><br><span class="line">print(r.text)					<span class="comment"># 显示的内容很多是乱码看不清编码是什么</span></span><br><span class="line">print(r.encoding)				<span class="comment"># 返回 'ISO-8859-1'</span></span><br><span class="line">print(r.apparent_encoding)		<span class="comment"># 返回 'utf-8'</span></span><br><span class="line">r.encoding = <span class="string">'utf-8'</span></span><br><span class="line">print(r.text)					<span class="comment">#返回了正确信息</span></span><br></pre></td></tr></table></figure>
-
 <p>事实上，r.encoding 中的编码方式是从 HTTP 的 header 中的 charset 字段中获得，如果 HTTP 的 header 中有这个字段，说明我们访问的服务器对其资源的编码是有要求的，编码获得后存在 encoding 中，但若 HTTP 的 header中不含有此字段，将默认编码为 ‘ISO-8859-1’，但此编码并不能解析中文。而 apparent_encoding 则是从 HTTP 内容部分分析出可能的编码形式，原则来说此方法会更准确。</p>
 <h1 id="爬取网页的通用代码框架"><a href="#爬取网页的通用代码框架" class="headerlink" title="爬取网页的通用代码框架"></a>爬取网页的通用代码框架</h1><p>在实际爬取过程中，requests.get(url) 并不是时时通用的，经常会遇到各种问题，Requests 库支持六种常用的连接异常：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -149,7 +151,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>requests.ConnectionError</td>
 <td>网络连接错误异常，如 DNS 查询失败，拒绝连接等</td>
 </tr>
@@ -173,30 +176,13 @@
 <td>requests.Timeout</td>
 <td>请求 URL 超时，产生超时异常）</td>
 </tr>
-<tr>
-<td>Response 的异常：</td>
-<td></td>
-</tr>
-<tr>
-<td>异常</td>
-<td>说明</td>
-</tr>
-<tr>
-<td>——–</td>
-<td>—–</td>
-</tr>
-<tr>
-<td>r.raise_for_status()</td>
-<td>如果不是200，产生异常 requests.HTTPError</td>
-</tr>
-<tr>
-<td>这个异常有什么用呢，我们来看一下爬取网页的通用代码框架就一目了然了：</td>
-<td></td>
-</tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
+<p>Response 的异常：<br>异常 | 说明<br>———— | ——-<br>r.raise_for_status() | 如果不是200，产生异常 requests.HTTPError<br>这个异常有什么用呢，我们来看一下爬取网页的通用代码框架就一目了然了：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">geetHTMLText</span><span class="params">(url)</span>:</span></span><br><span class="line">	<span class="keyword">try</span>:</span><br><span class="line">		r = requests.get(url, timeout=<span class="number">30</span>)</span><br><span class="line">		r.raise_for_status() </span><br><span class="line">		r.encoding = r.apparent_encoding</span><br><span class="line">		<span class="keyword">return</span> r.text</span><br><span class="line">	<span class="keyword">except</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="string">"产生异常"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">	url = <span class="string">"http://www.baidu.com"</span></span><br><span class="line">	print(geteHTMLText(url))</span><br></pre></td></tr></table></figure>
-
 <h1 id="HTTP-协议与-Requests-库的主要方法"><a href="#HTTP-协议与-Requests-库的主要方法" class="headerlink" title="HTTP 协议与 Requests 库的主要方法"></a>HTTP 协议与 Requests 库的主要方法</h1><p>requests 库有七个主要方法，分别如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -204,7 +190,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>requests.request()</td>
 <td>构造一个请求，支撑以下各方法的基础方法</td>
 </tr>
@@ -232,9 +219,12 @@
 <td>requests.delete()</td>
 <td>向 HTML 网页提交删除请求，对应于 HTTP 的 DELETE</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>为了理解以上方法，我们需要首先了解 HTTP 协议。</p>
 <h2 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h2><p>HTTP 协议是超文本传输协议，是一种基于“请求与响应“模式的、无状态的应用层协议，其中无状态指的是第一次请求与第二次请求之间没有直接关联。HTTP 协议采用 URL 作为定位网络资源的标识，URL 格式为<br><a href="http://host[:port][path]，其中">http://host[:port][path]，其中</a> host 是一个合法的 Internet 主机域名或 IP 地址，port 为端口号，缺省端口为80，path 是请求资源的路径。HTTP协议对资源的操作方法如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -242,7 +232,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>GET</td>
 <td>请求获取 URL 位置的资源</td>
 </tr>
@@ -266,37 +257,28 @@
 <td>DELETE</td>
 <td>请求删除 URL 位置存储的资源</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>我们通过HTTP协议可以对资源进行上述操作，即：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph LR </span><br><span class="line">A[User] -- GET&#x2F;HEAD --&gt; B((cloud))</span><br><span class="line">B --PUT&#x2F;POST&#x2F;PATCH&#x2F;DELETE--&gt;A</span><br></pre></td></tr></table></figure>
-
 <p>事实上，HTTP 协议通过 URL 做定位，通过上述六个方法对资源进行管理，每个操作都是无状态的。HTTP 协议与 Requests 库的方法是一一对应的，下面以 requests.post() 方法为例说明之：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">payload =  &#123;<span class="string">"key1"</span>:<span class="string">"value1"</span>, <span class="string">"key2"</span>:<span class="string">"value2"</span>&#125;</span><br><span class="line">r = requests.post(<span class="string">"http://httpbin.org/post"</span>, data=payload)</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">返回内容：</span><br><span class="line">&#123;...</span><br><span class="line"> &quot;form&quot; : &#123;</span><br><span class="line">	&quot;key2&quot;:&quot;value2&quot;,</span><br><span class="line">   &quot;key1&quot;:&quot;value1&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这说明用 requests.post() 提交一个键值对时会将数据存储在表单（ form ) 下，若提交的是数据，则会存储在 data 下。</p>
 <h1 id="Requests-库主要方法解析"><a href="#Requests-库主要方法解析" class="headerlink" title="Requests 库主要方法解析"></a>Requests 库主要方法解析</h1><h2 id="request-方法"><a href="#request-方法" class="headerlink" title="request 方法"></a>request 方法</h2><p>request 方法的使用规则是：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requests.request(method, url, **kwargs)</span><br></pre></td></tr></table></figure>
-
 <p>其中 method 表示请求方式，具体可填参数有 ‘GET’ , ‘HEAD’, ‘POST’, ‘PUT’, ‘PATCH’, ‘delete’, ‘OPTIONS’，**kwargs 为可选项，有13个参数，下面将进行部分举例：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># params 参数</span></span><br><span class="line">kv = &#123;<span class="string">"key1"</span>:<span class="string">"value1"</span>, <span class="string">"key2"</span>:<span class="string">"value2"</span>&#125;</span><br><span class="line">r = requests.request(<span class="string">'GET'</span>, <span class="string">'http://python123.io/ws'</span>, params=kv)</span><br><span class="line">print(r.url)</span><br><span class="line"><span class="comment"># http://python123.io/ws?key1=value1&amp;key2=value2</span></span><br></pre></td></tr></table></figure>
-<p>其中”？”后面带的参数可供浏览器进行筛选，再将页面返回。除此之外更常用的是 header 参数：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hd = &#123;<span class="string">'user=agent'</span>:<span class="string">'Chrome/10'</span>&#125;</span><br><span class="line">r = requests.request(<span class="string">'POST'</span>,<span class="string">'http://python123.io/ws'</span>, headers=hd)</span><br></pre></td></tr></table></figure>
-
+<p>其中”？”后面带的参数可供浏览器进行筛选，再将页面返回。除此之外更常用的是 header 参数：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hd = &#123;<span class="string">'user=agent'</span>:<span class="string">'Chrome/10'</span>&#125;</span><br><span class="line">r = requests.request(<span class="string">'POST'</span>,<span class="string">'http://python123.io/ws'</span>, headers=hd)</span><br></pre></td></tr></table></figure></p>
 <p>由上述代码可见，我们可以通过修改 headers 的 ‘user-agent’ 部分模拟不同的浏览器进行访问。另外我们也常常需要隐藏自己的 IP 地址来防止爬虫的逆追踪，我们会使用 proxies 可选项：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pxs = &#123;<span class="string">'http'</span> : <span class="string">'http://user:pass@10.10.10.1:1234'</span> </span><br><span class="line">	   <span class="string">'https'</span> : <span class="string">'https://10.10.10.1:4321'</span> &#125;</span><br><span class="line">r = requests.request(<span class="string">'GET'</span>, <span class="string">'http://www.baidu.com'</span>, proxies=pxs)</span><br></pre></td></tr></table></figure>
-
 <p>其余的可选项还有 data, json, cookies, auth, files, timeout, allow_redirects, stream, verify, cert。</p>
 <h1 id="get-方法"><a href="#get-方法" class="headerlink" title="get 方法"></a>get 方法</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requests.get(url, params=<span class="literal">None</span>, **kwargs)</span><br></pre></td></tr></table></figure>
-
 <p>其中 params 为 url 中的额外参数，是字典或字节流格式，为可选项。**kwargs 有12个控制访问参数，即 request 方法中除了 params 的其他访问参数，就不一一介绍了。</p>
 <h1 id="post-方法"><a href="#post-方法" class="headerlink" title="post 方法"></a>post 方法</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requests.post(url, data=<span class="literal">None</span>, json=<span class="literal">None</span>, **kwargs)</span><br></pre></td></tr></table></figure>
-
 <p>其中 url 为拟更新页面的 url 链接， data 为字典、字节序列或文件，是 Requests 的内容， json 为 JSON 格式的数据， 是 Requests 的内容，**kwargs 为除了 data 与 json 外的其他控制访问参数。</p>
-<h1 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h1><p>由于其他三个方法使用情况大同小异，直接在下面列出了调用格式：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">requests.put(url, data=<span class="literal">None</span>, **kwargs)</span><br><span class="line">requests.patch(url, data=<span class="literal">None</span>, **kwargs)</span><br><span class="line">requests.delete(url, **kwargs)</span><br></pre></td></tr></table></figure>
-
+<h1 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h1><p>由于其他三个方法使用情况大同小异，直接在下面列出了调用格式：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">requests.put(url, data=<span class="literal">None</span>, **kwargs)</span><br><span class="line">requests.patch(url, data=<span class="literal">None</span>, **kwargs)</span><br><span class="line">requests.delete(url, **kwargs)</span><br></pre></td></tr></table></figure></p>
 <p>事实上我们可以发现，除了 request 方法，其他几个方法都不过是显式定义了 kwargs 中的部分参数。这样定义是因为这几个参数的使用频率更高，因此单独定义出来更方便。</p>
  
       <!-- reward -->

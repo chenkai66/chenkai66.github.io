@@ -109,16 +109,13 @@
 <ul>
 <li><strong>A Forward LM</strong></li>
 </ul>
-<p>$$p(t_1,t_2,…,t_N) = \prod_{k=1}^N p(t_k|t_1,t_2,…,t_{k-1})$$</p>
-<ul>
+<script type="math/tex; mode=display">p(t_1,t_2,...,t_N) = \prod_{k=1}^N p(t_k|t_1,t_2,...,t_{k-1})</script><ul>
 <li><strong>A Backward LM</strong></li>
 </ul>
-<p>$$p(t_1,t_2,…,t_N) = \prod_{k=1}^N p(t_k|t_{k+1},t_{k+2},…,t_{N})$$</p>
-<ul>
+<script type="math/tex; mode=display">p(t_1,t_2,...,t_N) = \prod_{k=1}^N p(t_k|t_{k+1},t_{k+2},...,t_{N})</script><ul>
 <li><strong>Jointly maximize the log likelihood of the forward and backward directions</strong></li>
 </ul>
-<p>$$\sum_{k=1}^N (log p(t_k|t_1,t_2,…,t_{k-1};\theta_x,\theta_{LSTM}^{forward},\theta_s) + log p(t_k|t_{k+1},t_{k+2},…,t_{N};\theta_x,\theta_{LSTM}^{backward},\theta_s))$$</p>
-<p>总结一下，不像传统的词向量，每一个词只对应一个词向量，ELMo利用预训练好的双向语言模型，然后根据具体输入从该语言模型中可以得到上下文依赖的当前词表示（对于不同上下文的同一个词的表示是不一样的），再当成特征加入到具体的NLP有监督模型里。</p>
+<script type="math/tex; mode=display">\sum_{k=1}^N (log p(t_k|t_1,t_2,...,t_{k-1};\theta_x,\theta_{LSTM}^{forward},\theta_s) + log p(t_k|t_{k+1},t_{k+2},...,t_{N};\theta_x,\theta_{LSTM}^{backward},\theta_s))</script><p>总结一下，不像传统的词向量，每一个词只对应一个词向量，ELMo利用预训练好的双向语言模型，然后根据具体输入从该语言模型中可以得到上下文依赖的当前词表示（对于不同上下文的同一个词的表示是不一样的），再当成特征加入到具体的NLP有监督模型里。</p>
 <h1 id="Open-AI-GPT"><a href="#Open-AI-GPT" class="headerlink" title="Open AI GPT"></a>Open AI GPT</h1><p>他们利用了Transformer网络代替了LSTM作为语言模型来更好的捕获长距离语言结构。</p>
 <p>首先我们来看一下他们无监督预训练时的语言模型。他们仍然使用的是标准的语言模型目标函数，即通过前k个词预测当前词，但是在语言模型网络上他们使用了google团队在《Attention is all your need》论文中提出的Transformer解码器作为语言模型。Transformer模型主要是利用自注意力（self-attention）机制的模型（参看我另一篇Bert介绍的博客）。</p>
 <p>然后再具体NLP任务有监督微调时，与ELMo当成特征的做法不同，OpenAI GPT不需要再重新对任务构建新的模型结构，而是直接在transformer这个语言模型上的最后一层接上softmax作为任务输出层，然后再对这整个模型进行微调。他们额外发现，如果使用语言模型作为辅助任务，能够提升有监督模型的泛化能力，并且能够加速收敛。</p>

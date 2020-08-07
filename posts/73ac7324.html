@@ -111,12 +111,9 @@
 <li>更新单词向量以便更好地预测</li>
 </ol>
 <h2 id="目标函数"><a href="#目标函数" class="headerlink" title="目标函数"></a>目标函数</h2><p>那么我们是用什么方法来预测单词呢？我们要降低loss，也就等价于概率最大化，在这里我们利用极大似然函数求解，首先我们定义预测单词的概率：</p>
-<p>$$P(o|c) = \frac{exp(u_0^Tv_c)}{\sum_{w\in V}exp(u_w^Tv_c)}$$</p>
-<p>我们的目标函数是：</p>
-<p>$$J(\theta)=\frac{1}{T} \sum_{t=1}^{T} J_{t}(\theta)$$</p>
-<p>其中</p>
-<p>$$J_{t}(\theta)=\log \sigma\left(u_{o}^{T} v_{c}\right)+\sum_{i=1}^{k} \mathbb{E}<em>{j \sim P(w)}\left[\log \sigma\left(-u</em>{j}^{T} v_{c}\right)\right]$$</p>
-<h2 id="想一想"><a href="#想一想" class="headerlink" title="想一想"></a>想一想</h2><p>我们思考两个问题：</p>
+<script type="math/tex; mode=display">P(o|c) = \frac{exp(u_0^Tv_c)}{\sum_{w\in V}exp(u_w^Tv_c)}</script><p>我们的目标函数是：</p>
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{T} \sum_{t=1}^{T} J_{t}(\theta)</script><p>其中</p>
+<script type="math/tex; mode=display">J_{t}(\theta)=\log \sigma\left(u_{o}^{T} v_{c}\right)+\sum_{i=1}^{k} \mathbb{E}_{j \sim P(w)}\left[\log \sigma\left(-u_{j}^{T} v_{c}\right)\right]</script><h2 id="想一想"><a href="#想一想" class="headerlink" title="想一想"></a>想一想</h2><p>我们思考两个问题：</p>
 <ol>
 <li>我们把所有单词拿出来计算预测单词的概率$P(0|c)$，会给计算机带来很大的负担。<ul>
 <li>我们会采用两个方式缓解这个问题，也就是上一节课末尾提出的negative sampling和hierarchical softmax。</li>
@@ -193,33 +190,27 @@
 <h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><h3 id="计算共现矩阵"><a href="#计算共现矩阵" class="headerlink" title="计算共现矩阵"></a>计算共现矩阵</h3><p>$X$表示word-word共现矩阵，其中$X_{ij}$表示词$j$出现在词$i$的上下文的次数。令$X_{i}=\sum_{k}X_{ik}$为任意词$k$出现在词$i$的上下文的次数。最后，令$P_{ij}=P(w_{j}\mid w_{i})=\frac{X_{ij}}{X_{i}}$是词$j$出现在词$i$的上下文的概率。</p>
 <p>计算这个矩阵需要遍历一次整个语料库获得统计信息。对庞大的语料库，这样的遍历会产生非常大的计算量，但是这只是一次性的前期投入成本。</p>
 <h3 id="计算损失函数"><a href="#计算损失函数" class="headerlink" title="计算损失函数"></a>计算损失函数</h3><p>回想一下Skip-Gram模型，我们使用softmax来计算词$j$出现在词$i$的上下文的概率：</p>
-<p>$$Q_{ij}=\frac{exp(u_{j}^{T}v_{i})}{\sum_{w=1}^{W}exp(u_{w}^{T}v_{i})}$$</p>
-<p>隐含的全局交叉熵损失可以如下计算：</p>
-<p>$$J=-\sum_{i\in corpus} \sum_{j\in context(i)}log;Q_{ij}$$</p>
-<p>或者可以写成：</p>
-<p>$$J=-\sum_{i=1}^{W}\sum_{j=1}^{W}X_{ij}log;Q_{ij}$$</p>
-<p>其中$X_{ij}$由共现矩阵相应位置的值给定。</p>
+<script type="math/tex; mode=display">Q_{ij}=\frac{exp(u_{j}^{T}v_{i})}{\sum_{w=1}^{W}exp(u_{w}^{T}v_{i})}</script><p>隐含的全局交叉熵损失可以如下计算：</p>
+<script type="math/tex; mode=display">J=-\sum_{i\in corpus} \sum_{j\in context(i)}log\;Q_{ij}</script><p>或者可以写成：</p>
+<script type="math/tex; mode=display">J=-\sum_{i=1}^{W}\sum_{j=1}^{W}X_{ij}log\;Q_{ij}</script><p>其中$X_{ij}$由共现矩阵相应位置的值给定。</p>
 <p>交叉熵损失的一个显着缺点是要求分布$Q$被正确归一化，因为对整个词汇的求和的计算量是非常大的。因此，我们使用一个最小二乘的目标函数，其中$P$和$Q$的归一化因子被丢弃了：</p>
-<p>$$\widehat{J}=\sum_{i=1}^{W}\sum_{j=1}^{W}X_{i}(\widehat{P}<em>{ij}-\widehat{Q}</em>{ij})^{2}$$</p>
-<p>其中$\hat{P}<em>{i j}=X</em>{i j}$和 $\hat{Q}<em>{i j}=\exp \left(\vec{u}</em>{j}^{T} \vec{v}<em>{i}\right)$是未归一化分布。这个公式带来了一个新的问题，$X</em>{ij}$经常会是很大的值，从而难以优化。一个有效的改变是最小化$\widehat{P}$和$\widehat{Q}$对数的平方误差：</p>
-<p>$$\begin{eqnarray}  \widehat{J} &amp;=&amp;\sum_{i=1}^{W}\sum_{j=1}^{W}X_{i}(log(\widehat{P}<em>{ij})-log(\widehat{Q}</em>{ij}))^{2} \nonumber \ &amp;=&amp; \sum_{i=1}^{W}\sum_{j=1}^{W}X_{i}(u_{j}^{T}v_{i}-log; X_{ij})^{2} \nonumber \end{eqnarray}$$</p>
-<p>另外一个问题是权值因子$X_i$不能保证是最优的。因此，我们引入更一般化的权值函数，我们可以自由地依赖于上下文单词：</p>
-<p>$$\widehat{J}=\sum_{i=1}^{W}\sum_{j=1}^{W}f(X_{ij})(u_{j}^{T}v_{i}-log; X_{ij})^{2}$$</p>
-<p>或者我们从另一个角度来看这个损失函数公式的结果：</p>
+<script type="math/tex; mode=display">\widehat{J}=\sum_{i=1}^{W}\sum_{j=1}^{W}X_{i}(\widehat{P}_{ij}-\widehat{Q}_{ij})^{2}</script><p>其中$\hat{P}_{i j}=X_{i j}$和 $\hat{Q}_{i j}=\exp \left(\vec{u}_{j}^{T} \vec{v}_{i}\right)$是未归一化分布。这个公式带来了一个新的问题，$X_{ij}$经常会是很大的值，从而难以优化。一个有效的改变是最小化$\widehat{P}$和$\widehat{Q}$对数的平方误差：</p>
+<script type="math/tex; mode=display">\begin{eqnarray}  \widehat{J} &amp;=&amp;\sum_{i=1}^{W}\sum_{j=1}^{W}X_{i}(log(\widehat{P}_{ij})-log(\widehat{Q}_{ij}))^{2} \nonumber \\ &amp;=&amp; \sum_{i=1}^{W}\sum_{j=1}^{W}X_{i}(u_{j}^{T}v_{i}-log\; X_{ij})^{2} \nonumber \end{eqnarray}</script><p>另外一个问题是权值因子$X_i$不能保证是最优的。因此，我们引入更一般化的权值函数，我们可以自由地依赖于上下文单词：</p>
+<script type="math/tex; mode=display">\widehat{J}=\sum_{i=1}^{W}\sum_{j=1}^{W}f(X_{ij})(u_{j}^{T}v_{i}-log\; X_{ij})^{2}</script><p>或者我们从另一个角度来看这个损失函数公式的结果：</p>
 <p><img src="/posts/NLP/14.jpg" alt></p>
 <p>例如我们想区分热力学上两种不同状态ice冰与蒸汽steam，它们之间的关系可通过与不同的单词$x$的co-occurrence probability的比值来描述，例如对于solid固态，虽然$P(solid|ice)$与$P(solid|stream)$本身很小，不能透露有效的信息，但是它们的比值$\frac{P(solid|ice)}{P(solid|stream)}$却较大，因为solid更常用来描述ice的状态而不是steam的状态，所以在ice的上下文中出现几率较大，对于gas则恰恰相反，而对于water这种描述ice与steam均可或者fashion这种与两者都没什么联系的单词，则比值接近于1。所以相较于单纯的co-occurrence probability，实际上co-occurrence probability的相对比值更有意义。</p>
 <p>基于对于以上概率比值的观察，我们假设模型的函数有如下形式：</p>
-<p>$$F(w_i,w_j,w_k) = \frac{P_{ik}}{P_{jk}}$$</p>
-<p>其中，$w$代表了context vector，如上例中的solid，gas，water，fashion等。$w_i, w_j$则是我们要比较的两个词汇，如上例中的ice，steam。</p>
+<script type="math/tex; mode=display">F(w_i,w_j,w_k) = \frac{P_{ik}}{P_{jk}}</script><p>其中，$w$代表了context vector，如上例中的solid，gas，water，fashion等。$w_i, w_j$则是我们要比较的两个词汇，如上例中的ice，steam。</p>
 <p>$F$的可选的形式过多，我们希望有所限定。首先我们希望的是$F$能有效的在单词向量空间内表示概率比值，由于向量空间是线性空间，一个自然的假设是$F$是关于向量$w_i,w_j$的差的形式：</p>
-<p>$$F(w_i-w_j,w_k) = \frac{P_{ik}}{P_{jk}}$$</p>
-<p>我们可以直接通过矢量的点乘将左边化为标量形式</p>
-<p>$$F((w_i-w_j)^T,w_k) = \frac{P_{ik}}{P_{jk}}$$</p>
-<p>在此，作者又对其进行了对称性分析，即对于word-word co-occurrence，将向量划分为center word还是context word的选择是不重要的，即我们在交换 $w\leftrightarrow \bar w$ 与$X\leftrightarrow\bar X$的时候该式仍然成立。如何保证这种对称性呢？</p>
+<script type="math/tex; mode=display">F(w_i-w_j,w_k) = \frac{P_{ik}}{P_{jk}}</script><p>我们可以直接通过矢量的点乘将左边化为标量形式</p>
+<script type="math/tex; mode=display">F((w_i-w_j)^T,w_k) = \frac{P_{ik}}{P_{jk}}</script><p>在此，作者又对其进行了对称性分析，即对于word-word co-occurrence，将向量划分为center word还是context word的选择是不重要的，即我们在交换 $w\leftrightarrow \bar w$ 与$X\leftrightarrow\bar X$的时候该式仍然成立。如何保证这种对称性呢？</p>
 <p><img src="/posts/NLP/14.png" alt></p>
 <p>作者最终尝试的比较好的权重参数是：</p>
-<p>$$f(x)=<br>\begin{cases}<br>(x/x_{max})^{\alpha}&amp; \text{if x} \lt \text{}x_{max}\<br>1&amp; \text{otherwise}<br>\end{cases}$$</p>
-<blockquote>
+<script type="math/tex; mode=display">f(x)=
+\begin{cases}
+(x/x_{max})^{\alpha}& \text{if x} \lt \text{}x_{max}\\
+1& \text{otherwise}
+\end{cases}</script><blockquote>
 <p>部分引用自：</p>
 </blockquote>
 <ul>
