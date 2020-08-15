@@ -6306,6 +6306,245 @@ EX_{(n)} &=& \int_{-\infty}^{+\infty}xf_{x_{(n)}}(x){\rm d}x\\
 <p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89/v2-988542c2ecda1aab54a4cba442d63b7e_720w.jpg" alt="img"></p>
 <p>wmc()函数首先给出了样本量、样本中位数、每组的绝对中位差。其中，西部地区（West）的文盲率最低，南部地区（South）文盲率最高。然后，函数生成了六组统计比较（南部与中北部（North Central） 、西部与东北部（Northeast）、西部与南部、中北部与东北部、中北部与南部、东北部与南部）。可以从双侧p值（p）看到，南部与其他三个区域有明显差别，但当显著性水平p＜0.05时，其他三个区域间并没有统计显著的差别。</p>
 <h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>在本次分享中，我们评述了R中用于生成统计概要和进行假设检验的函数。我们关注了样本统计量和频数表、独立性检验和类别型变量的相关性度量、定量变量的相关系数（和连带的显著性检验）以及两组或更多组定量结果变量的比较。下次分享，我们将探索一元回归和多元回归，讨论的焦点在于如何理解一个预测变量（一元回归）或多个预测变量（多元回归）与某个被预测变量或效标变量（criterion variable）之间的关系。图形将有助于诊断潜在的问题、评估和提高模型的拟合精度，并发现数据中意料之外的信息瑰宝。</p>
+<blockquote>
+<p>本文转载自知乎：<a href="https://zhuanlan.zhihu.com/p/181729801" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/181729801</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>R</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>R语言实战（二）</title>
+    <url>/posts/5ad0b051.html</url>
+    <content><![CDATA[<p>R是用于统计分析、绘图的语言和操作环境。R是属于GNU系统的一个自由、免费、源代码开放的软件，它是一个用于统计计算和统计制图的优秀工具。在学习R数据科学之前，我们首先要对R语言的基础语法有一个良好的了解，方便我们理解以后的数据科学算法。本次语法精讲分三次讲完，每次负责讲解其中一部分！<strong>本次的R语言语法精讲（二）主要介绍了 R语言的数据的输入输出以及R语言内置的绘图语法。学完本文后，您将可以具备初步的R语言数据可视化的基本能力并结合R语言语法精讲（一）做简单的数据分析项目以及报告。</strong></p>
+<p>本文引用：</p>
+<blockquote>
+<p>《R语言实战—第2版》————-Robert I.Kabacoff<br>《统计计算与模拟》课程课件———-深圳大学林炳清老师</p>
+</blockquote>
+<p>本文内容：</p>
+<ul>
+<li>R常用数据结构</li>
+<li>R的运算以及常用函数</li>
+<li>R语言编程结构<br>判断if-else<br>循环for、while、repeat<br>自定义函数</li>
+<li>R的输入与输出（本文）</li>
+<li>R基础绘图（本文）</li>
+<li>基本数据管理</li>
+<li>高级数据管理</li>
+</ul>
+<h1 id="1-R的输入与输出"><a href="#1-R的输入与输出" class="headerlink" title="1.R的输入与输出"></a>1.R的输入与输出</h1><h2 id="1-1-导入数据"><a href="#1-1-导入数据" class="headerlink" title="1.1 导入数据"></a>1.1 导入数据</h2><p><strong>(1) 从带分隔符的文本文件导入数据</strong></p>
+<p>使用read.table()从带分隔符的文本文件中导入数据。此函数可读入一个表格格式的文件并将其保存为一个数据框。表格的每一行分别出现在文件中每一行。</p>
+<p>其语法如下：</p>
+<p>mydataframe &lt;- read.table(file, options)</p>
+<p>其中，file是一个带分隔符的ASCII文本文件，options是控制如何处理数据的选项。</p>
+<p>表2-2列出了常见的选项:</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-2bcda690f5e7bb685dc1b89cb27edff6_720w.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 文件第一行包含表头，指定了列名，可以通过如下步骤读取该文件(注意参数header的设置)</span><br><span class="line">z &#x3D; read.table(&quot;.&#x2F;z1.txt&quot;, header&#x3D;T)</span><br><span class="line">z</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-a0ceb85fcab690ae11475bd78ff9c4c3_720w.jpg" alt="img"></p>
+<p><strong>(2) read.csv()读取.csv文件</strong></p>
+<p>函数read.csv()可以读取excel文档中后缀为.csv的文件。在函数read.csv()中，参数header的默认值是TRUE。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x &#x3D; read.csv(&quot;.&#x2F;edf.csv&quot;)</span><br><span class="line">x</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-3be8e6f31c414a64a3f895eb5687e35f_720w.jpg" alt="img"></p>
+<p><strong>(3) 函数read.csv()网上文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uci &#x3D; &quot;http:&#x2F;&#x2F;archive.ics.uci.edu&#x2F;ml&#x2F;machine-learning-databases&#x2F;&quot;</span><br><span class="line">uci &#x3D; paste(uci, &quot;echocardiogram&#x2F;echocardiogram.data&quot;, sep&#x3D;&quot;&quot;)</span><br><span class="line">ecc&#x3D; read.csv(uci)</span><br><span class="line">head(ecc)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-0367b99a320636b3b68a01997dd955a7_720w.jpg" alt="img"></p>
+<p><strong>(4) read.xlsx()读取.xlsx文件</strong></p>
+<p>读取后缀为.xlsx的文件的包有很多。在这里，我们介绍的是R包openxlsx。在这个包中，我们可以使用函数read.xlsx()读取xlsx文件 （首次使用，请先安装此包install.packages(“openxlsx”)）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">require(openxlsx)</span><br><span class="line">x &#x3D; read.xlsx(&quot;.&#x2F;abc.xlsx&quot;)</span><br><span class="line">x</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-377507aa46443e2e970faf8c7bb35a0d_720w.jpg" alt="img"></p>
+<h2 id="1-2-导出数据"><a href="#1-2-导出数据" class="headerlink" title="1.2 导出数据"></a>1.2 导出数据</h2><p><strong>(1) 函数cat()输出到屏幕</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x &#x3D; &quot;I love R!&quot;</span><br><span class="line">y &#x3D; &quot;R is very powerful!&quot;</span><br><span class="line">cat(x, y)</span><br><span class="line">cat(x, &quot;\n&quot;, y)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-632856de89ecb378c7fc565fd796bee0_720w.jpg" alt="img"></p>
+<p><strong>(2) 函数cat()输出到文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat(&quot;abc\n&quot;, file&#x3D;&quot;.&#x2F;u.txt&quot;)</span><br><span class="line">cat(&quot;de\n&quot;, file&#x3D;&quot;.&#x2F;u.txt&quot;, append&#x3D;TRUE)</span><br></pre></td></tr></table></figure>
+<p>第一次调用函数cat()创建了文件u，包含一行内容abc;第二次调用追加了第二行，内容是de。</p>
+<p><strong>(3) 函数write.table()输出到文件</strong></p>
+<p>函数write.table()的用法与函数read.table()非常相似，只不过它是把数据框写入文件。例如:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kids &#x3D; c(&quot;jack&quot;, &quot;jill&quot;)</span><br><span class="line">ages &#x3D; c(12, 10)</span><br><span class="line">d &#x3D; data.frame(kids, ages, stringsAsFactors &#x3D; F)</span><br><span class="line">d</span><br><span class="line">write.table(d, &quot;.&#x2F;kds.txt&quot;)</span><br><span class="line"># 如果不需要行名和列名，可以使用参数row.names，col.names</span><br><span class="line">write.table(d, &quot;.&#x2F;kds2.txt&quot;, row.names&#x3D;F, col.names&#x3D;F)</span><br></pre></td></tr></table></figure>
+<p><strong>(4) 函数write.csv()输出到文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">write.csv(d, &quot;.&#x2F;kds.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><strong>(5) 函数write.xlsx()输出到文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">require(openxlsx)</span><br><span class="line">write.xlsx(d, &quot;.&#x2F;kds.xslx&quot;)</span><br></pre></td></tr></table></figure>
+<h1 id="2-R基础绘图"><a href="#2-R基础绘图" class="headerlink" title="2.R基础绘图"></a>2.R基础绘图</h1><h2 id="2-1-R绘图的基础设置"><a href="#2-1-R绘图的基础设置" class="headerlink" title="2.1 R绘图的基础设置"></a>2.1 R绘图的基础设置</h2><p><strong>(1) 一个简单的小例子引入</strong></p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-4772d99e8e1a69328f87826ec7151bcf_720w.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dose  &lt;- c(20, 30, 40, 45, 60) </span><br><span class="line">drugA &lt;- c(16, 20, 27, 40, 60) </span><br><span class="line">drugB &lt;- c(15, 18, 25, 31, 40)</span><br><span class="line"># 创建一幅描述药物A的剂量和响应关系的图形：</span><br><span class="line">plot(dose, drugA, type&#x3D;&quot;b&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-6fbb86aa5c200784644120f94c094516_720w.jpg" alt="img"></p>
+<p>plot()是R中为对象作图的一个泛型函数 （它的输出将根据所绘制对象类型的不同而变化）。 本例中，plot(x, y, type=”b”)将x置于横轴，将y置于纵轴，绘制点集(x,y)，然后使用线段将其连接。选项type=”b”表示同时绘制点和线。使用help(plot)可以查看其他选项。</p>
+<p><strong>(2) 图形参数：</strong></p>
+<p>我们可以通过修改称为图形参数的选项来自定义一幅图形的多个特征 （字体、颜色、坐标轴、标签等）。</p>
+<p><strong>(2.1) 符号和线条</strong>：</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-22c8098ffb63668f3c46568ab6987d53_720w.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 绘制一幅图形，其线条类型为点线，宽度为默认宽度的3倍，点的符号为实心正方形，大小为默认符号大小的2倍</span><br><span class="line">plot(dose, drugA, type&#x3D;&quot;b&quot;, lty&#x3D;3, lwd&#x3D;3, pch&#x3D;15, cex&#x3D;2)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-d4636e1c91c435cdd12b46c21af72ba2_720w.jpg" alt="img"></p>
+<p><strong>(2.2) 颜色:</strong></p>
+<p>R中有若干和颜色相关的参数。表3-3列出了一些常用参数:</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-dcc26577b7778a612b657f6ab8447e91_720w.jpg" alt="img"></p>
+<p>在R中，可以通过颜色下标、颜色名称、十六进制的颜色值、RGB值或HSV值来指定颜色。举例来说，col=1、col=”white”、col=”#FFFFFF”、col=rgb(1,1,1)和col=hsv(0,0,1)都是表示白色的等价方式。函数rgb()可基于红－绿－蓝三色值生成颜色，而hsv()则基于色相－饱和度－亮度值来生成颜色。</p>
+<p><strong>对于创建吸引人的颜色配对，RColorBrewer特别受到欢迎。注意在第一次使用它之前先进行下载(install.packages(“RColorBrewer”))。安装之后， 使用函数brewer.pal(n, name)来创建一个颜色值的向量。</strong>比如说，以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 从Set1调色板中抽取了7种用十六进制表示的颜色并返回一个向量。</span><br><span class="line">library(RColorBrewer) </span><br><span class="line">n &lt;- 7 </span><br><span class="line">mycolors &lt;- brewer.pal(n, &quot;Set1&quot;) </span><br><span class="line">barplot(rep(1,n), col&#x3D;mycolors)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-ac71a017baeb0d39b5b5c0552a90f90e_720w.jpg" alt="img"></p>
+<p>若要得到所有可选调色板的列表，<a href="https://link.zhihu.com/?target=http%3A//%E8%BE%93%E5%85%A5brewer.pal.info">输入 brewer.pal.info</a>；或者输入display.brewer.all()从而在一个显示输出中产生每个调色板的图形。</p>
+<p><strong>(2.3) 文本属性:</strong></p>
+<p>图形参数同样可以用来指定字号、字体和字样。表3-4阐释了用于控制文本大小的参数。字体族和字样可以通过字体选项进行控制（见表3-5）</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-e5dfe80c174383bf5f228a15cc7f395d_720w.jpg" alt="img"></p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-eccd8babe0fcca378b87ebc88f4a339b_720w.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 创建的所有图形都将拥有斜体、1.5倍于默认文本大小的坐标轴标签（名称） ，以及粗斜体、2倍于默认文本大小的标题。</span><br><span class="line">par(font.lab&#x3D;3, cex.lab&#x3D;1.5, font.main&#x3D;4, cex.main&#x3D;2)</span><br><span class="line"># 在Windows系统中，等宽字体映射为TT Courier New，衬线字体映射为TT Times New Roman，无衬线字体则映射为TT Arial（TT代表True Type） </span><br><span class="line">windowsFonts( </span><br><span class="line">  A&#x3D;windowsFont(&quot;Arial Black&quot;), </span><br><span class="line">  B&#x3D;windowsFont(&quot;Bookman Old Style&quot;), </span><br><span class="line">  C&#x3D;windowsFont(&quot;Comic Sans MS&quot;) </span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>(2.4) 图形尺寸与边界尺寸:</strong></p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-3cf3d890f6348dc987a9b563952603e7_720w.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 生成一幅4英寸宽、3英寸高、上下边界为1英寸、左边界为0.5英寸、右边界为0.2英寸的图形</span><br><span class="line">par(pin&#x3D;c(4,3), mai&#x3D;c(1,.5, 1, .2))</span><br></pre></td></tr></table></figure>
+<p><strong>(2.5) 使用图形参数控制图形外观例子:</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dose  &lt;- c(20, 30, 40, 45, 60) </span><br><span class="line">drugA &lt;- c(16, 20, 27, 40, 60) </span><br><span class="line">drugB &lt;- c(15, 18, 25, 31, 40) </span><br><span class="line"> </span><br><span class="line">opar &lt;- par(no.readonly&#x3D;TRUE)</span><br><span class="line">par(mfrow&#x3D;c(1,2),pin&#x3D;c(2, 3),opar) </span><br><span class="line">par(lwd&#x3D;2, cex&#x3D;1.5) </span><br><span class="line">par(cex.axis&#x3D;.75, font.axis&#x3D;3) </span><br><span class="line">plot(dose, drugA, type&#x3D;&quot;b&quot;, pch&#x3D;19, lty&#x3D;2, col&#x3D;&quot;red&quot;) </span><br><span class="line">plot(dose, drugB, type&#x3D;&quot;b&quot;, pch&#x3D;23, lty&#x3D;6, col&#x3D;&quot;blue&quot;, bg&#x3D;&quot;green&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-6091b253b6ca199ce33d1e74ba36e68e_720w.jpg" alt="img"></p>
+<p><strong>(3) 添加文本、自定义坐标轴和图例</strong></p>
+<p>除了图形参数，许多高级绘图函数（例如plot、hist、boxplot）也允许自行设定坐标轴和文本标注选项。举例来说，以下代码在图形上添加了标题（main） 、副标题（sub） 、坐标轴标签（xlab、ylab）并指定了坐标轴范围（xlim、ylim）。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">plot(dose, drugA, type&#x3D;&quot;b&quot;,  </span><br><span class="line">     col&#x3D;&quot;red&quot;, lty&#x3D;2, pch&#x3D;2, lwd&#x3D;2, </span><br><span class="line">     main&#x3D;&quot;Clinical Trials for Drug A&quot;, </span><br><span class="line">     sub&#x3D;&quot;This is hypothetical data&quot;, </span><br><span class="line">     xlab&#x3D;&quot;Dosage&quot;, ylab&#x3D;&quot;Drug Response&quot;, </span><br><span class="line">     xlim&#x3D;c(0, 60), ylim&#x3D;c(0, 70))</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-694d49033888a017014e1ab5a22bd97c_720w.jpg" alt="img"></p>
+<p><strong>(3.1) 标题:</strong></p>
+<p>使用title()函数为图形添加标题和坐标轴标签。调用格式为：</p>
+<p>title(main=”main title”, sub=”subtitle”,</p>
+<p>xlab=”x-axis label”, ylab=”y-axis label”)</p>
+<p>函数title()中亦可指定其他图形参数（如文本大小、字体、旋转角度和颜色） 。</p>
+<p>函数title()一般来说被用于添加信息到一个默认标题和坐标轴标签被ann=FALSE选项移除的图形中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">par(ann&#x3D;FALSE)   # 不生成默认坐标轴标签</span><br><span class="line">plot(dose, drugA, type&#x3D;&quot;b&quot;,  </span><br><span class="line">     col&#x3D;&quot;red&quot;, lty&#x3D;2, pch&#x3D;2, lwd&#x3D;2, </span><br><span class="line">     xlim&#x3D;c(0, 60), ylim&#x3D;c(0, 70))</span><br><span class="line"># 生成红色的标题和蓝色的副标题，以及比默认大小小25%的绿色x轴、y轴标签</span><br><span class="line">title(main&#x3D;&quot;My Title&quot;, col.main&#x3D;&quot;red&quot;,  </span><br><span class="line">      sub&#x3D;&quot;My Subtitle&quot;, col.sub&#x3D;&quot;blue&quot;, </span><br><span class="line">      xlab&#x3D;&quot;My X label&quot;, ylab&#x3D;&quot;My Y label&quot;, </span><br><span class="line">      col.lab&#x3D;&quot;green&quot;, cex.lab&#x3D;0.75)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-dfc9768313e9514e6c924f792ba49e4f_720w.jpg" alt="img"></p>
+<p><strong>(3.2) 坐标轴:</strong></p>
+<p>可以使用函数axis()来创建自定义的坐标轴，而非使用R中的默认坐标轴。其格式为：</p>
+<p>axis(side, at=, labels=, pos=, lty=, col=, las=, tck=, …)</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-d674f67eb096fe0e5d8e9dc8080a391a_720w.jpg" alt="img"></p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-7889cd51fecfcd0619f6f6ae9d6a7dca_720w.jpg" alt="img"></p>
+<p>创建自定义坐标轴时，你应当禁用高级绘图函数自动生成的坐标轴。参数axes=FALSE将禁用全部坐标轴（包括坐标轴框架线，除非你添加了参数frame.plot=TRUE） 。参数xaxt=”n”和yaxt=”n”将分别禁用X轴或Y轴（会留下框架线，只是去除了刻度） 。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x &lt;- c(1:10) </span><br><span class="line">y &lt;- x  </span><br><span class="line">z &lt;- 10&#x2F;x </span><br><span class="line">opar &lt;- par(no.readonly&#x3D;TRUE)  </span><br><span class="line">par(opar)</span><br><span class="line">par(mar&#x3D;c(5, 4, 4, 8) + 0.1)  </span><br><span class="line">plot(x, y, type&#x3D;&quot;b&quot;,  </span><br><span class="line">     pch&#x3D;21, col&#x3D;&quot;red&quot;, </span><br><span class="line">     yaxt&#x3D;&quot;n&quot;, lty&#x3D;3, ann&#x3D;FALSE) </span><br><span class="line">lines(x, z, type&#x3D;&quot;b&quot;, pch&#x3D;22, col&#x3D;&quot;blue&quot;, lty&#x3D;2) </span><br><span class="line"> </span><br><span class="line">axis(2, at&#x3D;x, labels&#x3D;x, col.axis&#x3D;&quot;red&quot;, las&#x3D;2)  </span><br><span class="line"> </span><br><span class="line">axis(4, at&#x3D;z, labels&#x3D;round(z, digits&#x3D;2), </span><br><span class="line">     col.axis&#x3D;&quot;blue&quot;, las&#x3D;2, cex.axis&#x3D;0.7, tck&#x3D;-.01)  </span><br><span class="line"> </span><br><span class="line">mtext(&quot;y&#x3D;1&#x2F;x&quot;, side&#x3D;4, line&#x3D;3, cex.lab&#x3D;1, las&#x3D;2, col&#x3D;&quot;blue&quot;) </span><br><span class="line"> </span><br><span class="line">title(&quot;An Example of Creative Axes&quot;,  </span><br><span class="line">      xlab&#x3D;&quot;X values&quot;, </span><br><span class="line">      ylab&#x3D;&quot;Y&#x3D;X&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-f64f8deb4036bfc3976293fb3cb399cd_720w.jpg" alt="img"></p>
+<p><strong>(3.3) 参考线:</strong></p>
+<p>函数abline()可以用来为图形添加参考线。其使用格式为：</p>
+<p>abline(h=yvalues, v=xvalues)</p>
+<p>函数abline()中也可以指定其他图形参数（如线条类型、颜色和宽度）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">plot(x, y, type&#x3D;&quot;b&quot;,  </span><br><span class="line">     pch&#x3D;21, col&#x3D;&quot;red&quot;, </span><br><span class="line">     yaxt&#x3D;&quot;n&quot;, lty&#x3D;3, ann&#x3D;FALSE) </span><br><span class="line"># 为1、3、5、7、9的位置添加了垂直的蓝色虚线</span><br><span class="line">abline(v&#x3D;seq(1, 10, 2), lty&#x3D;2, col&#x3D;&quot;blue&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-de2459e13da3eb3d944446cc01696cec_720w.jpg" alt="img"></p>
+<p><strong>(3.4) 图例:</strong></p>
+<p>当图形中包含的数据不止一组时，图例可以帮助你辨别出每个条形、扇形区域或折线各代表哪一类数据。我们可以使用函数legend()来添加图例（果然不出所料） 。其使用格式为：</p>
+<p>legend(location, title, legend, …)</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-caee56fd438e7b47bb1f6c08c7d90264_720w.jpg" alt="img"></p>
+<p>其他常用的图例选项包括用于指定盒子样式的bty、指定背景色的bg、指定大小的cex，以及指定文本颜色的text.col。指定horiz=TRUE将会水平放置图例，而不是垂直放置。关于图例的更多细节，请参考help(legend)。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dose  &lt;- c(20, 30, 40, 45, 60)  </span><br><span class="line">drugA &lt;- c(16, 20, 27, 40, 60) </span><br><span class="line">drugB &lt;- c(15, 18, 25, 31, 40) </span><br><span class="line"> </span><br><span class="line">opar &lt;- par(no.readonly&#x3D;TRUE) </span><br><span class="line">par(opar)</span><br><span class="line">par(lwd&#x3D;2, cex&#x3D;1.5, font.lab&#x3D;2)</span><br><span class="line">plot(dose, drugA, type&#x3D;&quot;b&quot;, </span><br><span class="line">     pch&#x3D;15, lty&#x3D;1, col&#x3D;&quot;red&quot;, ylim&#x3D;c(0, 60),  </span><br><span class="line">     main&#x3D;&quot;Drug A vs. Drug B&quot;, </span><br><span class="line">     xlab&#x3D;&quot;Drug Dosage&quot;, ylab&#x3D;&quot;Drug Response&quot;)  </span><br><span class="line"> </span><br><span class="line">lines(dose, drugB, type&#x3D;&quot;b&quot;, </span><br><span class="line">      pch&#x3D;17, lty&#x3D;2, col&#x3D;&quot;blue&quot;) </span><br><span class="line"> </span><br><span class="line">abline(h&#x3D;c(30), lwd&#x3D;1.5, lty&#x3D;2, col&#x3D;&quot;gray&quot;) </span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">legend(&quot;topleft&quot;, inset&#x3D;.05, title&#x3D;&quot;Drug Type&quot;, c(&quot;A&quot;,&quot;B&quot;) ,lty&#x3D;c(1, 2), pch&#x3D;c(15, 17), col&#x3D;c(&quot;red&quot;, &quot;blue&quot;))</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-721294eb02e466621734aee77606f3d4_720w.jpg" alt="img"></p>
+<p><strong>(3.5) 文本标注:</strong></p>
+<p>可以通过函数text()和mtext()将文本添加到图形上。text()可向绘图区域内部添加文本，而mtext()则向图形的四个边界之一添加文本。使用格式分别为：</p>
+<p>text(location, “text to place”, pos, …)</p>
+<p>mtext(“text to place”, side, line=n, …)</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-bf68ca4eae613ac8d395a588200f3e3f_720w.jpg" alt="img"></p>
+<p>其他常用的选项有cex、col和font（分别用来调整字号、颜色和字体样式） 。</p>
+<p>除了用来添加文本标注以外，text()函数也通常用来标示图形中的点。我们只需指定一系列的x、y坐标作为位置参数，同时以向量的形式指定要放置的文本。x、y和文本标签向量的长度应当相同。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">attach(mtcars) </span><br><span class="line">plot(wt, mpg, </span><br><span class="line">     main&#x3D;&quot;Mileage vs. Car Weight&quot;, </span><br><span class="line">     xlab&#x3D;&quot;Weight&quot;, ylab&#x3D;&quot;Mileage&quot;, </span><br><span class="line">     pch&#x3D;18, col&#x3D;&quot;blue&quot;) </span><br><span class="line">text(wt, mpg, </span><br><span class="line">     row.names(mtcars), </span><br><span class="line">     cex&#x3D;0.6, pos&#x3D;4, col&#x3D;&quot;red&quot;) </span><br><span class="line">detach(mtcars)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-e541b01550b094f2426a733c41aaddaa_720w.jpg" alt="img"></p>
+<p><strong>(3.6) 数学标注:</strong></p>
+<p>函数plotmath()可以为图形主体或边界上的标题、坐标轴名称或文本标注添加数学符号。</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-6f90b9d000def6d2d6da3857022e0c65_720w.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x &#x3D; seq(-2, 2, 0.5)</span><br><span class="line">plot(x, x^2, type&#x3D;&quot;l&quot;, main&#x3D;expression(paste(&quot;f(x)&#x3D;&quot;,x^2)), ylab&#x3D;expression(x^2), cex.axis&#x3D;1.2, cex.lab&#x3D;1.2, cex.main&#x3D;1.2, lwd&#x3D;2, xlim&#x3D;c(-3, 3), ylim&#x3D;c(-1, 5))</span><br><span class="line">points(x, x^2+0.5, type&#x3D;&quot;b&quot;, lwd&#x3D;3, lty&#x3D;2)</span><br><span class="line">points(x, x^2-0.5, pch&#x3D;10, lwd&#x3D;1)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-e79cb4a8cbc3ddda1e9d19865607d55a_720w.jpg" alt="img"></p>
+<p><strong>(4) 图形组合：</strong></p>
+<p>在R中使用函数par()或layout()可以容易地组合多幅图形为一幅总括图形。</p>
+<p>可以在par()函数中使用图形参数mfrow=c(nrows,ncols)来创建按行填充的、行数为nrows、列数为ncols的图形矩阵。另外，可以使用mfcol=c(nrows, ncols)按列填充矩阵。</p>
+<p><strong>(4.1) 示例1</strong>：创建了四幅图形并将其排布在两行两列中</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">attach(mtcars) </span><br><span class="line">opar &lt;- par(no.readonly&#x3D;TRUE) </span><br><span class="line">par(mfrow&#x3D;c(2,2))</span><br><span class="line">plot(wt,mpg, main&#x3D;&quot;Scatterplot of wt vs. mpg&quot;) </span><br><span class="line">plot(wt,disp, main&#x3D;&quot;Scatterplot of wt vs. disp&quot;) </span><br><span class="line">hist(wt, main&#x3D;&quot;Histogram of wt&quot;) </span><br><span class="line">boxplot(wt, main&#x3D;&quot;Boxplot of wt&quot;) </span><br><span class="line">par(opar) </span><br><span class="line">detach(mtcars)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-e84469fc8ec4bb0d16835c20abf477f0_720w.jpg" alt="img"></p>
+<p><strong>(4.2) 示例2：</strong>依三行一列排布三幅图形</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">attach(mtcars) </span><br><span class="line">opar &lt;- par(no.readonly&#x3D;TRUE) </span><br><span class="line">par(mfrow&#x3D;c(3,1)) </span><br><span class="line">hist(wt) </span><br><span class="line">hist(mpg) </span><br><span class="line">hist(disp) </span><br><span class="line">par(opar) </span><br><span class="line">detach(mtcars)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-6c345e92e6a5e9d7daff75afd3c740c2_720w.jpg" alt="img"></p>
+<p><strong>(4.3) 示例3：</strong>函数layout()的调用形式为layout(mat)，其中的mat是一个矩阵，它指定了所要组合的多个图形的所在位置。在以下代码中，一幅图被置于第1行，另两幅图则被置于第2行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">attach(mtcars) </span><br><span class="line">layout(matrix(c(1,1,2,3), 2, 2, byrow &#x3D; TRUE)) </span><br><span class="line">hist(wt) </span><br><span class="line">hist(mpg) </span><br><span class="line">hist(disp) </span><br><span class="line">detach(mtcars)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-93b1871008a8395326a0f88b16659127_720w.jpg" alt="img"></p>
+<p><strong>(4.4) 示例4:</strong>为了更精确地控制每幅图形的大小，可以有选择地在layout()函数中使用widths=和heights=两个参数。其形式为：</p>
+<p>widths = 各列宽度值组成的一个向量</p>
+<p>heights = 各行高度值组成的一个向量</p>
+<p>相对宽度可以直接通过数值指定，绝对宽度（以厘米为单位）可以通过函数lcm()来指定。</p>
+<p>在以下代码中，我们再次将一幅图形置于第1行，两幅图形置于第2行。但第1行中图形的高度是第2行中图形高度的二分之一。除此之外，右下角图形的宽度是左下角图形宽度的三分之一 :</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">attach(mtcars) </span><br><span class="line">layout(matrix(c(1, 1, 2, 3), 2, 2, byrow &#x3D; TRUE), </span><br><span class="line">       widths&#x3D;c(3, 1), heights&#x3D;c(1, 2)) </span><br><span class="line">hist(wt) </span><br><span class="line">hist(mpg) </span><br><span class="line">hist(disp) </span><br><span class="line">detach(mtcars)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-f59067d2d1726dc02e557581233e6520_720w.jpg" alt="img"></p>
+<p><strong>(5) 图形布局的精细控制</strong></p>
+<p>可能有很多时候，你想通过排布或叠加若干图形来创建单幅的、有意义的图形，这需要有对图形布局的精细控制能力。你可以使用图形参数fig=完成这个任务。 参数fig=的取值是一个形如c(x1, x2, y1, y2)的数值向量。</p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-c7928563ef2c59d852074423fb376907_720w.jpg" alt="img"></p>
+<p>第一个fig=将散点图设定为占据横向范围0~0.8，纵向范围0~0.8。上方的箱线图横向占据0~0.8，纵向0.55~1。右侧的箱线图横向占据0.65~1，纵向0~0.8。fig=默认会新建一幅图形，所以在添加一幅图到一幅现有图形上时，请设定参数new=TRUE。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 在散点图上添加两幅箱线图，创建了单幅的增强型图形</span><br><span class="line">opar &lt;- par(no.readonly&#x3D;TRUE) </span><br><span class="line">par(fig&#x3D;c(0, 0.8, 0, 0.8))  </span><br><span class="line">plot(mtcars$wt, mtcars$mpg, </span><br><span class="line">     xlab&#x3D;&quot;Miles Per Gallon&quot;, </span><br><span class="line">     ylab&#x3D;&quot;Car Weight&quot;) </span><br><span class="line">par(fig&#x3D;c(0, 0.8, 0.55, 1), new&#x3D;TRUE) </span><br><span class="line">boxplot(mtcars$wt, horizontal&#x3D;TRUE, axes&#x3D;FALSE)  </span><br><span class="line"> </span><br><span class="line">par(fig&#x3D;c(0.65, 1, 0, 0.8), new&#x3D;TRUE) </span><br><span class="line">boxplot(mtcars$mpg, axes&#x3D;FALSE)</span><br><span class="line">mtext(&quot;Enhanced Scatterplot&quot;, side&#x3D;3, outer&#x3D;TRUE, line&#x3D;-3) </span><br><span class="line"> </span><br><span class="line">par(opar)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-03aab7b882b8d083b1cd8239c93e9cdf_720w.jpg" alt="img"></p>
+<h2 id="2-2-R绘图的基本图形"><a href="#2-2-R绘图的基本图形" class="headerlink" title="2.2 R绘图的基本图形"></a>2.2 R绘图的基本图形</h2><p><strong>(1) 条形图</strong></p>
+<p>条形图通过垂直的或水平的条形展示了类别型变量的分布（频数） 。函数barplot()的最简单用法是：</p>
+<p>barplot(height) ，其中的height是一个向量或一个矩阵。</p>
+<p><strong>(1.1) 简单的条形图</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">library(vcd) </span><br><span class="line"># 变量Improved记录了对每位接受了安慰剂或药物治疗的病人的治疗结果</span><br><span class="line">counts &lt;- table(Arthritis$Improved) </span><br><span class="line">counts </span><br><span class="line"># 简单条形图</span><br><span class="line">barplot(counts,  </span><br><span class="line">       main&#x3D;&quot;Simple Bar Plot&quot;, </span><br><span class="line">       xlab&#x3D;&quot;Improvement&quot;, ylab&#x3D;&quot;Frequency&quot;) </span><br><span class="line"># 水平条形图</span><br><span class="line">barplot(counts, </span><br><span class="line">       main&#x3D;&quot;Horizontal Bar Plot&quot;, </span><br><span class="line">       xlab&#x3D;&quot;Frequency&quot;, ylab&#x3D;&quot;Improvement&quot;,  </span><br><span class="line">       horiz&#x3D;TRUE)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-48dd29f7f75afa13ecf30028c850ae61_720w.jpg" alt="img"></p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-2c00b4ee98cf70f6037f5509e879c830_720w.jpg" alt="img"></p>
+<p><strong>(1.2) 堆砌条形图和分组条形图</strong></p>
+<p>如果height是一个矩阵而不是一个向量，则绘图结果将是一幅堆砌条形图或分组条形图。</p>
+<p>若beside=FALSE（默认值） ，则矩阵中的每一列都将生成图中的一个条形，各列中的值将给出堆砌的“子条”的高度。</p>
+<p>若beside=TRUE，则矩阵中的每一列都表示一个分组，各列中的值将并列而不是堆砌。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">library(vcd)</span><br><span class="line">counts &lt;- table(Arthritis$Improved, Arthritis$Treatment) </span><br><span class="line">counts </span><br><span class="line"># 堆砌条形图</span><br><span class="line">barplot(counts, </span><br><span class="line">     main&#x3D;&quot;Stacked Bar Plot&quot;,  </span><br><span class="line">     xlab&#x3D;&quot;Treatment&quot;, ylab&#x3D;&quot;Frequency&quot;, </span><br><span class="line">     col&#x3D;c(&quot;red&quot;, &quot;yellow&quot;,&quot;green&quot;), </span><br><span class="line">     legend&#x3D;rownames(counts))</span><br><span class="line"># 分组条形图</span><br><span class="line">barplot(counts, </span><br><span class="line">     main&#x3D;&quot;Grouped Bar Plot&quot;, </span><br><span class="line">     xlab&#x3D;&quot;Treatment&quot;, ylab&#x3D;&quot;Frequency&quot;, </span><br><span class="line">     col&#x3D;c(&quot;red&quot;, &quot;yellow&quot;, &quot;green&quot;), </span><br><span class="line">     legend&#x3D;rownames(counts), beside&#x3D;TRUE)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-c52c823982317fac7de81e4cfcac4241_720w.jpg" alt="img"></p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-4b9bc3b71dc3c6674779bcfffd0bfe82_720w.jpg" alt="img"></p>
+<p><strong>(1.3) 均值条形图</strong></p>
+<p>条形图并不一定要基于计数数据或频率数据。你可以使用数据整合函数并将结果传递给barplot()函数，来创建表示均值、中位数、标准差等的条形图。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">states &lt;- data.frame(state.region, state.x77) </span><br><span class="line">means &lt;- aggregate(states$Illiteracy, by&#x3D;list(state.region), FUN&#x3D;mean) </span><br><span class="line">means </span><br><span class="line"># 将均值从小到大排序</span><br><span class="line">means &lt;- means[order(means$x),]</span><br><span class="line">means </span><br><span class="line">barplot(means$x, names.arg&#x3D;means$Group.1)</span><br><span class="line">title(&quot;Mean Illiteracy Rate&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-86482e96dc2914c2fa25df0738395a7d_720w.jpg" alt="img"></p>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-28ff7aca91c26f2431a7f740eced3583_720w.jpg" alt="img"></p>
+<p><strong>(1.4) 荆棘图</strong></p>
+<p>棘状图对堆砌条形图进行了重缩放，这样每个条形的高度均为1，每一段的高度即表示比例。棘状图可由vcd包中的函数spine()绘制。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">library(vcd) </span><br><span class="line">attach(Arthritis) </span><br><span class="line">counts &lt;- table(Treatment, Improved) </span><br><span class="line">spine(counts, main&#x3D;&quot;Spinogram Example&quot;) </span><br><span class="line">detach(Arthritis)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-7069fd3c44d5d03948063c64d6ce4fac_720w.jpg" alt="img"></p>
+<p><strong>(2) 饼图</strong></p>
+<p>饼图可由以下函数创建：</p>
+<p>pie(x, labels)</p>
+<p>其中x是一个非负数值向量， 表示每个扇形的面积， 而labels则是表示各扇形标签的字符型向量。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">par(mfrow&#x3D;c(2, 2))  </span><br><span class="line">slices &lt;- c(10, 12,4, 16, 8)  </span><br><span class="line">lbls &lt;- c(&quot;US&quot;, &quot;UK&quot;, &quot;Australia&quot;, &quot;Germany&quot;, &quot;France&quot;) </span><br><span class="line">pie(slices, labels &#x3D; lbls, </span><br><span class="line">    main&#x3D;&quot;Simple Pie Chart&quot;) </span><br><span class="line"> </span><br><span class="line">pct &lt;- round(slices&#x2F;sum(slices)*100) </span><br><span class="line">lbls2 &lt;- paste(lbls, &quot; &quot;, pct, &quot;%&quot;, sep&#x3D;&quot;&quot;) </span><br><span class="line">pie(slices, labels&#x3D;lbls2, col&#x3D;rainbow(length(lbls2)),  </span><br><span class="line">    main&#x3D;&quot;Pie Chart with Percentages&quot;) </span><br><span class="line">library(plotrix) </span><br><span class="line">pie3D(slices, labels&#x3D;lbls,explode&#x3D;0.1, </span><br><span class="line">      main&#x3D;&quot;3D Pie Chart &quot;)  </span><br><span class="line">mytable &lt;- table(state.region)  </span><br><span class="line">lbls3 &lt;- paste(names(mytable), &quot;\n&quot;, mytable, sep&#x3D;&quot;&quot;) </span><br><span class="line">pie(mytable, labels &#x3D; lbls3, </span><br><span class="line">    main&#x3D;&quot;Pie Chart from a Table\n (with sample sizes)&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-abf72d617493d4e802ffb8618f03b114_720w.jpg" alt="img"></p>
+<p>扇形图提供了一种同时展示相对数量和相互差异的方法。在R中，扇形图是通过plotrix包中的fan.plot()函数实现的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">library(plotrix) </span><br><span class="line">slices &lt;- c(10, 12,4, 16, 8) </span><br><span class="line">lbls &lt;- c(&quot;US&quot;, &quot;UK&quot;, &quot;Australia&quot;, &quot;Germany&quot;, &quot;France&quot;) </span><br><span class="line">fan.plot(slices, labels &#x3D; lbls, main&#x3D;&quot;Fan Plot&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-6c979ae6ad79f2fa1cb97b7a4a8d3baa_720w.jpg" alt="img"></p>
+<p><strong>(3) 直方图</strong></p>
+<p>直方图通过在x轴上将值域分割为一定数量的组，在y轴上显示相应值的频数，展示了连续型变量的分布。可以使用如下函数创建直方图：</p>
+<p>hist(x)</p>
+<p>其中的x是一个由数据值组成的数值向量。参数freq=FALSE表示根据概率密度而不是频数绘制图形。参数breaks用于控制组的数量。在定义直方图中的单元时，默认将生成等距切分。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">par(mfrow&#x3D;c(2,2)) </span><br><span class="line">  </span><br><span class="line">hist(mtcars$mpg)  </span><br><span class="line"> </span><br><span class="line">hist(mtcars$mpg, </span><br><span class="line">     breaks&#x3D;12, </span><br><span class="line">     col&#x3D;&quot;red&quot;, </span><br><span class="line">     xlab&#x3D;&quot;Miles Per Gallon&quot;, </span><br><span class="line">     main&#x3D;&quot;Colored histogram with 12 bins&quot;) </span><br><span class="line"> </span><br><span class="line">hist(mtcars$mpg, </span><br><span class="line">     freq&#x3D;FALSE, </span><br><span class="line">     breaks&#x3D;12, </span><br><span class="line">     col&#x3D;&quot;red&quot;, </span><br><span class="line">     xlab&#x3D;&quot;Miles Per Gallon&quot;, </span><br><span class="line">     main&#x3D;&quot;Histogram, rug plot, density curve&quot;)  </span><br><span class="line">rug(jitter(mtcars$mpg)) </span><br><span class="line">lines(density(mtcars$mpg), col&#x3D;&quot;blue&quot;, lwd&#x3D;2) </span><br><span class="line"> </span><br><span class="line">x &lt;- mtcars$mpg </span><br><span class="line">h&lt;-hist(x, </span><br><span class="line">        breaks&#x3D;12, </span><br><span class="line">        col&#x3D;&quot;red&quot;, </span><br><span class="line">        xlab&#x3D;&quot;Miles Per Gallon&quot;, </span><br><span class="line">        main&#x3D;&quot;Histogram with normal curve and box&quot;) </span><br><span class="line">xfit&lt;-seq(min(x), max(x), length&#x3D;40) </span><br><span class="line">yfit&lt;-dnorm(xfit, mean&#x3D;mean(x), sd&#x3D;sd(x)) </span><br><span class="line">yfit &lt;- yfit*diff(h$mids[1:2])*length(x)  </span><br><span class="line">lines(xfit, yfit, col&#x3D;&quot;blue&quot;, lwd&#x3D;2) </span><br><span class="line">box()</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-7cc8ce761e9aeca0a0d5285d03b16203_720w.jpg" alt="img"></p>
+<p><strong>(4) 核密度图</strong></p>
+<p>核密度估计是用于估计随机变量概率密度函数的一种非参数方法。从总体上讲，核密度图不失为一种用来观察连续型变量分布的有效方法。绘制密度图的方法（不叠加到另一幅图上方）为：</p>
+<p>plot(density(x)) 其中的x是一个数值型向量。</p>
+<p>由于plot()函数会创建一幅新的图形，所以要向一幅已经存在的图形上叠加一条密度曲线，可以使用lines()函数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">par(mfrow&#x3D;c(2,1)) </span><br><span class="line">d &lt;- density(mtcars$mpg) </span><br><span class="line">plot(d)  </span><br><span class="line">d &lt;- density(mtcars$mpg)  </span><br><span class="line">plot(d, main&#x3D;&quot;Kernel Density of Miles Per Gallon&quot;) </span><br><span class="line"># 将曲线修改为蓝色，并使用实心红色填充曲线下方的区域 </span><br><span class="line"># polygon()函数根据顶点的x和y坐标（本例中由density()函数提供）绘制了多边形。 </span><br><span class="line">polygon(d, col&#x3D;&quot;red&quot;, border&#x3D;&quot;blue&quot;) </span><br><span class="line"># 添加棕色的轴须图 </span><br><span class="line">rug(mtcars$mpg, col&#x3D;&quot;brown&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-46816645fcfd87bf2673d2cb8b3d9d63_720w.jpg" alt="img"></p>
+<p><a href="https://link.zhihu.com/?target=http%3A//%E4%BD%BF%E7%94%A8sm%E5%8C%85%E4%B8%AD%E7%9A%84sm.density.compare">使用sm包中的sm.density.compare</a>()函数可向图形叠加两组或更多的核密度图。使用格式为：</p>
+<p><a href="https://link.zhihu.com/?target=http%3A//sm.density.compare">sm.density.compare</a>(x, factor) 其中的x是一个数值型向量，factor是一个分组变量。请在第一次使用sm包之前安装它。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">library(sm)  </span><br><span class="line">attach(mtcars) </span><br><span class="line"> </span><br><span class="line">cyl.f &lt;- factor(cyl, levels&#x3D; c(4,6,8), </span><br><span class="line">              labels &#x3D; c(&quot;4 cylinder&quot;, &quot;6 cylinder&quot;,  </span><br><span class="line">                         &quot;8 cylinder&quot;)) </span><br><span class="line"> </span><br><span class="line">sm.density.compare(mpg, cyl, xlab&#x3D;&quot;Miles Per Gallon&quot;) </span><br><span class="line">title(main&#x3D;&quot;MPG Distribution by Car Cylinders&quot;) </span><br><span class="line"> </span><br><span class="line">detach(mtcars)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-5211f46ac859cc57836f32fc2d382079_720w.jpg" alt="img"></p>
+<p><strong>(5) 箱线图</strong></p>
+<p>箱线图（又称盒须图）通过绘制连续型变量的五数总括，即最小值、下四分位数（第25百分位数）、中位数（第50百分位数）、上四分位数（第75百分位数）以及最大值，描述了连续型变量的分布。箱线图能够显示出可能为离群点（范围±1.5*IQR以外的值，IQR表示四分位距，即上四分位数与下四分位数的差值）的观测。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">boxplot(mtcars$mpg, main&#x3D;&quot;Box plot&quot;, ylab&#x3D;&quot;Miles per Gallon&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-a8c4ac7a9823054b18d7699759bc08fd_720w.jpg" alt="img"></p>
+<p>我们使用并列箱线图重新研究了四缸、六缸、八缸发动机对每加仑汽油行驶的英里数的影响。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">boxplot(mpg ~ cyl, data&#x3D;mtcars, </span><br><span class="line">        main&#x3D;&quot;Car Mileage Data&quot;,  </span><br><span class="line">        xlab&#x3D;&quot;Number of Cylinders&quot;, </span><br><span class="line">        ylab&#x3D;&quot;Miles Per Gallon&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-cae2e3bc1592dc13a9f91c4b03371642_720w.jpg" alt="img"></p>
+<p>最后，你可以为多个分组因子绘制箱线图。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 创建汽缸数量的因子 </span><br><span class="line">mtcars$cyl.f &lt;- factor(mtcars$cyl, </span><br><span class="line">                      levels&#x3D;c(4,6,8),  </span><br><span class="line">                      labels&#x3D;c(&quot;4&quot;,&quot;6&quot;,&quot;8&quot;)) </span><br><span class="line"># 创建变速箱类型的因子 </span><br><span class="line">mtcars$am.f &lt;- factor(mtcars$am, </span><br><span class="line">                     levels&#x3D;c(0,1), </span><br><span class="line">                     labels&#x3D;c(&quot;auto&quot;, &quot;standard&quot;))  </span><br><span class="line"># 生成箱线图 </span><br><span class="line">boxplot(mpg ~ am.f *cyl.f, </span><br><span class="line">       data&#x3D;mtcars, </span><br><span class="line">       varwidth&#x3D;TRUE, </span><br><span class="line">       col&#x3D;c(&quot;gold&quot;,&quot;darkgreen&quot;), </span><br><span class="line">       main&#x3D;&quot;MPG Distribution by Auto Type&quot;, </span><br><span class="line">       xlab&#x3D;&quot;Auto Type&quot;, ylab&#x3D;&quot;Miles Per Gallon&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-5c91212fe36e63ad7f0dd73f3083fa82_720w.jpg" alt="img"></p>
+<p><strong>(6) 小提琴图</strong></p>
+<p>小提琴图是箱线图与核密度图的结合。 你可以使用vioplot包中的vioplot()函数绘制它。 请在第一次使用之前安装vioplot包。</p>
+<p>vioplot()函数的使用格式为：</p>
+<p>vioplot(x1, x2, … , names=, col=)</p>
+<p>其中x1, x2, …表示要绘制的一个或多个数值向量（将为每个向量绘制一幅小提琴图）。参数names是小提琴图中标签的字符向量，而col是一个为每幅小提琴图指定颜色的向量。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">library(vioplot)  </span><br><span class="line">x1 &lt;- mtcars$mpg[mtcars$cyl&#x3D;&#x3D;4] </span><br><span class="line">x2 &lt;- mtcars$mpg[mtcars$cyl&#x3D;&#x3D;6] </span><br><span class="line">x3 &lt;- mtcars$mpg[mtcars$cyl&#x3D;&#x3D;8] </span><br><span class="line">vioplot(x1, x2, x3, </span><br><span class="line">        names&#x3D;c(&quot;4 cyl&quot;, &quot;6 cyl&quot;, &quot;8 cyl&quot;), </span><br><span class="line">        col&#x3D;&quot;gold&quot;) </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">title(&quot;Violin Plots of Miles Per Gallon&quot;, ylab&#x3D;&quot;Miles Per Gallon&quot;, </span><br><span class="line">       xlab&#x3D;&quot;Number of Cylinders&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-aa868d0531ad3a67f8834cf4b0f8a536_720w.jpg" alt="img"></p>
+<p><strong>(7) 点图</strong></p>
+<p>点图提供了一种在简单水平刻度上绘制大量有标签值的方法。你可以使用dotchart()函数创建点图，格式为：</p>
+<p>dotchart(x, labels=)</p>
+<p>其中的x是一个数值向量，而labels则是由每个点的标签组成的向量。你可以通过添加参数groups来选定一个因子，用以指定x中元素的分组方式。如果这样做，则参数gcolor可以控制不同组标签的颜色，cex可以控制标签的大小。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dotchart(mtcars$mpg, labels&#x3D;row.names(mtcars), cex&#x3D;.7, </span><br><span class="line">         main&#x3D;&quot;Gas Mileage for Car Models&quot;, </span><br><span class="line">         xlab&#x3D;&quot;Miles Per Gallon&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-021e1478a4881257d4b116a5c203430f_720w.jpg" alt="img"></p>
+<p>分组、排序、着色后的点图</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x &lt;- mtcars[order(mtcars$mpg),] </span><br><span class="line"> </span><br><span class="line">x$cyl &lt;- factor(x$cyl)  </span><br><span class="line"> </span><br><span class="line">x$color[x$cyl&#x3D;&#x3D;4] &lt;- &quot;red&quot; </span><br><span class="line">x$color[x$cyl&#x3D;&#x3D;6] &lt;- &quot;blue&quot; </span><br><span class="line">x$color[x$cyl&#x3D;&#x3D;8] &lt;- &quot;darkgreen&quot; </span><br><span class="line">dotchart(x$mpg,  </span><br><span class="line">          labels &#x3D; row.names(x),  </span><br><span class="line">          cex&#x3D;.7, </span><br><span class="line">          groups &#x3D; x$cyl, </span><br><span class="line">          gcolor &#x3D; &quot;black&quot;, </span><br><span class="line">          color &#x3D; x$color,  </span><br><span class="line">          pch&#x3D;19, </span><br><span class="line">          main &#x3D; &quot;Gas Mileage for Car Models\ngrouped by cylinder&quot;, </span><br><span class="line">          xlab &#x3D; &quot;Miles Per Gallon&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/R%E8%AF%AD%E8%A8%80%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/v2-a5be3049f4c902914b18bd17b810f9ee_720w.jpg" alt="img"></p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>本次的R语言语法精讲（二）主要介绍了 R语言的数据的输入输出以及R语言内置的绘图语法。学完本文后，您将可以具备初步的R语言数据可视化的基本能力并结合R语言语法精讲（一）做简单的数据分析项目以及报告。</p>
+<blockquote>
+<p>本文转载自知乎：<a href="https://zhuanlan.zhihu.com/p/180425068" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/180425068</a></p>
+</blockquote>
 ]]></content>
       <categories>
         <category>R</category>
@@ -6507,7 +6746,7 @@ EX_{(n)} &=& \int_{-\infty}^{+\infty}xf_{x_{(n)}}(x){\rm d}x\\
 <p>最后使用函数return()返回结果</p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>本次的R语言语法精讲（一）主要介绍了 R语言的数据结构，R语言的运算以及R语言的编程结构。学完本文后，您将可以具备初步的R语言编程技巧，并能编写大部分程序以及算法。</p>
 <blockquote>
-<p>本文转载自知乎：<a href="https://zhuanlan.zhihu.com/p/180119895?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=960125220078702592&amp;utm_content=first" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/180119895?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=960125220078702592&amp;utm_content=first</a></p>
+<p>本文转载自知乎：<a href="https://zhuanlan.zhihu.com/p/180119895" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/180119895</a></p>
 </blockquote>
 ]]></content>
       <categories>
