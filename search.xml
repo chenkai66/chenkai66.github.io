@@ -5699,8 +5699,8 @@ EX_{(n)} &=& \int_{-\infty}^{+\infty}xf_{x_{(n)}}(x){\rm d}x\\
       </categories>
   </entry>
   <entry>
-    <title>Bert</title>
-    <url>/posts/1424e830.html</url>
+    <title>R语言实战（一）</title>
+    <url>/posts/6ac65c89.html</url>
     <content><![CDATA[<p>本次分享，我们将评述用于生成基本的描述性统计量和推断统计量的R函数。首先，我们将着眼于定量变量的位置和尺度的衡量方式。然后我们将学习生成类别型变量的频数表和列联表的方法（以及连带的卡方检验）。接下来，我们将考察连续型和有序型变量相关系数的多种形式。最后，我们将转而通过参数检验（t检验）和非参数检验（Mann-WhitneyU检验、Kruskal-Wallis检验）方法研究组间差异。</p>
 <p>参考书籍：</p>
 <blockquote>
@@ -5948,7 +5948,7 @@ EX_{(n)} &=& \int_{-\infty}^{+\infty}xf_{x_{(n)}}(x){\rm d}x\\
 <h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>在本次分享中，我们评述了R中用于生成统计概要和进行假设检验的函数。我们关注了样本统计量和频数表、独立性检验和类别型变量的相关性度量、定量变量的相关系数（和连带的显著性检验）以及两组或更多组定量结果变量的比较。下次分享，我们将探索一元回归和多元回归，讨论的焦点在于如何理解一个预测变量（一元回归）或多个预测变量（多元回归）与某个被预测变量或效标变量（criterion variable）之间的关系。图形将有助于诊断潜在的问题、评估和提高模型的拟合精度，并发现数据中意料之外的信息瑰宝。</p>
 ]]></content>
       <categories>
-        <category>NLP</category>
+        <category>R</category>
       </categories>
   </entry>
   <entry>
