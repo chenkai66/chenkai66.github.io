@@ -1318,6 +1318,115 @@ step:1000 train accuracy:0.9850 test accuracy:0.9760
       </categories>
   </entry>
   <entry>
+    <title>leetcode刷题专题打卡——分治法</title>
+    <url>/posts/3e1907bd.html</url>
+    <content><![CDATA[<p>注：由于<a href="https://github.com/datawhalechina/team-learning-program/blob/master/LeetCodeClassification/1.%E5%88%86%E6%B2%BB.md" target="_blank" rel="noopener">Datawhale组队学习资料</a>中对分治法讲的太美丽了，本文以直接搬运为主，对算法进行优化为辅。</p>
+<h1 id="关于分治法"><a href="#关于分治法" class="headerlink" title="关于分治法"></a>关于分治法</h1><h2 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h2><p>MapReduce（分治算法的应用） 是 Google 大数据处理的三驾马车之一，另外两个是 GFS 和 Bigtable。它在倒排索引、PageRank 计算、网页分析等搜索引擎相关的技术中都有大量的应用。</p>
+<p>尽管开发一个 MapReduce 看起来很高深，感觉遥不可及。实际上，万变不离其宗，它的本质就是分治算法思想，分治算法。如何理解分治算法？为什么说 MapRedue 的本质就是分治算法呢？</p>
+<h2 id="主要思想"><a href="#主要思想" class="headerlink" title="主要思想"></a>主要思想</h2><p>分治算法的主要思想是将原问题<strong>递归地分成</strong>若干个子问题，直到子问题<strong>满足边界条件</strong>，停止递归。将子问题逐个击破(一般是同种方法)，将已经解决的子问题合并，最后，算法会<strong>层层合并</strong>得到原问题的答案。</p>
+<h2 id="分治法的步骤"><a href="#分治法的步骤" class="headerlink" title="分治法的步骤"></a>分治法的步骤</h2><ul>
+<li>分：<strong>递归地</strong>将问题<strong>分解</strong>为各个的子<strong>问题</strong>(性质相同的、相互独立的子问题)；</li>
+<li>治：将这些规模更小的子问题<strong>逐个击破</strong>；</li>
+<li>合：将已解决的子问题<strong>逐层合并</strong>，最终得出原问题的解；</li>
+</ul>
+<p><a href="https://camo.githubusercontent.com/415d803c0966b64248633ddd46843c902819206a/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303430383230343435303730312e706e67" target="_blank" rel="noopener"><img src="/Pic/leetcode%E5%88%B7%E9%A2%98%E4%B8%93%E9%A2%98%E6%89%93%E5%8D%A1%E2%80%94%E2%80%94%E5%88%86%E6%B2%BB%E6%B3%95/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303430383230343435303730312e706e67" alt="img"></a></p>
+<h2 id="分治法适用的情况"><a href="#分治法适用的情况" class="headerlink" title="分治法适用的情况"></a>分治法适用的情况</h2><ul>
+<li>原问题的<strong>计算复杂度</strong>随着问题的规模的增加而增加。</li>
+<li>原问题<strong>能够被分解</strong>成更小的子问题。</li>
+<li>子问题的<strong>结构和性质</strong>与原问题一样，并且<strong>相互独立</strong>，子问题之间<strong>不包含</strong>公共的子子问题。</li>
+<li>原问题分解出的子问题的解<strong>可以合并</strong>为该问题的解。</li>
+</ul>
+<h2 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">divide_conquer</span><span class="params">(problem, paraml, param2,...)</span>:</span></span><br><span class="line">    <span class="comment"># 不断切分的终止条件</span></span><br><span class="line">    <span class="keyword">if</span> problem <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        print_result</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    <span class="comment"># 准备数据</span></span><br><span class="line">    data=prepare_data(problem)</span><br><span class="line">    <span class="comment"># 将大问题拆分为小问题</span></span><br><span class="line">    subproblems=split_problem(problem, data)</span><br><span class="line">    <span class="comment"># 处理小问题，得到子结果</span></span><br><span class="line">    subresult1=self.divide_conquer(subproblems[<span class="number">0</span>],p1,..…)</span><br><span class="line">    subresult2=self.divide_conquer(subproblems[<span class="number">1</span>],p1,...)</span><br><span class="line">    subresult3=self.divide_conquer(subproblems[<span class="number">2</span>],p1,.…)</span><br><span class="line">    <span class="comment"># 对子结果进行合并 得到最终结果</span></span><br><span class="line">    result=process_result(subresult1, subresult2, subresult3,...)</span><br></pre></td></tr></table></figure>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p> 通过应用举例分析理解分治算法的原理其实并不难，但是要想灵活应用并在编程中体现这种思想中却并不容易。所以，这里这里用分治算法应用在排序的时候的一个栗子，加深对分治算法的理解。</p>
+<p>相关概念：</p>
+<ul>
+<li><strong>有序度</strong>：表示一组数据的有序程度</li>
+<li><strong>逆序度</strong>：表示一组数据的无序程度</li>
+</ul>
+<p>一般通过<strong>计算有序对或者逆序对的个数</strong>，来表示数据的有序度或逆序度。</p>
+<p>假设我们有 <code>n</code> 个数据，我们期望数据从小到大排列，那完全有序的数据的有序度就是 $n(n-1)/2$，逆序度等于 0；相反，倒序排列的数据的有序度就是 0，逆序度是 $n(n-1)/2$。</p>
+<p><strong>Q：如何编程求出一组数据的有序对个数或者逆序对个数呢？</strong></p>
+<p>因为有序对个数和逆序对个数的求解方式是类似的，所以这里可以只思考逆序对（常接触的）个数的求解方法。</p>
+<ul>
+<li>方法1<ul>
+<li>拿数组里的每个数字跟它后面的数字比较，看有几个比它小的。</li>
+<li>把比它小的数字个数记作 <code>k</code>，通过这样的方式，把每个数字都考察一遍之后，然后对每个数字对应的 <code>k</code> 值求和</li>
+<li>最后得到的总和就是逆序对个数。</li>
+<li>这样操作的时间复杂度是$O(n^2)$（需要两层循环过滤）。那有没有更加高效的处理方法呢？这里尝试套用分治的思想来求数组 A 的逆序对个数。</li>
+</ul>
+</li>
+<li>方法2<ul>
+<li>首先将数组分成前后两半 A1 和 A2，分别计算 A1 和 A2 的逆序对个数 K1 和 K2</li>
+<li>然后再计算 A1 与 A2 之间的逆序对个数 K3。那数组 A 的逆序对个数就等于 K1+K2+K3。</li>
+<li>注意使用分治算法其中一个要求是，<strong>子问题合并的代价不能太大</strong>，否则就起不了降低时间复杂度的效果了。</li>
+<li><strong>如何快速计算出两个子问题 A1 与 A2 之间的逆序对个数呢？这里就要借助归并排序算法了。（这里先回顾一下归并排序思想）</strong>如何借助归并排序算法来解决呢？归并排序中有一个非常关键的操作，就是将两个有序的小数组，合并成一个有序的数组。实际上，在这个合并的过程中，可以计算这两个小数组的逆序对个数了。每次合并操作，我们都计算逆序对个数，把这些计算出来的逆序对个数求和，就是这个数组的逆序对个数了。</li>
+</ul>
+</li>
+</ul>
+<h1 id="Leetcode题解"><a href="#Leetcode题解" class="headerlink" title="Leetcode题解"></a>Leetcode题解</h1><h2 id="169-多数元素"><a href="#169-多数元素" class="headerlink" title="169. 多数元素"></a><a href="https://leetcode-cn.com/problems/majority-element/" target="_blank" rel="noopener">169. 多数元素</a></h2><ul>
+<li><p>题目描述</p>
+<p>给定一个大小为 n 的数组，找到其中的众数。众数是指在数组中出现次数大于 [n/2] 的元素。</p>
+<p>你可以假设数组是非空的，并且给定的数组总是存在众数。</p>
+<p>示例 1:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">输入: [3,2,3]</span><br><span class="line">输出: 3</span><br></pre></td></tr></table></figure>
+<p>示例 2:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">输入: [2,2,1,1,1,2,2]</span><br><span class="line">输出: 2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解题思路</p>
+<ul>
+<li><p>确定切分的终止条件</p>
+<p>直到所有的子问题都是长度为 1 的数组，停止切分。</p>
+</li>
+<li><p>准备数据，将大问题切分为小问题</p>
+<p>递归地将原数组二分为左区间与右区间，直到最终的数组只剩下一个元素，将其返回</p>
+</li>
+<li><p>处理子问题得到子结果，并合并</p>
+<ul>
+<li>长度为 1 的子数组中唯一的数显然是众数，直接返回即可。</li>
+<li>如果它们的众数相同，那么显然这一段区间的众数是它们相同的值。</li>
+<li>如果他们的众数不同，比较两个众数在整个区间内出现的次数来决定该区间的众数</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="分治法解题代码"><a href="#分治法解题代码" class="headerlink" title="分治法解题代码"></a>分治法解题代码</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">majorityElement2</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :rtype: int</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment"># 【不断切分的终止条件】</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> nums:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        <span class="keyword">if</span> len(nums) == <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">return</span> nums[<span class="number">0</span>]</span><br><span class="line">        <span class="comment"># 【准备数据，并将大问题拆分为小问题】</span></span><br><span class="line">        left = self.majorityElement(nums[:len(nums)//<span class="number">2</span>])</span><br><span class="line">        right = self.majorityElement(nums[len(nums)//<span class="number">2</span>:])</span><br><span class="line">        <span class="comment"># 【处理子问题，得到子结果】</span></span><br><span class="line">        <span class="comment"># 【对子结果进行合并 得到最终结果】</span></span><br><span class="line">        <span class="keyword">if</span> left == right:</span><br><span class="line">            <span class="keyword">return</span> left</span><br><span class="line">        <span class="keyword">if</span> nums.count(left) &gt; nums.count(right):</span><br><span class="line">            <span class="keyword">return</span> left</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> right</span><br></pre></td></tr></table></figure>
+<p>结果不太理想：</p>
+<p><img src="/Pic/leetcode%E5%88%B7%E9%A2%98%E4%B8%93%E9%A2%98%E6%89%93%E5%8D%A1%E2%80%94%E2%80%94%E5%88%86%E6%B2%BB%E6%B3%95/result169.png" alt></p>
+<h3 id="改进策略"><a href="#改进策略" class="headerlink" title="改进策略"></a>改进策略</h3><h3 id="官方思路"><a href="#官方思路" class="headerlink" title="官方思路"></a>官方思路</h3><h4 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h4><p>我们使用哈希映射（HashMap）来存储每个元素以及出现的次数。对于哈希映射中的每个键值对，键表示一个元素，值表示该元素出现的次数。</p>
+<p>我们用一个循环遍历数组 nums 并将数组中的每个元素加入哈希映射中。在这之后，我们遍历哈希映射中的所有键值对，返回值最大的键。我们同样也可以在遍历数组 nums 时候使用打擂台的方法，维护最大的值，这样省去了最后对哈希映射的遍历。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">majorityElement</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :rtype: int</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line"></span><br><span class="line">        counts = collections.Counter(nums)</span><br><span class="line">        <span class="keyword">return</span> max(counts.keys(), key=counts.get)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/leetcode%E5%88%B7%E9%A2%98%E4%B8%93%E9%A2%98%E6%89%93%E5%8D%A1%E2%80%94%E2%80%94%E5%88%86%E6%B2%BB%E6%B3%95/result169_1.png" alt></p>
+<h4 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h4><p>如果将数组 nums 中的所有元素按照单调递增或单调递减的顺序排序，那么下标为 $\lfloor \dfrac{n}{2} \rfloor$ 的元素（下标从 0 开始）一定是众数。Python实现更为简单：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">majorityElement</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        nums.sort()</span><br><span class="line">        <span class="keyword">return</span> nums[len(nums)//<span class="number">2</span>]</span><br></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong></p>
+<ul>
+<li><p>时间复杂度：$O(n\log n)$。将数组排序的时间复杂度为 $O(n\log n)$。</p>
+</li>
+<li><p>空间复杂度：$O(\log n)$。如果使用语言自带的排序算法，需要使用$O(\log n)$的栈空间。如果自己编写堆排序，则只需要使用 $O(1)$ 的额外空间。</p>
+</li>
+</ul>
+<p>运行结果很美丽：</p>
+<p><img src="/Pic/leetcode%E5%88%B7%E9%A2%98%E4%B8%93%E9%A2%98%E6%89%93%E5%8D%A1%E2%80%94%E2%80%94%E5%88%86%E6%B2%BB%E6%B3%95/result169_2.png" alt></p>
+<h4 id="随机化"><a href="#随机化" class="headerlink" title="随机化"></a>随机化</h4><p>因为超过$\lfloor \dfrac{n}{2}⌋$的数组下标被众数占据了，这样我们随机挑选一个下标对应的元素并验证，有很大的概率能找到众数。实现代码也很简单：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">majorityElement</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        majority_count = len(nums)//<span class="number">2</span></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            candidate = random.choice(nums)</span><br><span class="line">            <span class="keyword">if</span> sum(<span class="number">1</span> <span class="keyword">for</span> elem <span class="keyword">in</span> nums <span class="keyword">if</span> elem == candidate) &gt; majority_count:</span><br><span class="line">                <span class="keyword">return</span> candidate</span><br></pre></td></tr></table></figure>
+<p><strong>复杂度分析</strong></p>
+<p>时间复杂度：理论上最坏情况下的时间复杂度为$O(\infty)$，因为如果我们的运气很差，这个算法会一直找不到众数，随机挑选无穷多次，所以最坏时间复杂度是没有上限的。然而，运行的期望时间是线性的。为了更简单地分析，先说服你自己：由于众数占据超过数组一半的位置，期望的随机次数会小于众数占据数组恰好一半的情况。因此，我们可以计算随机的期望次数（下标为 prob 为原问题，mod 为众数恰好占据数组一半数目的问题）：</p>
+<script type="math/tex; mode=display">\begin{aligned} E(iters_{prob})\le& E(iter_{mod})\\=&\lim_{n-\rightarrow\infty}\sum_{i=1}^ni\frac1{2^i}\\=&2\end{aligned}</script><p>计算方法为：当众数恰好占据数组的一半时，第一次随机我们有$\frac{1}{2}$的概率找到众数，如果没有找到，则第二次随机时，包含上一次我们有 $\frac{1}{4} $的概率找到众数，以此类推。因此期望的次数为$i * \frac{1}{2^i}$的和，可以计算出这个和为$2$，说明期望的随机次数是常数。每一次随机后，我们需要的时间判断这个数是否为众数，因此期望的时间复杂度为$O(n)$。</p>
+<p>空间复杂度：$O(1)$。随机方法只需要常数级别的额外空间。</p>
+<p>结果也不赖：</p>
+<p><img src="/Pic/leetcode%E5%88%B7%E9%A2%98%E4%B8%93%E9%A2%98%E6%89%93%E5%8D%A1%E2%80%94%E2%80%94%E5%88%86%E6%B2%BB%E6%B3%95/result169_3.png" alt></p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://github.com/datawhalechina/team-learning-program/blob/master/LeetCodeClassification/1.分治.md" target="_blank" rel="noopener">https://github.com/datawhalechina/team-learning-program/blob/master/LeetCodeClassification/1.%E5%88%86%E6%B2%BB.md</a></li>
+<li><a href="https://leetcode-cn.com/problems/majority-element/solution/duo-shu-yuan-su-by-leetcode-solution/" target="_blank" rel="noopener">https://leetcode-cn.com/problems/majority-element/solution/duo-shu-yuan-su-by-leetcode-solution/</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Leetcode</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Microsoft Recommenders应用</title>
     <url>/posts/7f98fd00.html</url>
     <content><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
@@ -2925,6 +3034,8 @@ R S A T(x, y)=R S A T(x, y)+R S A T(x-1, y+1)-R S A T(x-2, y) \\
 </blockquote>
 <p><img src="/Pic/%E6%B3%B0%E5%9D%A6%E5%B0%BC%E5%85%8B%E5%8F%B7%E7%94%9F%E5%AD%98%E7%8E%87%E9%A2%84%E6%B5%8B/cabin_.png" alt></p>
 <p>脑洞确实大，结果确实不赖~</p>
+<h3 id="热力图"><a href="#热力图" class="headerlink" title="热力图"></a>热力图</h3><p>我们还可以给数据画上美丽的热力图，虽然没什么卵用：</p>
+<p><img src="/Pic/%E6%B3%B0%E5%9D%A6%E5%B0%BC%E5%85%8B%E5%8F%B7%E7%94%9F%E5%AD%98%E7%8E%87%E9%A2%84%E6%B5%8B/sns.png" alt></p>
 <h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><h2 id="拼接数据集"><a href="#拼接数据集" class="headerlink" title="拼接数据集"></a>拼接数据集</h2><p>首先我们讲训练集中的Survived特征提取出来，这是我们需要预测的目标函数，这部分也是train_data和test_data的不同点，接着我们可以讲训练集和测试集的数据拼接起来一起进行数据预处理，当然在实际中我们是无从得知测试数据的，但在比赛中为了方便我们可以统一进行处理：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">y_train = train_data.pop(<span class="string">"Survived"</span>)</span><br><span class="line">data_all = pd.concat((train_data, test_data), axis=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
 <h2 id="处理Name特征，提取出Title"><a href="#处理Name特征，提取出Title" class="headerlink" title="处理Name特征，提取出Title"></a>处理Name特征，提取出Title</h2><p>从左往右看我们首先可以看到Name这个特征是比较碍眼的，很多人可能直接把它去掉了，但仔细观察我们可以发现这一列特征里都含有名字的前缀，比如”Mr.”，”Mrs.“，”Miss”等，只要学过小学一年级英语的都知道这个特征在一定程度上会代表阶级地位，婚配情况等，我们可以将这个特征做一个映射，实现方式如下：</p>
@@ -2963,6 +3074,19 @@ R S A T(x, y)=R S A T(x, y)+R S A T(x-1, y+1)-R S A T(x-2, y) \\
 <p>结果比使用默认模型的Bagging策略稍好一些。</p>
 <h2 id="XGBClassifier"><a href="#XGBClassifier" class="headerlink" title="XGBClassifier"></a>XGBClassifier</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> xgboost <span class="keyword">import</span> XGBClassifier</span><br><span class="line">params = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</span><br><span class="line">test_scores = []</span><br><span class="line"><span class="keyword">for</span> param <span class="keyword">in</span> params:</span><br><span class="line">    clf = XGBClassifier(max_depth=param)</span><br><span class="line">    test_score = cross_val_score(clf, train_df, y_train, cv=<span class="number">10</span>, scoring=<span class="string">"precision"</span>)</span><br><span class="line">    test_scores.append(np.mean(test_score))</span><br><span class="line">plt.plot(params, test_scores)</span><br></pre></td></tr></table></figure>
 <p><img src="/Pic/%E6%B3%B0%E5%9D%A6%E5%B0%BC%E5%85%8B%E5%8F%B7%E7%94%9F%E5%AD%98%E7%8E%87%E9%A2%84%E6%B5%8B/xgb.png" alt></p>
+<h2 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h2><p>首先我们基于Keras搭建了一个简单的神经网络架构：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Sequential</span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">tf.keras.optimizers.Adam(</span><br><span class="line">    learning_rate=<span class="number">0.003</span>, beta_1=<span class="number">0.9</span>, beta_2=<span class="number">0.999</span>, epsilon=<span class="number">1e-07</span>, amsgrad=<span class="literal">False</span>,</span><br><span class="line">    name=<span class="string">'Adam'</span>, </span><br><span class="line">)</span><br><span class="line">model = Sequential()</span><br><span class="line">model.add(Dense(<span class="number">32</span>, input_dim=train_df.shape[<span class="number">1</span>],kernel_initializer = <span class="string">'uniform'</span>, activation=<span class="string">'relu'</span>))</span><br><span class="line">model.add(Dense(<span class="number">32</span>, kernel_initializer = <span class="string">'uniform'</span>, activation = <span class="string">'relu'</span>))</span><br><span class="line">model.add(Dropout(<span class="number">0.4</span>))</span><br><span class="line">model.add(Dense(<span class="number">32</span>,kernel_initializer = <span class="string">'uniform'</span>, activation = <span class="string">'relu'</span>))</span><br><span class="line">model.add(Dense(<span class="number">1</span>, activation=<span class="string">'sigmoid'</span>))</span><br><span class="line">    </span><br><span class="line">model.compile(loss=<span class="string">'binary_crossentropy'</span>, optimizer=<span class="string">'adam'</span>, metrics=[<span class="string">'accuracy'</span>])</span><br></pre></td></tr></table></figure>
+<p>然后将模型放入train_df进行训练得到结果：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">history = model.fit(np.array(train_df), np.array(y_train), epochs=<span class="number">20</span>, batch_size=<span class="number">50</span>, validation_split = <span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<p>最后一轮的结果为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Epoch 20&#x2F;20</span><br><span class="line">712&#x2F;712 [&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;] - 0s 43us&#x2F;step - loss: 0.4831 - accuracy: 0.7978 - val_loss: 0.3633 - val_accuracy: 0.8715</span><br></pre></td></tr></table></figure>
+<p>可以看到实验结果还是不错的，我们看一看模型的架构：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model.summary()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Model: &quot;sequential_1&quot;</span><br><span class="line">_________________________________________________________________</span><br><span class="line">Layer (type)                 Output Shape              Param #   </span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">dense_1 (Dense)              (None, 32)                896       </span><br><span class="line">_________________________________________________________________</span><br><span class="line">dense_2 (Dense)              (None, 32)                1056      </span><br><span class="line">_________________________________________________________________</span><br><span class="line">dropout_1 (Dropout)          (None, 32)                0         </span><br><span class="line">_________________________________________________________________</span><br><span class="line">dense_3 (Dense)              (None, 32)                1056      </span><br><span class="line">_________________________________________________________________</span><br><span class="line">dense_4 (Dense)              (None, 1)                 33        </span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">Total params: 3,041</span><br><span class="line">Trainable params: 3,041</span><br><span class="line">Non-trainable params: 0</span><br><span class="line">_________________________________________________________________</span><br></pre></td></tr></table></figure>
+<p>测试模型：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">scores = model.evaluate(train_df, y_train, batch_size=<span class="number">32</span>)</span><br><span class="line">print(scores)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">891&#x2F;891 [&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;] - 0s 18us&#x2F;step</span><br><span class="line">[0.4208374666645872, 0.8316498398780823]</span><br></pre></td></tr></table></figure>
+<p>可以看到效果和随机森林的最佳效果差不多。</p>
 <p>后续我们可以通过对这些表现比较好的模型再进行第二层的学习获得更好的分数。</p>
 ]]></content>
       <categories>
