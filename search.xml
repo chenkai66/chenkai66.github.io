@@ -1186,6 +1186,301 @@
       </categories>
   </entry>
   <entry>
+    <title>推荐系统实战（二）</title>
+    <url>/posts/8ad63d9d.html</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Recommender system</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>推荐系统实战（一）</title>
+    <url>/posts/bac0d145.html</url>
+    <content><![CDATA[<h1 id="一、推荐系统简介"><a href="#一、推荐系统简介" class="headerlink" title="一、推荐系统简介"></a>一、推荐系统简介</h1><p>​        个性化推荐(推荐系统)经历了多年的发展，已经成为互联网产品的标配，也是AI成功落地的分支之一，在电商(淘宝/京东)、资讯(今日头条/微博)、音乐(网易云音乐/QQ音乐)、短视频(抖音/快手)等热门应用中,推荐系统都是核心组件之一。</p>
+<h2 id="推荐系统产生背景"><a href="#推荐系统产生背景" class="headerlink" title="推荐系统产生背景"></a>推荐系统产生背景</h2><p><strong>信息过载</strong> <strong>&amp;</strong> <strong>用户需求不明确</strong></p>
+<ul>
+<li>分类⽬录（1990s）：覆盖少量热门⽹站，如Hao123 和 Yahoo</li>
+<li>搜索引擎（2000s）：通过搜索词明确需求，如Google 和 Baidu</li>
+<li>推荐系统（2010s）：不需要⽤户提供明确的需求，通过分析⽤户的历史⾏为给⽤户的兴趣进⾏建模，从⽽主动给⽤户推荐能够满⾜他们兴趣和需求的信息。</li>
+</ul>
+<h2 id="什么是推荐系统"><a href="#什么是推荐系统" class="headerlink" title="什么是推荐系统"></a>什么是推荐系统</h2><p>没有明确需求的用户访问了我们的服务, 且服务的物品对用户构成了信息过载, 系统通过一定的规则<strong>对物品进行排序</strong>,并将排在前面的物品展示给用户,这样的系统就是推荐系统</p>
+<h2 id="推荐系统-V-S-搜索引擎"><a href="#推荐系统-V-S-搜索引擎" class="headerlink" title="推荐系统 V.S. 搜索引擎"></a>推荐系统 V.S. 搜索引擎</h2><table>
+  <tr>
+    <th></th>
+    <th>搜索</th>
+    <th>推荐</th>
+  </tr>
+  <tr>
+    <td> 行为方式 </td>
+    <td> 主动 </td>
+    <td> 被动 </td>
+  </tr>
+  <tr>
+    <td> 意图 </td>
+    <td> 明确 </td>
+    <td> 模糊 </td>
+  </tr>
+  <tr>
+    <td> 个性化 </td>
+    <td> 弱 </td>
+    <td> 强 </td>
+  </tr>
+  <tr>
+    <td> 流量分布 </td>
+    <td> 马太效应 </td>
+    <td> 长尾效应 </td>
+  </tr>
+  <tr>
+    <td> 目标 </td>
+    <td> 快速满足  </td>
+    <td> 持续服务 </td>
+  </tr>
+  <tr>
+    <td> 评估指标 </td>
+    <td> 简明 </td>
+    <td> 复杂 </td>
+  </tr>
+</table>
+
+<h2 id="推荐系统的作用"><a href="#推荐系统的作用" class="headerlink" title="推荐系统的作用"></a>推荐系统的作用</h2><ul>
+<li>高效连接用户和物品, 发现长尾商品</li>
+<li>留住用户和内容生产者, 实现商业目标</li>
+</ul>
+<h2 id="推荐系统的工作原理"><a href="#推荐系统的工作原理" class="headerlink" title="推荐系统的工作原理"></a>推荐系统的工作原理</h2><ul>
+<li><strong>社会化推荐</strong> 向朋友咨询, 社会化推荐, 让好友给自己推荐物品</li>
+<li><strong>基于内容的推荐</strong> 打开搜索引擎, 输入自己喜欢的演员的名字, 然后看看返回结果中还有什么电影是自己没看过的</li>
+<li><strong>基于流行度的推荐</strong> 查看票房排行榜, </li>
+<li><strong>基于协同过滤的推荐</strong> 找到和自己历史兴趣相似的用户, 看看他们最近在看什么电影</li>
+</ul>
+<h2 id="推荐系统的应用场景"><a href="#推荐系统的应用场景" class="headerlink" title="推荐系统的应用场景"></a>推荐系统的应用场景</h2><p><img src="/Pic/recommend/recommend1.png" alt></p>
+<h2 id="推荐系统和Web项目的区别"><a href="#推荐系统和Web项目的区别" class="headerlink" title="推荐系统和Web项目的区别"></a>推荐系统和Web项目的区别</h2><ul>
+<li>稳定的信息流通系统 V.S. 通过信息过滤实现目标提升 <ul>
+<li>web项目: 复杂逻辑 高并发 高可用</li>
+<li>推荐系统: 追求指标增长, 留存率/阅读时间/GMV (Gross Merchandise Volume电商网站成交金额)/视频网站VV (Video View)</li>
+</ul>
+</li>
+<li>确定 V.S. 不确定思维<ul>
+<li>web项目: 对结果有确定预期</li>
+<li>推荐系统: 结果是概率问题</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="二、推荐系统评估"><a href="#二、推荐系统评估" class="headerlink" title="二、推荐系统评估"></a>二、推荐系统评估</h1><p>好的推荐系统可以实现用户, 服务提供方, 内容提供方的共赢</p>
+<p><img src="/../../Python/RecSys/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AD%25A6%25E4%25B9%25A0/%25E9%25BB%2591%25E9%25A9%25AC%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AE%259E%25E6%2588%2598%25E7%25AC%25AC%25E4%25BA%258C%25E6%259C%259F/2.%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E3%2580%2590%25E9%25A1%25B9%25E7%259B%25AE%25E3%2580%2591%25E5%25AD%25A6%25E4%25B9%25A0%25E8%25B5%2584%25E6%2596%2599/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E9%25A1%25B9%25E7%259B%25AEday01/%25E8%25B5%2584%25E6%2596%2599/%25E8%25AE%25B2%25E4%25B9%2589/img/recommend2.png" alt></p>
+<h2 id="显示反馈和隐式反馈"><a href="#显示反馈和隐式反馈" class="headerlink" title="显示反馈和隐式反馈"></a>显示反馈和隐式反馈</h2><table>
+  <tr>
+    <th></th>
+    <th>显示反馈</th>
+    <th>隐式反馈</th>
+  </tr>
+  <tr>
+ <td> 例子 </td>
+ <td> 电影/书籍评分 
+ 是否喜欢这个推荐 </td>
+ <td> 播放/点击 评论 下载 购买 </td>
+  </tr>
+  <tr>
+    <td> 准确性 </td>
+    <td> 高 </td>
+    <td> 低 </td>
+  </tr>
+  <tr>
+    <td> 数量 </td>
+    <td> 少 </td>
+    <td> 多 </td>
+  </tr>
+  <tr>
+    <td> 获取成本 </td>
+    <td> 高 </td>
+    <td> 低 </td>
+  </tr>
+</table>
+
+<h2 id="常用评估指标"><a href="#常用评估指标" class="headerlink" title="常用评估指标"></a>常用评估指标</h2><table>
+  <tr>
+    <td>准确性</td>
+    <td>信任度</td>
+  </tr>
+  <tr>
+     <td> 满意度  </td>
+     <td> 实时性 </td>
+  </tr>
+  <tr>
+    <td> 覆盖率 </td>
+    <td> 鲁棒性 </td>
+  </tr>
+  <tr>
+    <td> 多样性 </td>
+    <td> 可扩展性 </td>
+  </tr>
+  <tr>
+    <td> 新颖性 </td>
+    <td> 商业⽬标 </td>
+  </tr>
+  <tr>
+    <td> 惊喜度 </td>
+    <td> ⽤户留存 </td>
+  </tr>
+</table>
+
+<ul>
+<li>准确性 (理论角度)<ul>
+<li>评分预测<ul>
+<li>RMSE   MAE</li>
+</ul>
+</li>
+<li>topN推荐<ul>
+<li>召回率 精准率</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>准确性 (业务角度)</li>
+</ul>
+<p><img src="/Pic/recommend/recommend3.png" alt></p>
+<ul>
+<li>覆盖度<ul>
+<li>信息熵</li>
+<li>覆盖率</li>
+</ul>
+</li>
+<li>多样性&amp;新颖性&amp;惊喜性<ul>
+<li>多样性：推荐列表中两两物品的不相似性。（相似性如何度量？</li>
+<li>新颖性：未曾关注的类别、作者；推荐结果的平均流⾏度</li>
+<li>惊喜性：历史不相似（惊）但很满意（喜）</li>
+<li>往往需要牺牲准确性</li>
+<li>使⽤历史⾏为预测⽤户对某个物品的喜爱程度</li>
+<li>系统过度强调实时性</li>
+</ul>
+</li>
+</ul>
+<h2 id="Exploitation-amp-Exploration-探索与利用问题"><a href="#Exploitation-amp-Exploration-探索与利用问题" class="headerlink" title="Exploitation &amp; Exploration 探索与利用问题"></a>Exploitation &amp; Exploration 探索与利用问题</h2><ul>
+<li>Exploitation(开发 利用)：选择现在可能最佳的⽅案</li>
+<li>Exploration(探测 搜索)：选择现在不确定的⼀些⽅案，但未来可能会有⾼收益的⽅案</li>
+<li>在做两类决策的过程中，不断更新对所有决策的不确定性的认知，优化<br>长期的⽬标</li>
+<li>EE问题实践<ul>
+<li>兴趣扩展: 相似话题, 搭配推荐</li>
+<li>人群算法: userCF 用户聚类</li>
+<li>平衡个性化推荐和热门推荐比例</li>
+<li>随机丢弃用户行为历史</li>
+<li>随机扰动模型参数</li>
+</ul>
+</li>
+<li>EE可能带来的问题<ul>
+<li>探索伤害用户体验, 可能导致用户流失</li>
+<li>探索带来的长期收益(留存率)评估周期长, KPI压力大</li>
+<li>如何平衡实时兴趣和长期兴趣</li>
+<li>如何平衡短期产品体验和长期系统生态</li>
+<li>如何平衡大众口味和小众需求</li>
+<li>如何避免劣币驱逐良币</li>
+</ul>
+</li>
+</ul>
+<h2 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h2><ul>
+<li>问卷调查: 成本高</li>
+<li>离线评估:<ul>
+<li>只能在用户看到过的候选集上做评估, 且跟线上真实效果存在偏差</li>
+<li>只能评估少数指标</li>
+<li>速度快, 不损害用户体验</li>
+</ul>
+</li>
+<li>在线评估: 灰度发布 &amp; A/B测试</li>
+<li>实践: 离线评估和在线评估结合, 定期做问卷调查</li>
+</ul>
+<h1 id="三、推荐系统设计"><a href="#三、推荐系统设计" class="headerlink" title="三、推荐系统设计"></a>三、推荐系统设计</h1><h2 id="推荐系统要素"><a href="#推荐系统要素" class="headerlink" title="推荐系统要素"></a>推荐系统要素</h2><ul>
+<li>UI 和 UE(前端界面)</li>
+<li>数据 (Lambda架构)</li>
+<li>业务知识</li>
+<li>算法</li>
+</ul>
+<h2 id="推荐系统架构"><a href="#推荐系统架构" class="headerlink" title="推荐系统架构"></a>推荐系统架构</h2><ul>
+<li><p>推荐系统整体架构</p>
+<p><img src="/Pic/recommend/%E6%8E%A8%E8%8D%90%E6%B5%81%E7%A8%8B.png" alt></p>
+</li>
+<li><p>大数据Lambda架构</p>
+<ul>
+<li><p>由Twitter工程师Nathan Marz(storm项目发起人)提出</p>
+</li>
+<li><p>Lambda系统架构提供了一个结合实时数据和Hadoop预先计算的数据环境和混合平台, 提供一个实时的数据视图</p>
+</li>
+<li><p>分层架构</p>
+<ul>
+<li>批处理层<ul>
+<li>数据不可变, 可进行任何计算, 可水平扩展</li>
+<li>高延迟  几分钟~几小时(计算量和数据量不同)</li>
+<li>日志收集 Flume</li>
+<li>分布式存储 Hadoop</li>
+<li>分布式计算 Hadoop MapReduce &amp; spark</li>
+<li>视图存储数据库<ul>
+<li>nosql(HBase/Cassandra)</li>
+<li>Redis/memcache</li>
+<li>MySQL</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>实时处理层<ul>
+<li>流式处理, 持续计算</li>
+<li>存储和分析某个窗口期内的数据</li>
+<li>最终正确性(Eventual accuracy)</li>
+<li>实时数据收集 flume &amp; kafka</li>
+<li>实时数据分析  spark streaming/storm/flink</li>
+</ul>
+</li>
+<li>服务层<ul>
+<li>支持随机读</li>
+<li>需要在非常短的时间内返回结果</li>
+<li>读取批处理层和实时处理层结果并对其归并</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Lambda架构图</p>
+<p><img src="/Pic/recommend/lambda3.png" alt></p>
+</li>
+</ul>
+</li>
+<li><p>推荐算法架构</p>
+<ul>
+<li>召回阶段(海选)<ul>
+<li>召回决定了最终推荐结果的天花板</li>
+<li>常用算法:<ul>
+<li>基于用户行为的协同过滤</li>
+<li>基于内容 (根据用户行为总结出自己的偏好)</li>
+<li>基于隐语义</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>排序阶段<ul>
+<li>召回决定了最终推荐结果的天花板, 排序逼近这个极限, 决定了最终的推荐效果</li>
+<li>CTR预估 (点击率预估 使用LR算法)</li>
+</ul>
+</li>
+<li>策略调整</li>
+</ul>
+</li>
+</ul>
+<p><img src="/Pic/recommend/recommend7.jpeg" alt></p>
+<ul>
+<li><p>推荐系统的整体架构</p>
+<ul>
+<li>业务架构</li>
+</ul>
+<p><img src="/Pic/recommend/rs%E5%9F%BA%E7%A1%80%E4%B8%9A%E5%8A%A1%E6%9E%B6%E6%9E%84.png" alt></p>
+<ul>
+<li>技术架构</li>
+</ul>
+<p><img src="/Pic/recommend/rs%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84.png" alt></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Recommender system</category>
+      </categories>
+  </entry>
+  <entry>
     <title>CNN 卷积神经网络</title>
     <url>/posts/d7d85f1a.html</url>
     <content><![CDATA[<h1 id="卷积神经网络简介"><a href="#卷积神经网络简介" class="headerlink" title="卷积神经网络简介"></a>卷积神经网络简介</h1><h2 id="卷积神经网络主要层次"><a href="#卷积神经网络主要层次" class="headerlink" title="卷积神经网络主要层次"></a>卷积神经网络主要层次</h2><ul>

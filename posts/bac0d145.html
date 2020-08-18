@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    推荐系统实战（一） |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-推荐系统实战（一）"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  推荐系统实战（一）
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/bac0d145.html" class="article-date">
+  <time datetime="2020-08-18T08:11:28.215Z" itemprop="datePublished">2020-08-18</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Recommender-system/">Recommender system</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">5 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="一、推荐系统简介"><a href="#一、推荐系统简介" class="headerlink" title="一、推荐系统简介"></a>一、推荐系统简介</h1><p>​        个性化推荐(推荐系统)经历了多年的发展，已经成为互联网产品的标配，也是AI成功落地的分支之一，在电商(淘宝/京东)、资讯(今日头条/微博)、音乐(网易云音乐/QQ音乐)、短视频(抖音/快手)等热门应用中,推荐系统都是核心组件之一。</p>
+<h2 id="推荐系统产生背景"><a href="#推荐系统产生背景" class="headerlink" title="推荐系统产生背景"></a>推荐系统产生背景</h2><p><strong>信息过载</strong> <strong>&amp;</strong> <strong>用户需求不明确</strong></p>
+<ul>
+<li>分类⽬录（1990s）：覆盖少量热门⽹站，如Hao123 和 Yahoo</li>
+<li>搜索引擎（2000s）：通过搜索词明确需求，如Google 和 Baidu</li>
+<li>推荐系统（2010s）：不需要⽤户提供明确的需求，通过分析⽤户的历史⾏为给⽤户的兴趣进⾏建模，从⽽主动给⽤户推荐能够满⾜他们兴趣和需求的信息。</li>
+</ul>
+<h2 id="什么是推荐系统"><a href="#什么是推荐系统" class="headerlink" title="什么是推荐系统"></a>什么是推荐系统</h2><p>没有明确需求的用户访问了我们的服务, 且服务的物品对用户构成了信息过载, 系统通过一定的规则<strong>对物品进行排序</strong>,并将排在前面的物品展示给用户,这样的系统就是推荐系统</p>
+<h2 id="推荐系统-V-S-搜索引擎"><a href="#推荐系统-V-S-搜索引擎" class="headerlink" title="推荐系统 V.S. 搜索引擎"></a>推荐系统 V.S. 搜索引擎</h2><table>
+  <tr>
+    <th></th>
+    <th>搜索</th>
+    <th>推荐</th>
+  </tr>
+  <tr>
+    <td> 行为方式 </td>
+    <td> 主动 </td>
+    <td> 被动 </td>
+  </tr>
+  <tr>
+    <td> 意图 </td>
+    <td> 明确 </td>
+    <td> 模糊 </td>
+  </tr>
+  <tr>
+    <td> 个性化 </td>
+    <td> 弱 </td>
+    <td> 强 </td>
+  </tr>
+  <tr>
+    <td> 流量分布 </td>
+    <td> 马太效应 </td>
+    <td> 长尾效应 </td>
+  </tr>
+  <tr>
+    <td> 目标 </td>
+    <td> 快速满足  </td>
+    <td> 持续服务 </td>
+  </tr>
+  <tr>
+    <td> 评估指标 </td>
+    <td> 简明 </td>
+    <td> 复杂 </td>
+  </tr>
+</table>
+
+<h2 id="推荐系统的作用"><a href="#推荐系统的作用" class="headerlink" title="推荐系统的作用"></a>推荐系统的作用</h2><ul>
+<li>高效连接用户和物品, 发现长尾商品</li>
+<li>留住用户和内容生产者, 实现商业目标</li>
+</ul>
+<h2 id="推荐系统的工作原理"><a href="#推荐系统的工作原理" class="headerlink" title="推荐系统的工作原理"></a>推荐系统的工作原理</h2><ul>
+<li><strong>社会化推荐</strong> 向朋友咨询, 社会化推荐, 让好友给自己推荐物品</li>
+<li><strong>基于内容的推荐</strong> 打开搜索引擎, 输入自己喜欢的演员的名字, 然后看看返回结果中还有什么电影是自己没看过的</li>
+<li><strong>基于流行度的推荐</strong> 查看票房排行榜, </li>
+<li><strong>基于协同过滤的推荐</strong> 找到和自己历史兴趣相似的用户, 看看他们最近在看什么电影</li>
+</ul>
+<h2 id="推荐系统的应用场景"><a href="#推荐系统的应用场景" class="headerlink" title="推荐系统的应用场景"></a>推荐系统的应用场景</h2><p><img src="/Pic/recommend/recommend1.png" alt></p>
+<h2 id="推荐系统和Web项目的区别"><a href="#推荐系统和Web项目的区别" class="headerlink" title="推荐系统和Web项目的区别"></a>推荐系统和Web项目的区别</h2><ul>
+<li>稳定的信息流通系统 V.S. 通过信息过滤实现目标提升 <ul>
+<li>web项目: 复杂逻辑 高并发 高可用</li>
+<li>推荐系统: 追求指标增长, 留存率/阅读时间/GMV (Gross Merchandise Volume电商网站成交金额)/视频网站VV (Video View)</li>
+</ul>
+</li>
+<li>确定 V.S. 不确定思维<ul>
+<li>web项目: 对结果有确定预期</li>
+<li>推荐系统: 结果是概率问题</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="二、推荐系统评估"><a href="#二、推荐系统评估" class="headerlink" title="二、推荐系统评估"></a>二、推荐系统评估</h1><p>好的推荐系统可以实现用户, 服务提供方, 内容提供方的共赢</p>
+<p><img src="/../../Python/RecSys/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AD%25A6%25E4%25B9%25A0/%25E9%25BB%2591%25E9%25A9%25AC%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AE%259E%25E6%2588%2598%25E7%25AC%25AC%25E4%25BA%258C%25E6%259C%259F/2.%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E3%2580%2590%25E9%25A1%25B9%25E7%259B%25AE%25E3%2580%2591%25E5%25AD%25A6%25E4%25B9%25A0%25E8%25B5%2584%25E6%2596%2599/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E9%25A1%25B9%25E7%259B%25AEday01/%25E8%25B5%2584%25E6%2596%2599/%25E8%25AE%25B2%25E4%25B9%2589/img/recommend2.png" alt></p>
+<h2 id="显示反馈和隐式反馈"><a href="#显示反馈和隐式反馈" class="headerlink" title="显示反馈和隐式反馈"></a>显示反馈和隐式反馈</h2><table>
+  <tr>
+    <th></th>
+    <th>显示反馈</th>
+    <th>隐式反馈</th>
+  </tr>
+  <tr>
+ <td> 例子 </td>
+ <td> 电影/书籍评分 
+ 是否喜欢这个推荐 </td>
+ <td> 播放/点击 评论 下载 购买 </td>
+  </tr>
+  <tr>
+    <td> 准确性 </td>
+    <td> 高 </td>
+    <td> 低 </td>
+  </tr>
+  <tr>
+    <td> 数量 </td>
+    <td> 少 </td>
+    <td> 多 </td>
+  </tr>
+  <tr>
+    <td> 获取成本 </td>
+    <td> 高 </td>
+    <td> 低 </td>
+  </tr>
+</table>
+
+<h2 id="常用评估指标"><a href="#常用评估指标" class="headerlink" title="常用评估指标"></a>常用评估指标</h2><table>
+  <tr>
+    <td>准确性</td>
+    <td>信任度</td>
+  </tr>
+  <tr>
+     <td> 满意度  </td>
+     <td> 实时性 </td>
+  </tr>
+  <tr>
+    <td> 覆盖率 </td>
+    <td> 鲁棒性 </td>
+  </tr>
+  <tr>
+    <td> 多样性 </td>
+    <td> 可扩展性 </td>
+  </tr>
+  <tr>
+    <td> 新颖性 </td>
+    <td> 商业⽬标 </td>
+  </tr>
+  <tr>
+    <td> 惊喜度 </td>
+    <td> ⽤户留存 </td>
+  </tr>
+</table>
+
+<ul>
+<li>准确性 (理论角度)<ul>
+<li>评分预测<ul>
+<li>RMSE   MAE</li>
+</ul>
+</li>
+<li>topN推荐<ul>
+<li>召回率 精准率</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>准确性 (业务角度)</li>
+</ul>
+<p><img src="/Pic/recommend/recommend3.png" alt></p>
+<ul>
+<li>覆盖度<ul>
+<li>信息熵</li>
+<li>覆盖率</li>
+</ul>
+</li>
+<li>多样性&amp;新颖性&amp;惊喜性<ul>
+<li>多样性：推荐列表中两两物品的不相似性。（相似性如何度量？</li>
+<li>新颖性：未曾关注的类别、作者；推荐结果的平均流⾏度</li>
+<li>惊喜性：历史不相似（惊）但很满意（喜）</li>
+<li>往往需要牺牲准确性</li>
+<li>使⽤历史⾏为预测⽤户对某个物品的喜爱程度</li>
+<li>系统过度强调实时性</li>
+</ul>
+</li>
+</ul>
+<h2 id="Exploitation-amp-Exploration-探索与利用问题"><a href="#Exploitation-amp-Exploration-探索与利用问题" class="headerlink" title="Exploitation &amp; Exploration 探索与利用问题"></a>Exploitation &amp; Exploration 探索与利用问题</h2><ul>
+<li>Exploitation(开发 利用)：选择现在可能最佳的⽅案</li>
+<li>Exploration(探测 搜索)：选择现在不确定的⼀些⽅案，但未来可能会有⾼收益的⽅案</li>
+<li>在做两类决策的过程中，不断更新对所有决策的不确定性的认知，优化<br>长期的⽬标</li>
+<li>EE问题实践<ul>
+<li>兴趣扩展: 相似话题, 搭配推荐</li>
+<li>人群算法: userCF 用户聚类</li>
+<li>平衡个性化推荐和热门推荐比例</li>
+<li>随机丢弃用户行为历史</li>
+<li>随机扰动模型参数</li>
+</ul>
+</li>
+<li>EE可能带来的问题<ul>
+<li>探索伤害用户体验, 可能导致用户流失</li>
+<li>探索带来的长期收益(留存率)评估周期长, KPI压力大</li>
+<li>如何平衡实时兴趣和长期兴趣</li>
+<li>如何平衡短期产品体验和长期系统生态</li>
+<li>如何平衡大众口味和小众需求</li>
+<li>如何避免劣币驱逐良币</li>
+</ul>
+</li>
+</ul>
+<h2 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h2><ul>
+<li>问卷调查: 成本高</li>
+<li>离线评估:<ul>
+<li>只能在用户看到过的候选集上做评估, 且跟线上真实效果存在偏差</li>
+<li>只能评估少数指标</li>
+<li>速度快, 不损害用户体验</li>
+</ul>
+</li>
+<li>在线评估: 灰度发布 &amp; A/B测试</li>
+<li>实践: 离线评估和在线评估结合, 定期做问卷调查</li>
+</ul>
+<h1 id="三、推荐系统设计"><a href="#三、推荐系统设计" class="headerlink" title="三、推荐系统设计"></a>三、推荐系统设计</h1><h2 id="推荐系统要素"><a href="#推荐系统要素" class="headerlink" title="推荐系统要素"></a>推荐系统要素</h2><ul>
+<li>UI 和 UE(前端界面)</li>
+<li>数据 (Lambda架构)</li>
+<li>业务知识</li>
+<li>算法</li>
+</ul>
+<h2 id="推荐系统架构"><a href="#推荐系统架构" class="headerlink" title="推荐系统架构"></a>推荐系统架构</h2><ul>
+<li><p>推荐系统整体架构</p>
+<p><img src="/Pic/recommend/%E6%8E%A8%E8%8D%90%E6%B5%81%E7%A8%8B.png" alt></p>
+</li>
+<li><p>大数据Lambda架构</p>
+<ul>
+<li><p>由Twitter工程师Nathan Marz(storm项目发起人)提出</p>
+</li>
+<li><p>Lambda系统架构提供了一个结合实时数据和Hadoop预先计算的数据环境和混合平台, 提供一个实时的数据视图</p>
+</li>
+<li><p>分层架构</p>
+<ul>
+<li>批处理层<ul>
+<li>数据不可变, 可进行任何计算, 可水平扩展</li>
+<li>高延迟  几分钟~几小时(计算量和数据量不同)</li>
+<li>日志收集 Flume</li>
+<li>分布式存储 Hadoop</li>
+<li>分布式计算 Hadoop MapReduce &amp; spark</li>
+<li>视图存储数据库<ul>
+<li>nosql(HBase/Cassandra)</li>
+<li>Redis/memcache</li>
+<li>MySQL</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>实时处理层<ul>
+<li>流式处理, 持续计算</li>
+<li>存储和分析某个窗口期内的数据</li>
+<li>最终正确性(Eventual accuracy)</li>
+<li>实时数据收集 flume &amp; kafka</li>
+<li>实时数据分析  spark streaming/storm/flink</li>
+</ul>
+</li>
+<li>服务层<ul>
+<li>支持随机读</li>
+<li>需要在非常短的时间内返回结果</li>
+<li>读取批处理层和实时处理层结果并对其归并</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Lambda架构图</p>
+<p><img src="/Pic/recommend/lambda3.png" alt></p>
+</li>
+</ul>
+</li>
+<li><p>推荐算法架构</p>
+<ul>
+<li>召回阶段(海选)<ul>
+<li>召回决定了最终推荐结果的天花板</li>
+<li>常用算法:<ul>
+<li>基于用户行为的协同过滤</li>
+<li>基于内容 (根据用户行为总结出自己的偏好)</li>
+<li>基于隐语义</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>排序阶段<ul>
+<li>召回决定了最终推荐结果的天花板, 排序逼近这个极限, 决定了最终的推荐效果</li>
+<li>CTR预估 (点击率预估 使用LR算法)</li>
+</ul>
+</li>
+<li>策略调整</li>
+</ul>
+</li>
+</ul>
+<p><img src="/Pic/recommend/recommend7.jpeg" alt></p>
+<ul>
+<li><p>推荐系统的整体架构</p>
+<ul>
+<li>业务架构</li>
+</ul>
+<p><img src="/Pic/recommend/rs%E5%9F%BA%E7%A1%80%E4%B8%9A%E5%8A%A1%E6%9E%B6%E6%9E%84.png" alt></p>
+<ul>
+<li>技术架构</li>
+</ul>
+<p><img src="/Pic/recommend/rs%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84.png" alt></p>
+</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/bac0d145.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/8ad63d9d.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            推荐系统实战（二）
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/3e1907bd.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">leetcode刷题专题打卡——分治法</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
