@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">12 分钟</span>
+            <span class="post-count">11 分钟</span>
         </span>
     </span>
 </div>
@@ -372,7 +372,7 @@
 <li><p>算法分类</p>
 <ul>
 <li>基于图的模型</li>
-<li><strong>基于矩阵分解的方法</strong></li>
+<li>基于矩阵分解的方法</li>
 </ul>
 </li>
 <li><p>基于图的模型</p>
@@ -397,10 +397,9 @@
 </li>
 <li><p>把原来的大矩阵, 近似分解成两个小矩阵的乘积, 在实际推荐计算时不再使用大矩阵, 而是使用分解得到的两个小矩阵  </p>
 </li>
-<li><p>用户-物品评分矩阵A是M X N维, 即一共有M个用户, n个物品 我们选一个很小的数 K (K&lt;&lt; M, K&lt;&lt;N)</p>
+<li><p>用户-物品评分矩阵A是$M * N$维, 即一共有$M$个用户, $N$个物品 我们选一个很小的数 $K (K&lt;&lt; M, K&lt;&lt;N)$</p>
 </li>
-<li><p>通过计算得到两个矩阵U V  U是M <em> K矩阵 , 矩阵V是 N </em> K</p>
-<p>$U_{m<em>k} V^{T}_{n</em>k} 约等于 A_{m*n}$</p>
+<li><p>通过计算得到两个矩阵$U$ 和 $V$，其中$U$是$M <em> K$矩阵 , $V$是$N </em> K$矩阵，$U_{m<em>k} V^{T}_{n</em>k}$ 约等于 $A_{m*n}$</p>
 <p>类似这样的计算过程就是矩阵分解</p>
 </li>
 </ul>
@@ -418,58 +417,42 @@
 </ul>
 </li>
 <li><p>ALS方法</p>
-<p><img src="/Pic/recommend/als1.png" alt></p>
+<p><img src="/Pic/recommend/als1.png" style="zoom:75%;"></p>
 <ul>
 <li>ALS的矩阵分解算法常应用于推荐系统中，将用户(user)对商品(item)的评分矩阵，分解为用户对商品隐含特征的偏好矩阵，和商品在隐含特征上的映射矩阵。</li>
-<li>与传统的矩阵分解SVD方法来分解矩阵R(R∈ℝm×n)不同的是，ALS(alternating least squares)希望找到两个低维矩阵，以 R̃ =XY 来逼近矩阵R，其中 ，X∈ℝm×d，Y∈ℝd×n，这样，将问题的复杂度由O(m<em>n)转换为O((m+n)</em>d)。</li>
-<li>计算X和Y过程：首先用一个小于1的随机数初始化Y，并根据公式求X，此时就可以得到初始的XY矩阵了，根据平方差和得到的X，重新计算并覆盖Y，计算差平方和，反复进行以上两步的计算，直到差平方和小于一个预设的数，或者迭代次数满足要求则停止</li>
+<li>与传统的矩阵分解SVD方法来分解矩阵$R(R∈ℝm×n)$不同的是，ALS(alternating least squares)希望找到两个低维矩阵，以 $R̃ =XY$来逼近矩阵R，其中 ，$X∈ℝ_{m×d}，Y∈ℝ_{d×n}$，这样，将问题的复杂度由$O(m<em>n)$转换为$O((m+n)</em>d)$。</li>
+<li>计算$X$和$Y$过程：首先用一个小于1的随机数初始化$Y$，并根据公式求$X$，此时就可以得到初始的$XY$矩阵了，根据平方差和得到的X，重新计算并覆盖$Y$，计算差平方和，反复进行以上两步的计算，直到差平方和小于一个预设的数，或者迭代次数满足要求则停止</li>
 </ul>
 </li>
 </ul>
-<h3 id="3-5-基于用户的协同过滤实现-User-CF"><a href="#3-5-基于用户的协同过滤实现-User-CF" class="headerlink" title="3.5 基于用户的协同过滤实现 (User CF)"></a>3.5 基于用户的协同过滤实现 (User CF)</h3><ul>
-<li><p>基于用户的协同过滤实现</p>
-<ul>
+<h3 id="3-5-基于用户的协同过滤实现-User-CF"><a href="#3-5-基于用户的协同过滤实现-User-CF" class="headerlink" title="3.5 基于用户的协同过滤实现 (User CF)"></a>3.5 基于用户的协同过滤实现 (User CF)</h3><h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><ul>
 <li>第一步: 找出和目标用户兴趣类似的用户集合</li>
 <li>第二步: 找到集合中用户喜欢的，且目标用户没有听说过的物品推荐给目标用户</li>
 </ul>
-</li>
-<li><p>基于用户协同过滤 第一步:</p>
+<h4 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h4><p><strong>计算用户相似度</strong></p>
 <ul>
-<li>设N(u)是用户u有过正反馈的物品集合，则Jaccard公式：</li>
+<li>设$N(u)$是用户$u$有过正反馈的物品集合，则Jaccard公式：</li>
 </ul>
-<p><img src="/Pic/recommend/usercf1.png" alt></p>
-</li>
-<li><p>如果用户数目很多，如何优化？<br>答：首先计算出N(u)^ N(v) != 0 的用户对(u,v)，然后再对这种情况除以分母sqrt(N(u)*N(v))</p>
-<p><img src="/../../Python/RecSys/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AD%25A6%25E4%25B9%25A0/%25E9%25BB%2591%25E9%25A9%25AC%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AE%259E%25E6%2588%2598%25E7%25AC%25AC%25E4%25BA%258C%25E6%259C%259F/2.%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E3%2580%2590%25E9%25A1%25B9%25E7%259B%25AE%25E3%2580%2591%25E5%25AD%25A6%25E4%25B9%25A0%25E8%25B5%2584%25E6%2596%2599/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E9%25A1%25B9%25E7%259B%25AEday01/%25E8%25B5%2584%25E6%2596%2599/%25E8%25AE%25B2%25E4%25B9%2589/img/usercf3.png" alt></p>
+<p><img src="/Pic/recommend/usercf1.png" style="zoom:80%;"></p>
+<ul>
+<li>如果用户数目很多，如何优化？<br>答：首先计算出$N(u)\cap N(v) != 0$的用户对$(u,v)$，然后再对这种情况除以分母$\sqrt{(N(u)*N(v))}$</li>
+</ul>
 <p><img src="/Pic/recommend/usercf2.png" alt></p>
-</li>
-<li><p>基于用户协同过滤 第二步</p>
+<p><strong>推荐相似用户喜欢的物品</strong></p>
 <ul>
 <li><p>得到用户之间的兴趣相似度后，UserCF算法会给用户推荐和他兴趣最相似的$K$个用户喜欢的物品。</p>
 </li>
 <li><p>$S(u, K)$包含和用户u兴趣最接近的$K$个用户，$N(i)$是对物品i有过行为的用户集合，$W_{uv}$是用户u和用户v的兴趣相似度，$r_{vi}$代表用户$v$对物品$i$的兴趣，因为使用的是单一行为的隐反馈数据，所以所有的$r_{vi}$=1</p>
 <script type="math/tex; mode=display">p(u,i) = \sum_{v\in S(u,K)\cap N(i)}w_{uv}r_{vi}</script></li>
-<li><p>选取K=3，用户A对物品c、e没有过行为，因此可以把这两个物品推荐给用户A。根据UserCF算法，用户A对物品c、e的兴趣是：</p>
-<p>$p(A,c) = W_{AB}+W_{AD} = 0.7416$</p>
-<p>$p(A,e) = W_{Ac}+W_{AD} = 0.7416$</p>
+<li><p>选取$K=3$，用户A对物品c、e没有过行为，因此可以把这两个物品推荐给用户A。</p>
 </li>
 </ul>
-</li>
-</ul>
-<h3 id="3-6-基于物品的协同过滤实现-Item-CF"><a href="#3-6-基于物品的协同过滤实现-Item-CF" class="headerlink" title="3.6 基于物品的协同过滤实现 (Item CF)"></a>3.6 基于物品的协同过滤实现 (Item CF)</h3><ul>
-<li><p>基于物品的协同过滤实现步骤</p>
-<ul>
+<h3 id="3-6-基于物品的协同过滤实现-Item-CF"><a href="#3-6-基于物品的协同过滤实现-Item-CF" class="headerlink" title="3.6 基于物品的协同过滤实现 (Item CF)"></a>3.6 基于物品的协同过滤实现 (Item CF)</h3><h4 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h4><ul>
 <li>Step 1：计算物品之间的相似度</li>
 <li>Step 2：根据物品的相似度和用户的历史行为，为用户生成推荐列表</li>
 </ul>
-</li>
-<li><p>基于物品的协同过滤实现步骤1</p>
-<p><img src="/Pic/recommend/itemcf1.png" alt></p>
-</li>
-<li><p>基于物品的协同过滤实现步骤2</p>
-<p><img src="/Pic/recommend/itemcf2.png" alt></p>
-</li>
-</ul>
+<h4 id="实现步骤-1"><a href="#实现步骤-1" class="headerlink" title="实现步骤"></a>实现步骤</h4><p><img src="/Pic/recommend/itemcf1.png" style="zoom:50%;"></p>
+<p><img src="/Pic/recommend/itemcf2.png" style="zoom:50%;"></p>
  
       <!-- reward -->
       
