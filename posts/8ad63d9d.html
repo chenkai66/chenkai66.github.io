@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">11 分钟</span>
+            <span class="post-count">12 分钟</span>
         </span>
     </span>
 </div>
@@ -397,9 +397,9 @@
 </li>
 <li><p>把原来的大矩阵, 近似分解成两个小矩阵的乘积, 在实际推荐计算时不再使用大矩阵, 而是使用分解得到的两个小矩阵  </p>
 </li>
-<li><p>用户-物品评分矩阵A是$M * N$维, 即一共有$M$个用户, $N$个物品 我们选一个很小的数 $K (K&lt;&lt; M, K&lt;&lt;N)$</p>
+<li><p>用户-物品评分矩阵A是$M \text{x} N$维, 即一共有$M$个用户, $N$个物品 我们选一个很小的数 $K (K&lt;&lt; M, K&lt;&lt;N)$</p>
 </li>
-<li><p>通过计算得到两个矩阵$U$ 和 $V$，其中$U$是$M <em> K$矩阵 , $V$是$N </em> K$矩阵，$U_{m<em>k} V^{T}_{n</em>k}$ 约等于 $A_{m*n}$</p>
+<li><p>通过计算得到两个矩阵$U$ 和 $V$，其中$U$是$M \text{x} K$矩阵 , $V$是$N \text{x} K$矩阵，$U_{m\text{x}k} V^{T}_{n\text{x}k}$ 约等于 $A_{m\text{x}n}$</p>
 <p>类似这样的计算过程就是矩阵分解</p>
 </li>
 </ul>
@@ -420,7 +420,7 @@
 <p><img src="/Pic/recommend/als1.png" style="zoom:75%;"></p>
 <ul>
 <li>ALS的矩阵分解算法常应用于推荐系统中，将用户(user)对商品(item)的评分矩阵，分解为用户对商品隐含特征的偏好矩阵，和商品在隐含特征上的映射矩阵。</li>
-<li>与传统的矩阵分解SVD方法来分解矩阵$R(R∈ℝm×n)$不同的是，ALS(alternating least squares)希望找到两个低维矩阵，以 $R̃ =XY$来逼近矩阵R，其中 ，$X∈ℝ_{m×d}，Y∈ℝ_{d×n}$，这样，将问题的复杂度由$O(m<em>n)$转换为$O((m+n)</em>d)$。</li>
+<li>与传统的矩阵分解SVD方法来分解矩阵$R(R∈ℝm×n)$不同的是，ALS(alternating least squares)希望找到两个低维矩阵，以 $R̃ =XY$来逼近矩阵R，其中 $X∈ℝ_{m×d}，Y∈ℝ_{d×n}$，这样，将问题的复杂度由$O(mn)$转换为$O((m+n)d)$。</li>
 <li>计算$X$和$Y$过程：首先用一个小于1的随机数初始化$Y$，并根据公式求$X$，此时就可以得到初始的$XY$矩阵了，根据平方差和得到的X，重新计算并覆盖$Y$，计算差平方和，反复进行以上两步的计算，直到差平方和小于一个预设的数，或者迭代次数满足要求则停止</li>
 </ul>
 </li>
