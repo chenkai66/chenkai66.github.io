@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    使用Transformer完成文本分类任务 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-使用Transformer完成文本分类任务"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  使用Transformer完成文本分类任务
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/a6658471.html" class="article-date">
+  <time datetime="2020-08-18T13:54:37.152Z" itemprop="datePublished">2020-08-18</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NLP/">NLP</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">15 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h1><ul>
+<li><p>了解Transformer的原理和基于预训练语言模型（Bert）的词表示</p>
+</li>
+<li><p>学会Bert的使用，具体包括pretrain和finetune</p>
+</li>
+</ul>
+<h1 id="Attention"><a href="#Attention" class="headerlink" title="Attention"></a>Attention</h1><p>在学会 Transformer 和 Bert 之前，我们需要理解Attention和Self-Attention机制。Attention的本质是要找到<strong>输入的feature的权重分布</strong>，这个feature在某一个维度有一个长度的概念，如果我们输入一个长为 n 的 feature，那么 Attention 就要学习一个长为 n 的分布权重，这个权重是由相似度计算出来的，最后返回的得分就将会是权重与feature的加权和。</p>
+<h2 id="Attention的计算过程"><a href="#Attention的计算过程" class="headerlink" title="Attention的计算过程"></a>Attention的计算过程</h2><p>Attention的输入是Q,K,V，返回的是一个socre，计算公式如下：</p>
+<script type="math/tex; mode=display">\text{Att-score}(Q,K,V)=\sum_iA_iV_i = \sum_i\text{similar}(Q, K_i)V_i</script><p>需要注意的是上述公式的下标位置，显然我们需要学习的权重分布是 $A$，而$A$和$Q,K$相关，$V$就是我们希望去被找到权重的feature。</p>
+<h3 id="QKV-英文名字的含义"><a href="#QKV-英文名字的含义" class="headerlink" title="QKV 英文名字的含义"></a>QKV 英文名字的含义</h3><ul>
+<li><p>Q 即为英文中 Query 是指：被查询的序列，可以看到在每次计算相似度的过程中，Q在计算中是一直保持着整体的状态。</p>
+</li>
+<li><p>K 即为英文中 Key 是指：被查询的索引，我们学习到的权重分布A 长度为n，那么A中每一个下标的大小，就代表了对应索引被分配到的权重。所以这个K，控制的是索引。</p>
+</li>
+<li><p>V 即为英文中的 Value 是指：值，也就是我们feature 本身的值，他要去和权重分布做加权和来得到最终的分布。</p>
+</li>
+</ul>
+<h3 id="相似度的计算方式"><a href="#相似度的计算方式" class="headerlink" title="相似度的计算方式"></a>相似度的计算方式</h3><p>这里相似度的计算方式有很多种:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>相似度名</th>
+<th>计算方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>点乘</td>
+<td>$s(q,k)=q^Tk$</td>
+</tr>
+<tr>
+<td>矩阵乘积</td>
+<td>$s(q,k) = q^TWk$，$W$为参数</td>
+</tr>
+<tr>
+<td>余弦相似度</td>
+<td>$s(q,k)=\frac{q^Tk}{</td>
+<td></td>
+<td>q</td>
+<td></td>
+<td>·</td>
+<td></td>
+<td>k</td>
+<td></td>
+<td>}$</td>
+</tr>
+<tr>
+<td>concat</td>
+<td>$s(q,k) = W[q;k]$，$W$为参数</td>
+</tr>
+<tr>
+<td>mlp</td>
+<td>$s(q,k) = v_a^Ttanh(Wq+Uk)$，$VWU$为参数</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="HAN中的Attention"><a href="#HAN中的Attention" class="headerlink" title="HAN中的Attention"></a>HAN中的Attention</h2><p>我们首先看一下 HAN 的 Attention 中的QKV分别是如何体现的。</p>
+<p>在 HAN 中，我们只有一个输入 $H$，输出为 $H$ 和 $A$ 的加权平均，所以$H$即为 Attention 机制中的 <strong>Value</strong>。我们把 $H$做了一个线性变换变成了 $U$，然后又随机生成了一个 向量 $v_w$, 一起计算 $A$。公式为：</p>
+<script type="math/tex; mode=display">u_i = \text{tanh}(W_wh_i+b_w)</script><script type="math/tex; mode=display">\alpha_i=\frac{exp(u_i^Tu_w)}{\sum_iexp(u_i^Tu_w)}\in \mathbb{R}</script><p>可以看到在公式中$u_w$ 一直处于被查询的状态，即一直保持着一个整体的状态，所以我们生成的随机向量即为 Attention 机制中的Query 。而我们做完线性变换生成的U 给 A 生成不同索引的权重值，他即代表我们 Attention 机制中的 <strong>Key</strong>。这里用的相似度公式显然是点积，而在我自己实现的时候遇到了点困难，改成了MLP实现法。</p>
+<h2 id="seq2seq-中的Attention"><a href="#seq2seq-中的Attention" class="headerlink" title="seq2seq 中的Attention"></a>seq2seq 中的Attention</h2><p><img src="/Pic/%E4%BD%BF%E7%94%A8Transformer%E5%AE%8C%E6%88%90%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/aHR0cHM6Ly9naXRlZS5jb20va2t3ZWlzaGUvaW1hZ2VzL3Jhdy9tYXN0ZXIvTUwvMjAxOS05LTI1XzIwLTE4LTM2LnBuZw.jpg" style="zoom:67%;"><br>我们来看 seq2seq 中的 Attention 机制，在这个任务中我们需要一步一步的生成$ Y1，Y2,  Y3$，我们会根据每一步生成的$Y$（实际是一个分布），找到对应的单词。</p>
+<p>我们的生成公式为:</p>
+<script type="math/tex; mode=display">Y_1 = f(C_1, Y_0)</script><script type="math/tex; mode=display">Y_2 = f(C_2, Y_0, Y_1)</script><script type="math/tex; mode=display">Y_3 = f(C_3, Y_0, Y_1, Y_2)</script><p>可以看出，每一次生成的时候$C$都要被更新，而在这个模型中$C$ 就是 Attention 模型最终被返回的得分。</p>
+<p>在 seq2seq模型中，我们把$X$ 输入Encoder 生成的值记为 $H=[h_1,….,h_n]$ ，我们需要学习关于 $H$ 的权重分布，所以 $H$ 即为这里 Value，而这里的 Key 也是 $H$ 他自己，他没有像 HAN 中一样做变换，我们每一次要查询的 Query 是已经生成的序列 $Y=[y_0,y_1,y_2……]，$也即为 Decoder 中生成的值 ，显然随着每次生成的变化这个被查询的 $Q$ 会变长。 这样，由我们的 $Q,K,V$ 就能生成出最后的$C$ 。</p>
+<h1 id="Self-Attention"><a href="#Self-Attention" class="headerlink" title="Self-Attention"></a>Self-Attention</h1><p>在 Transformer 中我们要用到的 Attention 方式是 Self-Attention，它与之前的 Attention 有些许的不同。简单的来说，它通过学习三个参数$W_Q,W_K,W_V$，来对同一个embedding之后的feature 进行转换，将他线性转换成$Q，K，V$ ，之后计算出这句话的 Attention 得分。名字中的Self 体现的是所有的$Q，K，V$都是由输入自己生成出来的。</p>
+<p><strong>归一化</strong>：权重分布$A$ 在归一化前，要除以输入矩阵的第一维开根号，这会让梯度更稳定。这里也可以使用其它值，8只是默认值，再进行softmax。</p>
+<p><strong>返回</strong>：这里返回的值和输入的长度维度是一样的，每一个单词对应的输出是所有单词对于当前单词的权重分布与Value得分的加权和。所以他有多少个单词，就做了多少次Attention 得分，这就是self-Attention 。</p>
+<h1 id="Transformer"><a href="#Transformer" class="headerlink" title="Transformer"></a>Transformer</h1><p>Transformer改进了RNN最被人诟病的训练慢的缺点，<strong>利用self-attention机制实现快速并行</strong>。若希望进一步了解Transformer机制可以直接查看这篇<a href="https://jalammar.github.io/illustrated-transformer" target="_blank" rel="noopener">著名的博客</a>，下面仅列举部分要点：</p>
+<h2 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h2><ul>
+<li><p>Transformer：Input(Embedding)→Encoder ×6 → Decoder×6 → output</p>
+</li>
+<li><p>Encoder：Multi-headed attention → Add&amp;Norm → Feed Forward → Add&amp;Norm</p>
+</li>
+<li><p>Decoder：Multi-headed attention → Add&amp;Norm → Encoder-Decoder-Attention → Add&amp;Norm → Feed Forward → Add&amp;Norm</p>
+</li>
+<li><p>Multi-headed attention： Self-Attention×8</p>
+</li>
+</ul>
+<p>其中Encoder-Decoder-Attention即为seq2seq 中的Attention 结构，K和V 为Encoder顶层的output。</p>
+<h2 id="Multi-headed-attention（多头怪）"><a href="#Multi-headed-attention（多头怪）" class="headerlink" title="Multi-headed attention（多头怪）"></a>Multi-headed attention（多头怪）</h2><p>Self-Attention 生成了一组$QKV$，而多头怪生成了 8组 $QKV$，在实际的过程中，最后需要把这8组进行concat（拼接）。</p>
+<p>需要注意的是 Decoder 端的多头 self-attention 需要做mask，因为它在预测时，是“看不到未来的序列的”，所以要将当前预测的单词(token)及其之后的单词(token)全部mask掉。使用多头机制可以理解为CNN中同时使用多个卷积核。</p>
+<p>代码实现在pytorch中很简单，直接调包即可：$QKV$第0维是长度，第一维是batchsize。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## nn.MultiheadAttention 输入第0维为length</span></span><br><span class="line">query = torch.rand(<span class="number">12</span>,<span class="number">64</span>,<span class="number">300</span>)</span><br><span class="line">key = torch.rand(<span class="number">10</span>,<span class="number">64</span>,<span class="number">300</span>)</span><br><span class="line">value= torch.rand(<span class="number">10</span>,<span class="number">64</span>,<span class="number">300</span>)</span><br><span class="line">multihead_attn = nn.MultiheadAttention(embed_dim, num_heads)</span><br><span class="line">multihead_attn(query, key, value)[<span class="number">0</span>].shape</span><br><span class="line"><span class="comment"># output: torch.Size([12, 64, 300])</span></span><br></pre></td></tr></table></figure>
+<p>可以考虑实现一个第0维是 batchsize 的 MultiheadAttention：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiheadAttention</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, hid_dim, n_heads, dropout)</span>:</span></span><br><span class="line">        super(MultiheadAttention,self).__init__()</span><br><span class="line">        self.hid_dim = hid_dim</span><br><span class="line">        self.n_heads = n_heads      </span><br><span class="line">        </span><br><span class="line">        <span class="keyword">assert</span> hid_dim % n_heads == <span class="number">0</span> <span class="comment"># d_model // h 是要能整除</span></span><br><span class="line">        self.w_q = nn.Linear(hid_dim, hid_dim)</span><br><span class="line">        self.w_k = nn.Linear(hid_dim, hid_dim)</span><br><span class="line">        self.w_v = nn.Linear(hid_dim, hid_dim)</span><br><span class="line">        self.fc = nn.Linear(hid_dim, hid_dim)</span><br><span class="line">        self.do = nn.Dropout(dropout)</span><br><span class="line">        self.scale = torch.sqrt(torch.FloatTensor([hid_dim // n_heads]))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, query, key, value, mask=None)</span>:</span></span><br><span class="line">        bsz = query.shape[<span class="number">0</span>]</span><br><span class="line">        Q = self.w_q(query)</span><br><span class="line">        K = self.w_k(key)</span><br><span class="line">        V = self.w_v(value)</span><br><span class="line">        Q = Q.view(bsz, <span class="number">-1</span>, self.n_heads, self.hid_dim //</span><br><span class="line">                   self.n_heads).permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">        K = K.view(bsz, <span class="number">-1</span>, self.n_heads, self.hid_dim //</span><br><span class="line">                   self.n_heads).permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">        V = V.view(bsz, <span class="number">-1</span>, self.n_heads, self.hid_dim //</span><br><span class="line">                   self.n_heads).permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># Q, K相乘除以scale，这是计算scaled dot product attention的第一步</span></span><br><span class="line">        energy = torch.matmul(Q, K.permute(<span class="number">0</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>)) / self.scale</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 如果没有mask，就生成一个</span></span><br><span class="line">        <span class="keyword">if</span> mask <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            energy = energy.masked_fill(mask == <span class="number">0</span>, <span class="number">-1e10</span>)</span><br><span class="line">            </span><br><span class="line">        <span class="comment"># 然后对Q,K相乘的结果计算softmax加上dropout，这是计算scaled dot product attention的第二步：</span></span><br><span class="line">        attention = self.do(torch.softmax(energy, dim=<span class="number">-1</span>))</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 第三步，attention结果与V相乘</span></span><br><span class="line">        x = torch.matmul(attention, V)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 最后将多头排列好，就是multi-head attention的结果了</span></span><br><span class="line">        x = x.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>).contiguous()</span><br><span class="line">        x = x.view(bsz, <span class="number">-1</span>, self.n_heads * (self.hid_dim // self.n_heads))</span><br><span class="line">        x = self.fc(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p>测试结果符合预期：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 构造的 输入第0维为batch</span></span><br><span class="line">query = torch.rand(<span class="number">64</span>,<span class="number">12</span>,<span class="number">300</span>)</span><br><span class="line">key = torch.rand(<span class="number">64</span>,<span class="number">10</span>,<span class="number">300</span>)</span><br><span class="line">value= torch.rand(<span class="number">64</span>,<span class="number">10</span>,<span class="number">300</span>)</span><br><span class="line">tran=MultiheadAttention(hid_dim=<span class="number">300</span>, n_heads=<span class="number">6</span>, dropout=<span class="number">0.1</span>)</span><br><span class="line">tran(query, key, value).shape</span><br><span class="line"><span class="comment">## output: torch.Size([64, 12, 300])</span></span><br></pre></td></tr></table></figure>
+<h2 id="使用位置编码表示序列的顺序"><a href="#使用位置编码表示序列的顺序" class="headerlink" title="使用位置编码表示序列的顺序"></a>使用位置编码表示序列的顺序</h2><p>将位置向量添加到词嵌入中使得它们在接下来的运算中，能够更好地表达的词与词之间的距离（因为 Self-Attention 本身是并行的，没有学习位置信息）。<br>原始论文里描述了位置编码的公式，使用了使用不同频率的正弦和余弦，因为三角公式不受序列长度的限制，也就是可以对比之前遇到序列的更长的序列进行表示。</p>
+<h2 id="Add-amp-Norm-（残差模块）"><a href="#Add-amp-Norm-（残差模块）" class="headerlink" title="Add&amp;Norm （残差模块）"></a>Add&amp;Norm （残差模块）</h2><p>残差模块就是一个残差连接，并且都跟随着一个“层归一化”步骤。其中Norm 指的是 Layer Normalization，在 torch 中也很方便调用。</p>
+<h2 id="代码实现细节"><a href="#代码实现细节" class="headerlink" title="代码实现细节"></a>代码实现细节</h2><p>文本分类不是生成式的任务，因此只使用Transformer的编码部分（Encoder）进行特征提取。其实代码实现完整的Transformer是很有难度的，里面的关键细节如下，具体含义在前文均有阐释：</p>
+<ul>
+<li><p>Layer Normalization</p>
+</li>
+<li><p>Mask</p>
+</li>
+<li><p>Positional Embedding</p>
+</li>
+<li><p>Label Smoothing</p>
+</li>
+</ul>
+<h3 id="最外层的壳"><a href="#最外层的壳" class="headerlink" title="最外层的壳"></a>最外层的壳</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">torch.nn.Transformer(</span><br><span class="line">	d_model=<span class="number">512</span>, nhead=<span class="number">8</span>, </span><br><span class="line">	num_encoder_layers=<span class="number">6</span>, num_decoder_layers=<span class="number">6</span>, </span><br><span class="line">	dim_feedforward=<span class="number">2048</span>, dropout=<span class="number">0.1</span>, activation=<span class="string">'relu'</span>, </span><br><span class="line">	custom_encoder=<span class="literal">None</span>, custom_decoder=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="Encoder的壳"><a href="#Encoder的壳" class="headerlink" title="Encoder的壳"></a>Encoder的壳</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">torch.nn.TransformerEncoder(</span><br><span class="line">	encoder_layer, num_layers, norm=<span class="literal">None</span></span><br><span class="line">)</span><br><span class="line">torch.nn.TransformerDecoder(</span><br><span class="line">	decoder_layer, num_layers, norm=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="Encoder层"><a href="#Encoder层" class="headerlink" title="Encoder层"></a>Encoder层</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">torch.nn.TransformerEncoderLayer(</span><br><span class="line">	d_model, nhead, </span><br><span class="line">	dim_feedforward=<span class="number">2048</span>, </span><br><span class="line">	dropout=<span class="number">0.1</span>, activation=<span class="string">'relu'</span></span><br><span class="line">)</span><br><span class="line">torch.nn.TransformerDecoderLayer(</span><br><span class="line">	d_model, nhead, </span><br><span class="line">	dim_feedforward=<span class="number">2048</span>, </span><br><span class="line">	dropout=<span class="number">0.1</span>, activation=<span class="string">'relu'</span>)</span><br></pre></td></tr></table></figure>
+<p>这里实现一个简单版本的TransfomerEncoder:</p>
+<h3 id="PositionalEncoding"><a href="#PositionalEncoding" class="headerlink" title="PositionalEncoding"></a>PositionalEncoding</h3><p>注：代码来自官网</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PositionalEncoding</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">"Implement the PE function."</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, d_model = <span class="number">300</span>, dropout = <span class="number">0.2</span>, max_len=<span class="number">5000</span>)</span>:</span></span><br><span class="line">        super(PositionalEncoding, self).__init__()</span><br><span class="line">        self.dropout = nn.Dropout(p=dropout)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Compute the positional encodings once in log space.</span></span><br><span class="line">        pe = torch.zeros(max_len, d_model)</span><br><span class="line">        position = torch.arange(<span class="number">0.</span>, max_len).unsqueeze(<span class="number">1</span>)</span><br><span class="line">        div_term = torch.exp(torch.arange(<span class="number">0.</span>, d_model, <span class="number">2</span>) *</span><br><span class="line">                             -(math.log(<span class="number">10000.0</span>) / d_model))</span><br><span class="line">        pe[:, <span class="number">0</span>::<span class="number">2</span>] = torch.sin(position * div_term)</span><br><span class="line">        pe[:, <span class="number">1</span>::<span class="number">2</span>] = torch.cos(position * div_term)</span><br><span class="line">        pe = pe.unsqueeze(<span class="number">0</span>)</span><br><span class="line">        self.register_buffer(<span class="string">'pe'</span>, pe)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        x = x + Variable(self.pe[:, :x.size(<span class="number">1</span>)],</span><br><span class="line">                         requires_grad=<span class="literal">False</span>)</span><br><span class="line">        <span class="keyword">return</span> self.dropout(x)</span><br></pre></td></tr></table></figure>
+<h3 id="Transformer-1"><a href="#Transformer-1" class="headerlink" title="Transformer"></a>Transformer</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Transformer</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vocab_size,embedding_dim = <span class="number">300</span>)</span>:</span></span><br><span class="line">        super(Transformer, self).__init__()</span><br><span class="line">        self.embedding = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        self.position = PositionalEncoding()</span><br><span class="line">        encoder_layer = nn.TransformerEncoderLayer(d_model=<span class="number">300</span>, nhead=<span class="number">4</span>)</span><br><span class="line">        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=<span class="number">6</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        embed = self.embedding(X)</span><br><span class="line">        embed = self.position(embed)</span><br><span class="line">        embed = self.transformer_encoder(embed)  <span class="comment">#100</span></span><br><span class="line">        <span class="keyword">return</span> embed</span><br></pre></td></tr></table></figure>
+<h1 id="Bert"><a href="#Bert" class="headerlink" title="Bert"></a>Bert</h1><p>Bert模型的定位是一个预训练模型，同等级的应该是NNLM，Word2vec，Glove，GPT，还有ELMO。模型具体的解释不是本文关注重点，这里同样采用简单概述。</p>
+<h2 id="预训练模型分类"><a href="#预训练模型分类" class="headerlink" title="预训练模型分类"></a>预训练模型分类</h2><ul>
+<li><p>非语言模型：Word2vec，Glove</p>
+</li>
+<li><p>语言模型：GPT，NNLM，ELMO，Bert。</p>
+<p>其中NNLM是不考虑上下文（单向）的，而ELMO和Bert是考虑上下文（双向）的模型。</p>
+</li>
+</ul>
+<h2 id="不同模型的建模"><a href="#不同模型的建模" class="headerlink" title="不同模型的建模"></a>不同模型的建模</h2><h3 id="NNLM"><a href="#NNLM" class="headerlink" title="NNLM"></a>NNLM</h3><p>其全称为Nerual Network Language Model</p>
+<p>目标函数为用前t-1个单词，预测第t个单词，即最大化：</p>
+<script type="math/tex; mode=display">P(W_t|W_1, W_2,...,W_{t-1};\theta)</script><h3 id="ELMO"><a href="#ELMO" class="headerlink" title="ELMO"></a>ELMO</h3><p>Elmo的全称为Embedding from Language Models，ELMO是根据上下文单词的语义去动态调整单词的Word Embedding表示，解决了多义词的问题，采用的机制为双层双向LSTM。</p>
+<h4 id="目标函数"><a href="#目标函数" class="headerlink" title="目标函数"></a>目标函数</h4><p>ELMo是分别以</p>
+<script type="math/tex; mode=display">P(W_t|W_1, W_2,...,W_{t-1})</script><p>和</p>
+<script type="math/tex; mode=display">P(W_t|W_{t+1}, W_{t+2},...,W_{n})</script><p>作为目标函数，独立训练处两个representation然后进行拼接。</p>
+<h4 id="词的表示"><a href="#词的表示" class="headerlink" title="词的表示"></a>词的表示</h4><p>由于采用了双层双向LSTM，所以网络中有三层Word Embedding，给予这三个Embedding中的每一个Embedding一个权重$A$，这个权重可以学习得来，根据各自权重累加求和，将三个Embedding整合成一个Embedding。</p>
+<p><strong>理解</strong>：第一层LSTM学习到了句法信息，所以可以用这种方式解决一词多义。</p>
+<h4 id="ELMO两阶段过程"><a href="#ELMO两阶段过程" class="headerlink" title="ELMO两阶段过程"></a>ELMO两阶段过程</h4><ul>
+<li>第一个阶段是语言模型进行预训练；</li>
+<li>第二个阶段是在做下游任务时，从预训练网络中提取对应单词的网络各层的Word Embedding作为新特征补充到下游任务中。</li>
+</ul>
+<h3 id="GPT"><a href="#GPT" class="headerlink" title="GPT"></a>GPT</h3><p>GPT全称为Generative Pre-Training，它和ELMO类似都使用了Transformer，但与ELMO不同的是采用了单向的语言模型，也即只采用单词的上文来进行预测。其余与ELMO几乎一样这里就不展开介绍了。</p>
+<h3 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h3><p>BERT 在 GPT 的基础上使用了双向的Transformer block连接，为了适配多任务下的迁移学习，BERT设计了更通用的输入层和输出层。</p>
+<h4 id="BERT两阶段过程"><a href="#BERT两阶段过程" class="headerlink" title="BERT两阶段过程"></a>BERT两阶段过程</h4><p>第一阶段双向语言模型预训练，第二阶段采用具体任务Fine-tuning。</p>
+<h4 id="目标函数-1"><a href="#目标函数-1" class="headerlink" title="目标函数"></a>目标函数</h4><script type="math/tex; mode=display">P(W_t|W_1, W_2,...,W_{t-1},W_{t+1}, W_{t+2},...,W_{n})</script><p>BERT预训练模型分为以下三个步骤：Embedding、Masked LM、Next Sentence Prediction</p>
+<h4 id="Embedding"><a href="#Embedding" class="headerlink" title="Embedding"></a>Embedding</h4><p>这里的Embedding由三种Embedding求和而成：<br><img src="/Pic/%E4%BD%BF%E7%94%A8Transformer%E5%AE%8C%E6%88%90%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/images.jpg" alt="image" style="zoom:80%;"></p>
+<ul>
+<li><p>Token Embeddings：是词向量，第一个单词是CLS标志，可以用于之后的分类任务</p>
+</li>
+<li><p>Segment Embeddings：将句子分为两段，用来区别两种句子，因为预训练不光做LM还要做以两个句子为输入的分类任务</p>
+</li>
+<li><p>Position Embeddings：和之前文章中的Transformer不一样，不是三角函数而是学习出来的</p>
+</li>
+</ul>
+<h4 id="Masked-LM"><a href="#Masked-LM" class="headerlink" title="Masked LM"></a>Masked LM</h4><p>随机mask每一个句子中15%的词，用其上下文来做预测。采用非监督学习的方法预测mask位置的词。在这15%中，80%是采用[mask]，10%是随机取一个词来代替mask的词，10%保持不变。</p>
+<h4 id="Next-Sentence-Prediction"><a href="#Next-Sentence-Prediction" class="headerlink" title="Next Sentence Prediction"></a>Next Sentence Prediction</h4><p>用A+B/C来作为样本：选择一些句子对A与B，其中50%的数据B是A的下一条句子，剩余50%的数据B是语料库中随机选择的，学习其中的相关性，添加这样的预训练的目的是目前很多NLP的任务比如QA和NLI都需要理解两个句子之间的关系，从而能让预训练的模型更好的适应这样的任务。</p>
+<h4 id="Bert的优缺点"><a href="#Bert的优缺点" class="headerlink" title="Bert的优缺点"></a>Bert的优缺点</h4><ul>
+<li>Bert 对硬件资源的消耗巨大，大模型需要16个tpu，历时四天；更大的模型需要64个tpu，历时四天。</li>
+<li>Bert 最大的亮点在于效果好及普适性强，几乎所有NLP任务都可以套用Bert这种两阶段解决思路，而且效果应该会有明显提升。</li>
+</ul>
+<h2 id="代码实践"><a href="#代码实践" class="headerlink" title="代码实践"></a>代码实践</h2><p>完整代码可以戳<a href="https://github.com/zzhijiki/nlp_learning/tree/master/Task06" target="_blank" rel="noopener">链接</a>，其实代码实践比想象中的简单多了，只要调用 transformer 库就可以了不过真的新手真的会找不到方向。</p>
+<p>我们需要三个文件，一个vocab（构造一个词汇表即可），一个model.bin，一个config（这两个都可以下载到，不同的模型对应不同的bin和config，datawhale提供了bert-mini，可以说很不错了，我还真没找到mini的bin和config），三个文件放到同一个文件夹下面目录就可以了，载入靠transformer 库完成。</p>
+<h3 id="载入tokenize"><a href="#载入tokenize" class="headerlink" title="载入tokenize"></a>载入tokenize</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># bert_path 指的是目录,他要找到对应的config和vocab</span></span><br><span class="line">self.tokenizer = BertTokenizer.from_pretrained(bert_path)</span><br></pre></td></tr></table></figure>
+<h3 id="做bert的预处理"><a href="#做bert的预处理" class="headerlink" title="做bert的预处理"></a>做bert的预处理</h3><p>直接调库，获得embedding张量和mask张量即可，这个预处理帮我们做掉了几乎所有的事情了，无论是mask、截断还是cls、sep 都不需要自己去做：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">encoded_dict = self.tokenizer.encode_plus(</span><br><span class="line">            self.corpus[item],  <span class="comment"># 输入文本</span></span><br><span class="line">            add_special_tokens=<span class="literal">True</span>,  <span class="comment"># 添加 '[CLS]' 和 '[SEP]'</span></span><br><span class="line">            max_length=self.max_length,  <span class="comment"># 填充 &amp; 截断长度</span></span><br><span class="line">            pad_to_max_length=<span class="literal">True</span>,</span><br><span class="line">            return_attention_mask=<span class="literal">True</span>,</span><br><span class="line">            return_tensors=<span class="string">'pt'</span>,</span><br><span class="line">            truncation=<span class="literal">True</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line"><span class="comment"># 要的是这两个张量</span></span><br><span class="line">encoded_dict[<span class="string">'input_ids'</span>].squeeze(<span class="number">0</span>)</span><br><span class="line">encoded_dict[<span class="string">'attention_mask'</span>].squeeze(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>细节：</strong>这个操作复杂度比较高，如果200000个sentence 直接全部预处理，要等到天荒地老，不过解决办法很简单，直接写在dataset的getitem里就可以了。</p>
+<h3 id="建立bert-模型"><a href="#建立bert-模型" class="headerlink" title="建立bert 模型"></a>建立bert 模型</h3><p>直接调库就可以了。我这里是 BertModel，还可以调 BertForSequenceClassification ，都是差不多的，分类任务就是在 cls 上面接了个线性层呗。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">self.bert &#x3D; BertModel.from_pretrained(</span><br><span class="line">            bert_path,</span><br><span class="line">            num_labels&#x3D;14,</span><br><span class="line">            output_attentions&#x3D;False,  # 模型是否返回 attentions weights.</span><br><span class="line">            output_hidden_states&#x3D;False,  # 模型是否返回所有隐层状态.</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+<h3 id="跑程序"><a href="#跑程序" class="headerlink" title="跑程序"></a>跑程序</h3><p>做完了预处理，拿到了Loader，构建了model，opt，criterion，就可以直接跑程序了，bert很深奥，但是操作起来并不难，大家动手试试吧。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/a6658471.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/8ad63d9d.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">推荐系统实战（二）</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
