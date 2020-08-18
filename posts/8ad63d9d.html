@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">0</span>
+            <span class="post-count">3.3k</span>
         </span>
     </span>
 
@@ -86,20 +86,425 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">11 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-   
+  <h1 id="推荐算法"><a href="#推荐算法" class="headerlink" title="推荐算法"></a>推荐算法</h1><ul>
+<li>推荐模型构建流程</li>
+<li>推荐算法概述</li>
+<li>基于协同过滤的推荐算法</li>
+<li>协同过滤实现</li>
+</ul>
+<h2 id="一-推荐模型构建流程"><a href="#一-推荐模型构建流程" class="headerlink" title="一 推荐模型构建流程"></a>一 推荐模型构建流程</h2><p>Data(数据)-&gt;Features(特征)-&gt;ML Algorithm(机器学习算法)-&gt;Prediction Output(预测输出)</p>
+<ul>
+<li>数据清洗/数据处理</li>
+</ul>
+<p><img src="/../../Python/RecSys/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AD%25A6%25E4%25B9%25A0/%25E9%25BB%2591%25E9%25A9%25AC%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AE%259E%25E6%2588%2598%25E7%25AC%25AC%25E4%25BA%258C%25E6%259C%259F/2.%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E3%2580%2590%25E9%25A1%25B9%25E7%259B%25AE%25E3%2580%2591%25E5%25AD%25A6%25E4%25B9%25A0%25E8%25B5%2584%25E6%2596%2599/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E9%25A1%25B9%25E7%259B%25AEday01/%25E8%25B5%2584%25E6%2596%2599/%25E8%25AE%25B2%25E4%25B9%2589/img/algorithm1.png" alt></p>
+<ul>
+<li>数据来源<ul>
+<li>显性数据<ul>
+<li>Rating 打分</li>
+<li>Comments 评论/评价</li>
+</ul>
+</li>
+<li>隐形数据<ul>
+<li> Order history 历史订单</li>
+<li> Cart events    加购物车</li>
+<li> Page views    页面浏览</li>
+<li> Click-thru      点击</li>
+<li> Search log     搜索记录</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>数据量/数据能否满足要求</li>
+<li>特征工程</li>
+</ul>
+<p><img src="/Pic/recommend/algorithm2.png" alt></p>
+<ul>
+<li>从数据中筛选特征<ul>
+<li>一个给定的商品，可能被拥有类似品味或需求的用户购买</li>
+<li>使用用户行为数据描述商品</li>
+</ul>
+</li>
+</ul>
+<p><img src="/Pic/recommend/algorithm3.png" alt></p>
+<ul>
+<li><p>用数据表示特征</p>
+<ul>
+<li><p>将所有用户行为合并在一起 ，形成一个user-item 矩阵</p>
+<p><img src="/Pic/recommend/algorithm4.png" alt="1545452707102"></p>
+</li>
+</ul>
+</li>
+<li><p>选择合适的算法</p>
+</li>
+</ul>
+<p><img src="/Pic/recommend/algorithm5.png" alt></p>
+<ul>
+<li><p>产生推荐结果</p>
+<p><img src="/Pic/recommend/algorithm6.png" alt></p>
+</li>
+</ul>
+<h2 id="二-推荐算法概述"><a href="#二-推荐算法概述" class="headerlink" title="二 推荐算法概述"></a>二 推荐算法概述</h2><h3 id="2-1-常用推荐算法"><a href="#2-1-常用推荐算法" class="headerlink" title="2.1 常用推荐算法"></a>2.1 常用推荐算法</h3><ul>
+<li>基于内容过滤<ul>
+<li>从信息检索，和文本检索发展而来</li>
+<li>基于商品描述及用户喜好描述，为用户推荐商品</li>
+</ul>
+</li>
+<li>协同过滤<ul>
+<li>基于用户行为为用户推荐感兴趣的商品</li>
+<li>行为可以是过往的交易行为和商品评分，这种方式不需要显性的属性信息</li>
+</ul>
+</li>
+<li>混合推荐</li>
+</ul>
+<h3 id="2-2-基于内容过滤存在的问题"><a href="#2-2-基于内容过滤存在的问题" class="headerlink" title="2.2 基于内容过滤存在的问题"></a>2.2 基于内容过滤存在的问题</h3><ul>
+<li><p>需了解商品内容</p>
+<ul>
+<li>需要人工或自动标注信息</li>
+<li>商品内容不能反映所有特点</li>
+</ul>
+</li>
+<li><p>冷启动问题</p>
+<ul>
+<li>需要花时间学习哪些内容或feature 对用户而言是重要的</li>
+</ul>
+</li>
+<li><p>如果用户兴趣点改变了呢</p>
+</li>
+<li><p>Lack of serendipity(缺少意外新发现 EE问题)</p>
+<p><img src="/Pic/recommend/algorithm7.png" alt="1545453690391"></p>
+</li>
+<li><p>基于内容的推荐(Content-based) V.S. 协同过滤(Collaborative Filtering)</p>
+</li>
+</ul>
+<table>
+<tr>
+<th>推荐方法</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+<tr>
+<td> 基于内容推荐</td>
+<td>推荐结果直观,容易解释
+不需要领域知识</td>
+<td>新用户问题;
+复杂属性不好处理;
+要有足够数据构造分类器;</td>
+</tr>
+<tr>
+<td> 协同过滤推荐</td>
+<td>新异兴趣发现、不需要领域知识;<br>随着时间推移性能提高;<br>推荐个性化、自动化程度高;<br>能处理复杂的非结构化对象;</td>
+<td>稀疏问题;
+可扩展性问题;
+新用户问题;
+依赖历史数据集;
+系统开始时推荐质量差;</td>
+</tr>
+</table>
+
+
+<h2 id="三-基于协同过滤的推荐算法"><a href="#三-基于协同过滤的推荐算法" class="headerlink" title="三 基于协同过滤的推荐算法"></a>三 基于协同过滤的推荐算法</h2><h3 id="3-1-协同过滤算法概述"><a href="#3-1-协同过滤算法概述" class="headerlink" title="3.1 协同过滤算法概述"></a>3.1 协同过滤算法概述</h3><ul>
+<li><p>协同过滤算法</p>
+<ul>
+<li>基于用户行为的推荐</li>
+<li>行为可以是过往的交易行为和商品评分，这种方式不需要显性的属性信息</li>
+</ul>
+</li>
+<li><p>协同过滤分类</p>
+<ul>
+<li>K近邻（neighborhood ）方法<ul>
+<li>借助商品的关系或者用户的关系</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>基于模型的方法<ul>
+<li>用隐含变量刻画商品</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-协同过滤算法之K邻近方法"><a href="#3-2-协同过滤算法之K邻近方法" class="headerlink" title="3.2 协同过滤算法之K邻近方法"></a>3.2 协同过滤算法之K邻近方法</h3><ul>
+<li>K邻近方法<br>基于假设 ： “跟你喜好相似的人喜欢的东西你也很有可能喜欢” 或“跟你喜欢的物品类似的物品你也很有可能喜欢 ”</li>
+<li>分类<ul>
+<li>User-based 方法<ul>
+<li>基于user的协同过滤，通过不同用户对item的评分来评测用户之间的相似性，基于用户之间的相似性做出推荐</li>
+</ul>
+</li>
+<li>Item-based方法<ul>
+<li>基于item的协同过滤，通过用户对不同item的评分来评测item之间的相似性，基于item之间的相似性做出推荐</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>基于用户(User-based)<ul>
+<li>查找用户相似度 如何预测用户1对于商品4的喜好程度?<ul>
+<li>找到和用户1相似的用户且购买过商品4（基于购买记录）即为用户n</li>
+<li>根据用户n对商品4的评价，以相似度为权重回填结果</li>
+<li>针对所有用户组合，重复上述步骤，直到所有空格都被填满</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/Pic/recommend/knn1.png" alt="1545455898171"></p>
+<ul>
+<li><p>找到相似的Item (Item-based)</p>
+<ul>
+<li>用户1对于商品4的喜好程度?</li>
+</ul>
+<ol>
+<li>从用户1历史记录中，计算商品n和商品4的相似度（以其他用户的历史记录）</li>
+<li>将用户1对于商品n的评价，以商品相似度为权重回填</li>
+<li>针对所有商品组合，重复上述步骤直到所有空格都被填满</li>
+</ol>
+</li>
+</ul>
+<p><img src="/Pic/recommend/knn2.png" alt="1545456021921"></p>
+<ul>
+<li>用户&amp;物品矩阵</li>
+</ul>
+<p><img src="/Pic/recommend/user-itemMatrix.png" alt></p>
+<ul>
+<li>将订单数据填入到用户-物品矩阵</li>
+</ul>
+<p><img src="/Pic/recommend/user-itemMatrix2.png" alt></p>
+<ul>
+<li>处理用户-物品数据(归一化)</li>
+</ul>
+<p><img src="/Pic/recommend/user-itemMatrix3.png" alt></p>
+<ul>
+<li>处理用户-物品矩阵 填充矩阵中的空值</li>
+</ul>
+<p><img src="/Pic/recommend/user-itemMatrix4.png" alt></p>
+<h3 id="3-3-相似度计算-Similarity-Calculation"><a href="#3-3-相似度计算-Similarity-Calculation" class="headerlink" title="3.3 相似度计算(Similarity Calculation)"></a>3.3 相似度计算(Similarity Calculation)</h3><p><img src="/Pic/recommend/similarity_calc1.png" alt></p>
+<ul>
+<li><p>相似度的计算方法</p>
+<ul>
+<li>数据分类<ul>
+<li>实数值(物品评分情况)</li>
+<li>布尔值(用户的行为 是否点击 是否收藏)</li>
+</ul>
+</li>
+<li>欧氏距离, 是一个欧式空间下度量距离的方法. 两个物体, 都在同一个空间下表示为两个点, 假如叫做p,q, 分别都是n个坐标, 那么欧式距离就是衡量这两个点之间的距离. 欧氏距离不适用于布尔向量之间</li>
+</ul>
+<p><img src="/Pic/recommend/od.png" alt="1546159024305"></p>
+<p>​    欧氏距离的值是一个非负数, 最大值正无穷, 通常计算相似度的结果希望是[-1,1]或[0,1]之间,一般可以使用</p>
+<p>​    如下转化公式:<img src="/Pic/recommend/od2.png" alt></p>
+<p>​    </p>
+</li>
+<li><p>杰卡德相似度&amp;余弦相似度&amp;皮尔逊相关系数</p>
+<ul>
+<li>余弦相似度<ul>
+<li>度量的是两个向量之间的夹角, 用夹角的余弦值来度量相似的情况</li>
+<li>两个向量的夹角为0是,余弦值为1, 当夹角为90度是余弦值为0,为180度是余弦值为-1</li>
+<li>余弦相似度在度量文本相似度, 用户相似度 物品相似度的时候较为常用</li>
+<li>余弦相似度的特点, 与向量长度无关,余弦相似度计算要对向量长度归一化, 两个向量只要方向一致,无论程度强弱, 都可以视为’相似’</li>
+</ul>
+</li>
+<li>皮尔逊相关系数Pearson<ul>
+<li>实际上也是一种余弦相似度, 不过先对向量做了中心化, 向量a b 各自减去向量的均值后, 再计算余弦相似度</li>
+<li>皮尔逊相似度计算结果在-1,1之间 -1表示负相关, 1表示正相关</li>
+<li>度量两个变量是不是同增同减</li>
+<li>皮尔逊相关系数度量的是两个变量的变化趋势是否一致, <strong>不适合计算布尔值向量之间的相关度</strong></li>
+</ul>
+</li>
+<li>杰卡德相似度 Jaccard<ul>
+<li>两个集合的交集元素个数在并集中所占的比例, 非常适用于布尔向量表示</li>
+<li>分子是两个布尔向量做点积计算, 得到的就是交集元素的个数</li>
+<li>分母是两个布尔向量做或运算, 再求元素和</li>
+</ul>
+</li>
+<li>余弦相似度适合用户评分数据(实数值), 杰卡德相似度适用于隐式反馈数据(0,1布尔值)(是否收藏,是否点击,是否加购物车)</li>
+</ul>
+</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc2.png" alt></p>
+<ul>
+<li>皮尔逊相关系数</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc3.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc4.png" alt></p>
+<ul>
+<li>余弦相似度 KNN</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc5.png" alt></p>
+<ul>
+<li>计算出用户1和其它用户之间的相似度</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc6.png" alt></p>
+<ul>
+<li>按照相似度大小排序, K近邻 如K取4: </li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc7.png" alt></p>
+<ul>
+<li>取出近邻用户的购物清单</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc8.png" alt></p>
+<ul>
+<li>去除用户1已经购买过的商品</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc9.png" alt></p>
+<ul>
+<li>在剩余的物品中根据评分排序</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc10.png" alt></p>
+<ul>
+<li>物品相似度计算<ul>
+<li>余弦相似度对绝对值大小不敏感带来的问题<ul>
+<li>用户A对两部电影评分分别是1分和2分, 用户B对同样这两部电影进行评分是4分,5分 用余弦相似度计算,两个用户的相似度达到0.98</li>
+<li>可以采用改进的余弦相似度, 先计算向量每个维度上的均值, 然后每个向量在各个维度上都减去均值后,在计算余弦相似度, 用调整的余弦相似度计算得到的相似度是-0.1</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc11.png" alt></p>
+<ul>
+<li>物品相似度计算案例</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc12.png" alt></p>
+<ul>
+<li>找出物品1的相似商品</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc13.png" alt></p>
+<ul>
+<li>选择最近似的物品</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc14.png" alt></p>
+<ul>
+<li>基于用户与物品的协同过滤比较</li>
+</ul>
+<p><img src="/Pic/recommend/similarity_calc15.png" alt></p>
+<h3 id="3-4-基于模型的方法"><a href="#3-4-基于模型的方法" class="headerlink" title="3.4 基于模型的方法"></a>3.4 基于模型的方法</h3><ul>
+<li><p>思想</p>
+<ul>
+<li>通过机器学习算法，在数据中找出模式，并将用户与物品间的互动方式模式化</li>
+<li>基于模型的协同过滤方式是构建协同过滤更高级的算法</li>
+</ul>
+</li>
+<li><p>近邻模型的问题</p>
+<ul>
+<li>物品之间存在相关性, 信息量并不随着向量维度增加而线性增加</li>
+<li>矩阵元素稀疏, 计算结果不稳定,增减一个向量维度, 导致近邻结果差异很大的情况存在</li>
+</ul>
+</li>
+<li><p>算法分类</p>
+<ul>
+<li>基于图的模型</li>
+<li><strong>基于矩阵分解的方法</strong></li>
+</ul>
+</li>
+<li><p>基于图的模型</p>
+<ul>
+<li>基于邻域的模型看做基于图的模型的简单形式</li>
+</ul>
+<p><img src="/Pic/recommend/graph1.png" alt></p>
+<ul>
+<li>原理<ul>
+<li>将用户的行为数据表示为二分图</li>
+<li>基于二分图为用户进行推荐</li>
+<li>根据两个顶点之间的路径数、路径长度和经过的顶点数来评价两个顶点的相关性</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>基于矩阵分解的模型</p>
+<ul>
+<li><p>原理</p>
+<ul>
+<li><p>根据用户与物品的潜在表现，我们就可以预测用户对未评分的物品的喜爱程度</p>
+</li>
+<li><p>把原来的大矩阵, 近似分解成两个小矩阵的乘积, 在实际推荐计算时不再使用大矩阵, 而是使用分解得到的两个小矩阵  </p>
+</li>
+<li><p>用户-物品评分矩阵A是M X N维, 即一共有M个用户, n个物品 我们选一个很小的数 K (K&lt;&lt; M, K&lt;&lt;N)</p>
+</li>
+<li><p>通过计算得到两个矩阵U V  U是M <em> K矩阵 , 矩阵V是 N </em> K</p>
+<p>$U_{m<em>k} V^{T}_{n</em>k} 约等于 A_{m*n}$</p>
+<p>类似这样的计算过程就是矩阵分解</p>
+</li>
+</ul>
+</li>
+<li><p>基于矩阵分解的方法</p>
+<ul>
+<li>ALS交替最小二乘<ul>
+<li>ALS-WR(加权正则化交替最小二乘法): alternating-least-squares with weighted-λ –regularization</li>
+<li>将用户(user)对商品(item)的评分矩阵分解为两个矩阵：一个是用户对商品隐含特征的偏好矩阵，另一个是商品所包含的隐含特征的矩阵。在这个矩阵分解的过程中，评分缺失项得到了填充，也就是说我们可以基于这个填充的评分来给用户做商品推荐了。</li>
+</ul>
+</li>
+<li>SVD奇异值分解矩阵</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>ALS方法</p>
+<p><img src="/Pic/recommend/als1.png" alt></p>
+<ul>
+<li>ALS的矩阵分解算法常应用于推荐系统中，将用户(user)对商品(item)的评分矩阵，分解为用户对商品隐含特征的偏好矩阵，和商品在隐含特征上的映射矩阵。</li>
+<li>与传统的矩阵分解SVD方法来分解矩阵R(R∈ℝm×n)不同的是，ALS(alternating least squares)希望找到两个低维矩阵，以 R̃ =XY 来逼近矩阵R，其中 ，X∈ℝm×d，Y∈ℝd×n，这样，将问题的复杂度由O(m<em>n)转换为O((m+n)</em>d)。</li>
+<li>计算X和Y过程：首先用一个小于1的随机数初始化Y，并根据公式求X，此时就可以得到初始的XY矩阵了，根据平方差和得到的X，重新计算并覆盖Y，计算差平方和，反复进行以上两步的计算，直到差平方和小于一个预设的数，或者迭代次数满足要求则停止</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-5-基于用户的协同过滤实现-User-CF"><a href="#3-5-基于用户的协同过滤实现-User-CF" class="headerlink" title="3.5 基于用户的协同过滤实现 (User CF)"></a>3.5 基于用户的协同过滤实现 (User CF)</h3><ul>
+<li><p>基于用户的协同过滤实现</p>
+<ul>
+<li>第一步: 找出和目标用户兴趣类似的用户集合</li>
+<li>第二步: 找到集合中用户喜欢的，且目标用户没有听说过的物品推荐给目标用户</li>
+</ul>
+</li>
+<li><p>基于用户协同过滤 第一步:</p>
+<ul>
+<li>设N(u)是用户u有过正反馈的物品集合，则Jaccard公式：</li>
+</ul>
+<p><img src="/Pic/recommend/usercf1.png" alt></p>
+</li>
+<li><p>如果用户数目很多，如何优化？<br>答：首先计算出N(u)^ N(v) != 0 的用户对(u,v)，然后再对这种情况除以分母sqrt(N(u)*N(v))</p>
+<p><img src="/../../Python/RecSys/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AD%25A6%25E4%25B9%25A0/%25E9%25BB%2591%25E9%25A9%25AC%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AE%259E%25E6%2588%2598%25E7%25AC%25AC%25E4%25BA%258C%25E6%259C%259F/2.%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E3%2580%2590%25E9%25A1%25B9%25E7%259B%25AE%25E3%2580%2591%25E5%25AD%25A6%25E4%25B9%25A0%25E8%25B5%2584%25E6%2596%2599/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E9%25A1%25B9%25E7%259B%25AEday01/%25E8%25B5%2584%25E6%2596%2599/%25E8%25AE%25B2%25E4%25B9%2589/img/usercf3.png" alt></p>
+<p><img src="/Pic/recommend/usercf2.png" alt></p>
+</li>
+<li><p>基于用户协同过滤 第二步</p>
+<ul>
+<li><p>得到用户之间的兴趣相似度后，UserCF算法会给用户推荐和他兴趣最相似的K个用户喜欢的物品。</p>
+</li>
+<li><p>S(u, K)包含和用户u兴趣最接近的K个用户，N(i)是对物品i有过行为的用户集合，Wuv是用户u和用户v的兴趣相似度，rvi代表用户v对物品i的兴趣，因为使用的是单一行为的隐反馈数据，所以所有的rvi=1</p>
+<p><img src="/../../Python/RecSys/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AD%25A6%25E4%25B9%25A0/%25E9%25BB%2591%25E9%25A9%25AC%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AE%259E%25E6%2588%2598%25E7%25AC%25AC%25E4%25BA%258C%25E6%259C%259F/2.%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E3%2580%2590%25E9%25A1%25B9%25E7%259B%25AE%25E3%2580%2591%25E5%25AD%25A6%25E4%25B9%25A0%25E8%25B5%2584%25E6%2596%2599/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E9%25A1%25B9%25E7%259B%25AEday01/%25E8%25B5%2584%25E6%2596%2599/%25E8%25AE%25B2%25E4%25B9%2589/img/usercf3.png" alt></p>
+</li>
+<li><p>选取K=3，用户A对物品c、e没有过行为，因此可以把这两个物品推荐给用户A。根据UserCF算法，用户A对物品c、e的兴趣是：</p>
+<p>p(A,c) = $W_{AB}+W_{AD}$ = 0.7416</p>
+<p>p(A,e) = $W_{Ac}+W_{AD}$ = 0.7416</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-6-基于物品的协同过滤实现-Item-CF"><a href="#3-6-基于物品的协同过滤实现-Item-CF" class="headerlink" title="3.6 基于物品的协同过滤实现 (Item CF)"></a>3.6 基于物品的协同过滤实现 (Item CF)</h3><ul>
+<li><p>基于物品的协同过滤实现步骤</p>
+<ul>
+<li>Step 1：计算物品之间的相似度</li>
+<li>Step 2：根据物品的相似度和用户的历史行为，为用户生成推荐列表</li>
+</ul>
+</li>
+<li><p>基于物品的协同过滤实现步骤1</p>
+<p><img src="/Pic/recommend/itemcf1.png" alt></p>
+</li>
+<li><p>基于物品的协同过滤实现步骤2</p>
+<p><img src="/Pic/recommend/itemcf2.png" alt></p>
+</li>
+</ul>
+ 
       <!-- reward -->
       
     </div>
