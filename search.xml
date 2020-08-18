@@ -1198,7 +1198,7 @@
 <ul>
 <li>数据清洗/数据处理</li>
 </ul>
-<p><img src="/../../Python/RecSys/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AD%25A6%25E4%25B9%25A0/%25E9%25BB%2591%25E9%25A9%25AC%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E5%25AE%259E%25E6%2588%2598%25E7%25AC%25AC%25E4%25BA%258C%25E6%259C%259F/2.%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E3%2580%2590%25E9%25A1%25B9%25E7%259B%25AE%25E3%2580%2591%25E5%25AD%25A6%25E4%25B9%25A0%25E8%25B5%2584%25E6%2596%2599/%25E6%258E%25A8%25E8%258D%2590%25E7%25B3%25BB%25E7%25BB%259F%25E9%25A1%25B9%25E7%259B%25AEday01/%25E8%25B5%2584%25E6%2596%2599/%25E8%25AE%25B2%25E4%25B9%2589/img/algorithm1.png" alt></p>
+<p><img src="/Pic/recommend/algorithm1.png" style="zoom:50%;"></p>
 <ul>
 <li>数据来源<ul>
 <li>显性数据<ul>
@@ -1219,7 +1219,7 @@
 <li>数据量/数据能否满足要求</li>
 <li>特征工程</li>
 </ul>
-<p><img src="/Pic/recommend/algorithm2.png" alt></p>
+<p><img src="/Pic/recommend/algorithm2.png" style="zoom:50%;"></p>
 <ul>
 <li>从数据中筛选特征<ul>
 <li>一个给定的商品，可能被拥有类似品味或需求的用户购买</li>
@@ -1227,22 +1227,22 @@
 </ul>
 </li>
 </ul>
-<p><img src="/Pic/recommend/algorithm3.png" alt></p>
+<p><img src="/Pic/recommend/algorithm3.png" style="zoom:57%;"></p>
 <ul>
 <li><p>用数据表示特征</p>
 <ul>
 <li><p>将所有用户行为合并在一起 ，形成一个user-item 矩阵</p>
-<p><img src="/Pic/recommend/algorithm4.png" alt="1545452707102"></p>
+<p><img src="/Pic/recommend/algorithm4.png" alt="1545452707102" style="zoom:57%;"></p>
 </li>
 </ul>
 </li>
 <li><p>选择合适的算法</p>
 </li>
 </ul>
-<p><img src="/Pic/recommend/algorithm5.png" alt></p>
+<p><img src="/Pic/recommend/algorithm5.png" style="zoom:50%;"></p>
 <ul>
 <li><p>产生推荐结果</p>
-<p><img src="/Pic/recommend/algorithm6.png" alt></p>
+<p><img src="/Pic/recommend/algorithm6.png" style="zoom:50%;"></p>
 </li>
 </ul>
 <h2 id="二-推荐算法概述"><a href="#二-推荐算法概述" class="headerlink" title="二 推荐算法概述"></a>二 推荐算法概述</h2><h3 id="2-1-常用推荐算法"><a href="#2-1-常用推荐算法" class="headerlink" title="2.1 常用推荐算法"></a>2.1 常用推荐算法</h3><ul>
@@ -1273,7 +1273,7 @@
 <li><p>如果用户兴趣点改变了呢</p>
 </li>
 <li><p>Lack of serendipity(缺少意外新发现 EE问题)</p>
-<p><img src="/Pic/recommend/algorithm7.png" alt="1545453690391"></p>
+<p><img src="/Pic/recommend/algorithm7.png" alt="1545453690391" style="zoom:50%;"></p>
 </li>
 <li><p>基于内容的推荐(Content-based) V.S. 协同过滤(Collaborative Filtering)</p>
 </li>
@@ -1347,7 +1347,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="/Pic/recommend/knn1.png" alt="1545455898171"></p>
+<p><img src="/Pic/recommend/knn1.png" alt="1545455898171" style="zoom:67%;"></p>
 <ul>
 <li><p>找到相似的Item (Item-based)</p>
 <ul>
@@ -1360,121 +1360,89 @@
 </ol>
 </li>
 </ul>
-<p><img src="/Pic/recommend/knn2.png" alt="1545456021921"></p>
+<p><img src="/Pic/recommend/knn2.png" alt="1545456021921" style="zoom:67%;"></p>
 <ul>
 <li>用户&amp;物品矩阵</li>
 </ul>
-<p><img src="/Pic/recommend/user-itemMatrix.png" alt></p>
+<p><img src="/Pic/recommend/user-itemMatrix.png" style="zoom:50%;"></p>
 <ul>
 <li>将订单数据填入到用户-物品矩阵</li>
 </ul>
-<p><img src="/Pic/recommend/user-itemMatrix2.png" alt></p>
+<p><img src="/Pic/recommend/user-itemMatrix2.png" style="zoom:50%;"></p>
 <ul>
 <li>处理用户-物品数据(归一化)</li>
 </ul>
-<p><img src="/Pic/recommend/user-itemMatrix3.png" alt></p>
+<p><img src="/Pic/recommend/user-itemMatrix3.png" style="zoom:50%;"></p>
 <ul>
 <li>处理用户-物品矩阵 填充矩阵中的空值</li>
 </ul>
-<p><img src="/Pic/recommend/user-itemMatrix4.png" alt></p>
-<h3 id="3-3-相似度计算-Similarity-Calculation"><a href="#3-3-相似度计算-Similarity-Calculation" class="headerlink" title="3.3 相似度计算(Similarity Calculation)"></a>3.3 相似度计算(Similarity Calculation)</h3><p><img src="/Pic/recommend/similarity_calc1.png" alt></p>
+<p><img src="/Pic/recommend/user-itemMatrix4.png" style="zoom:50%;"></p>
+<h3 id="3-3-相似度计算-Similarity-Calculation"><a href="#3-3-相似度计算-Similarity-Calculation" class="headerlink" title="3.3 相似度计算(Similarity Calculation)"></a>3.3 相似度计算(Similarity Calculation)</h3><p><img src="/Pic/recommend/similarity_calc1.png" style="zoom:50%;"></p>
 <ul>
-<li><p>相似度的计算方法</p>
-<ul>
-<li><p>数据分类</p>
-<ul>
+<li>数据分类<ul>
 <li>实数值(物品评分情况)</li>
 <li>布尔值(用户的行为 是否点击 是否收藏)</li>
 </ul>
 </li>
-<li><p>欧氏距离, 是一个欧式空间下度量距离的方法. 两个物体, 都在同一个空间下表示为两个点, 假如叫做p,q, 分别都是n个坐标, 那么欧式距离就是衡量这两个点之间的距离. 欧氏距离不适用于布尔向量之间</p>
-<script type="math/tex; mode=display">E(p,q) = \sqrt{\sum_{i=1}^n(p_i-q_i)^2}</script><p>欧氏距离的值是一个非负数, 最大值正无穷, 通常计算相似度的结果希望是[-1,1]或[0,1]之间,一般可以使用如下转化公式:</p>
-<script type="math/tex; mode=display">\frac1{1+E(p,q)}</script></li>
 </ul>
-</li>
-<li><p>杰卡德相似度&amp;余弦相似度&amp;皮尔逊相关系数</p>
+<h4 id="欧氏距离"><a href="#欧氏距离" class="headerlink" title="欧氏距离"></a>欧氏距离</h4><p>欧氏距离是一个欧式空间下度量距离的方法. 两个物体, 都在同一个空间下表示为两个点, 假如叫做p,q, 分别都是n个坐标, 那么欧式距离就是衡量这两个点之间的距离. 欧氏距离不适用于布尔向量之间</p>
+<script type="math/tex; mode=display">E(p,q) = \sqrt{\sum_{i=1}^n(p_i-q_i)^2}</script><p>欧氏距离的值是一个非负数, 最大值正无穷, 通常计算相似度的结果希望是[-1,1]或[0,1]之间,一般可以使用如下转化公式:</p>
+<script type="math/tex; mode=display">\frac1{1+E(p,q)}</script><h4 id="杰卡德相似度-amp-余弦相似度-amp-皮尔逊相关系数"><a href="#杰卡德相似度-amp-余弦相似度-amp-皮尔逊相关系数" class="headerlink" title="杰卡德相似度&amp;余弦相似度&amp;皮尔逊相关系数"></a>杰卡德相似度&amp;余弦相似度&amp;皮尔逊相关系数</h4><h5 id="余弦相似度"><a href="#余弦相似度" class="headerlink" title="余弦相似度"></a>余弦相似度</h5><p><img src="/Pic/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89/similarity_calc5.png" style="zoom:33%;"></p>
 <ul>
-<li>余弦相似度<ul>
 <li>度量的是两个向量之间的夹角, 用夹角的余弦值来度量相似的情况</li>
 <li>两个向量的夹角为0是,余弦值为1, 当夹角为90度是余弦值为0,为180度是余弦值为-1</li>
 <li>余弦相似度在度量文本相似度, 用户相似度 物品相似度的时候较为常用</li>
 <li>余弦相似度的特点, 与向量长度无关,余弦相似度计算要对向量长度归一化, 两个向量只要方向一致,无论程度强弱, 都可以视为’相似’</li>
+<li>余弦相似度对绝对值大小不敏感带来的问题<ul>
+<li>用户A对两部电影评分分别是1分和2分, 用户B对同样这两部电影进行评分是4分,5分 用余弦相似度计算,两个用户的相似度达到0.98</li>
+<li>可以采用改进的余弦相似度, 先计算向量每个维度上的均值, 然后每个向量在各个维度上都减去均值后,在计算余弦相似度, 用调整的余弦相似度计算得到的相似度是-0.1，计算公式为$s(i,j) = \frac{\sum_{c\in U}(R_{u,i}-\bar R_u)(R_{u,j}-\bar R_u)}{\sqrt{\sum_{u\in U}(R_{u,i}-\bar R_u)^2}\sqrt{\sum_{u\in U}(R_{u,j}-\bar R_u)^2}}$</li>
 </ul>
 </li>
-<li>皮尔逊相关系数Pearson<ul>
+</ul>
+<h5 id="皮尔逊相关系数Pearson"><a href="#皮尔逊相关系数Pearson" class="headerlink" title="皮尔逊相关系数Pearson"></a>皮尔逊相关系数Pearson</h5><script type="math/tex; mode=display">r = \frac{\sum_{i=1}^n(x_i-\bar x)(y_i-\bar y)}{\sqrt{\sum_{i=1}^n(x_i-\bar x)^2}\sqrt{\sum_{i=1}^n}(y_i-\bar y)^2}</script><ul>
 <li>实际上也是一种余弦相似度, 不过先对向量做了中心化, 向量a b 各自减去向量的均值后, 再计算余弦相似度</li>
 <li>皮尔逊相似度计算结果在-1,1之间 -1表示负相关, 1表示正相关</li>
 <li>度量两个变量是不是同增同减</li>
 <li>皮尔逊相关系数度量的是两个变量的变化趋势是否一致, <strong>不适合计算布尔值向量之间的相关度</strong></li>
 </ul>
-</li>
-<li>杰卡德相似度 Jaccard<ul>
+<h5 id="杰卡德相似度-Jaccard"><a href="#杰卡德相似度-Jaccard" class="headerlink" title="杰卡德相似度 Jaccard"></a>杰卡德相似度 Jaccard</h5><ul>
 <li>两个集合的交集元素个数在并集中所占的比例, 非常适用于布尔向量表示</li>
 <li>分子是两个布尔向量做点积计算, 得到的就是交集元素的个数</li>
-<li>分母是两个布尔向量做或运算, 再求元素和</li>
-</ul>
+<li><p>分母是两个布尔向量做或运算, 再求元素和</p>
 </li>
-<li>余弦相似度适合用户评分数据(实数值), 杰卡德相似度适用于隐式反馈数据(0,1布尔值)(是否收藏,是否点击,是否加购物车)</li>
-</ul>
+<li><p>余弦相似度适合用户评分数据(实数值), 杰卡德相似度适用于隐式反馈数据(0,1布尔值)(是否收藏,是否点击,是否加购物车)</p>
 </li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc2.png" alt></p>
-<ul>
-<li>皮尔逊相关系数</li>
-</ul>
-<p><img src="/Pic/recommend/similarity_calc3.png" alt></p>
-<p><img src="/Pic/recommend/similarity_calc4.png" alt></p>
-<ul>
-<li>余弦相似度 KNN</li>
-</ul>
-<p><img src="/Pic/recommend/similarity_calc5.png" alt></p>
-<ul>
+<p><img src="/Pic/recommend/similarity_calc2.png" style="zoom:50%;"></p>
+<h4 id="推荐步骤"><a href="#推荐步骤" class="headerlink" title="推荐步骤"></a>推荐步骤</h4><ul>
 <li>计算出用户1和其它用户之间的相似度</li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc6.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc6.png" style="zoom:70%;"></p>
 <ul>
 <li>按照相似度大小排序, K近邻 如K取4: </li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc7.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc7.png" style="zoom:70%;"></p>
 <ul>
 <li>取出近邻用户的购物清单</li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc8.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc8.png" style="zoom:70%;"></p>
 <ul>
 <li>去除用户1已经购买过的商品</li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc9.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc9.png" style="zoom:70%;"></p>
 <ul>
 <li>在剩余的物品中根据评分排序</li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc10.png" alt></p>
-<ul>
-<li>物品相似度计算<ul>
-<li>余弦相似度对绝对值大小不敏感带来的问题<ul>
-<li>用户A对两部电影评分分别是1分和2分, 用户B对同样这两部电影进行评分是4分,5分 用余弦相似度计算,两个用户的相似度达到0.98</li>
-<li>可以采用改进的余弦相似度, 先计算向量每个维度上的均值, 然后每个向量在各个维度上都减去均值后,在计算余弦相似度, 用调整的余弦相似度计算得到的相似度是-0.1</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p><img src="/Pic/recommend/similarity_calc11.png" alt></p>
-<ul>
-<li>物品相似度计算案例</li>
-</ul>
-<p><img src="/Pic/recommend/similarity_calc12.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc10.png" style="zoom:70%;"></p>
+<h4 id="物品相似度计算案例"><a href="#物品相似度计算案例" class="headerlink" title="物品相似度计算案例"></a>物品相似度计算案例</h4><p><img src="/Pic/recommend/similarity_calc12.png" style="zoom:35%;"></p>
 <ul>
 <li>找出物品1的相似商品</li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc13.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc13.png" style="zoom:50%;"></p>
 <ul>
 <li>选择最近似的物品</li>
 </ul>
-<p><img src="/Pic/recommend/similarity_calc14.png" alt></p>
-<ul>
-<li>基于用户与物品的协同过滤比较</li>
-</ul>
-<p><img src="/Pic/recommend/similarity_calc15.png" alt></p>
+<p><img src="/Pic/recommend/similarity_calc14.png" style="zoom:50%;"></p>
 <h3 id="3-4-基于模型的方法"><a href="#3-4-基于模型的方法" class="headerlink" title="3.4 基于模型的方法"></a>3.4 基于模型的方法</h3><ul>
 <li><p>思想</p>
 <ul>
