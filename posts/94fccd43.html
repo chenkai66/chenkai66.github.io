@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">5.4k</span>
+            <span class="post-count">5.9k</span>
         </span>
     </span>
 
@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">31 分钟</span>
+            <span class="post-count">32 分钟</span>
         </span>
     </span>
 </div>
@@ -101,7 +101,49 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="全局设置"><a href="#全局设置" class="headerlink" title="全局设置"></a>全局设置</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span>  pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> warnings </span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> datetime </span><br><span class="line"><span class="keyword">from</span> scipy <span class="keyword">import</span> stats</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br></pre></td></tr></table></figure>
+  <h1 id="赛题理解"><a href="#赛题理解" class="headerlink" title="赛题理解"></a>赛题理解</h1><p>本博客是参加datawhale组队学习记的笔记，其中大部分内容来自<a href="https://github.com/datawhalechina/team-learning-data-mining/tree/master/PurchaseAndRedemptionForecast" target="_blank" rel="noopener">本次数据挖掘比赛学习文档</a>。本次比赛为<a href="https://tianchi.aliyun.com/competition/entrance/231573/information" target="_blank" rel="noopener">阿里天池资金流入流出预测-挑战Baseline</a>，研究问题为<strong>蚂蚁金服资金管理下预测未来每日的资金流入流出情况</strong>（Redeem/Purchase），总结可得以下信息：</p>
+<ul>
+<li>场景：蚂蚁金服每天需要处理大量的资金流入和流出</li>
+<li>条件：为了资金流动的风险达到最低，同时保证每天的正常业务运转</li>
+<li>目标：精准预测未来每日的资金流入流出情况</li>
+<li>数据：用户基本信息数据、用户申购赎回数据、收益率表、银行间拆借利率表</li>
+</ul>
+<h2 id="数据可视化方式"><a href="#数据可视化方式" class="headerlink" title="数据可视化方式"></a>数据可视化方式</h2><p>下面的时间序列可视化将用到以下函数：</p>
+<ul>
+<li><p>直方图</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sns.distplot()</span><br><span class="line">sns.barplot()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>箱形图</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.boxplot()</span><br></pre></td></tr></table></figure>
+<p>异常值 Q1-IQR, Q3+IQR, IQR=Q3-Q1</p>
+</li>
+<li><p>小提琴图</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.violin()</span><br></pre></td></tr></table></figure>
+<p>粗黑条：四分位；细黑条：置信区间；白点：中位数</p>
+</li>
+<li><p>频率图</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.distplot()</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="变量相关性分析与独立性分析"><a href="#变量相关性分析与独立性分析" class="headerlink" title="变量相关性分析与独立性分析"></a>变量相关性分析与独立性分析</h2><ul>
+<li><p>相关性分析</p>
+<ul>
+<li>定类 定序 定距</li>
+<li>定类-定类/定序——-&gt;卡方检验</li>
+<li>定类- 定距——-&gt;eta系数</li>
+<li>定序-定序——-&gt;spearman系数/同异序测量</li>
+<li>定序-定距——-&gt;spearman系数</li>
+<li>定距-定距———&gt;peason相关系数</li>
+</ul>
+</li>
+<li><p>独立性分析</p>
+<ul>
+<li>若变量之间无线性相关性，还可能存在非线性关联</li>
+<li>mv test</li>
+</ul>
+</li>
+</ul>
+<h1 id="全局设置"><a href="#全局设置" class="headerlink" title="全局设置"></a>全局设置</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span>  pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> warnings </span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> datetime </span><br><span class="line"><span class="keyword">from</span> scipy <span class="keyword">import</span> stats</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置数据集路径</span></span><br><span class="line">dataset_path = <span class="string">'Dataset/'</span></span><br><span class="line"><span class="comment"># 读取数据</span></span><br><span class="line">data_balance = pd.read_csv(dataset_path+<span class="string">'user_balance_table.csv'</span>)</span><br></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data_balance[<span class="string">'date'</span>] = pd.to_datetime(data_balance[<span class="string">'report_date'</span>], format= <span class="string">"%Y%m%d"</span>)</span><br><span class="line">data_balance[<span class="string">'day'</span>] = data_balance[<span class="string">'date'</span>].dt.day</span><br><span class="line">data_balance[<span class="string">'month'</span>] = data_balance[<span class="string">'date'</span>].dt.month</span><br><span class="line">data_balance[<span class="string">'year'</span>] = data_balance[<span class="string">'date'</span>].dt.year</span><br><span class="line">data_balance[<span class="string">'week'</span>] = data_balance[<span class="string">'date'</span>].dt.week</span><br><span class="line">data_balance[<span class="string">'weekday'</span>] = data_balance[<span class="string">'date'</span>].dt.weekday</span><br></pre></td></tr></table></figure>
 <h1 id="一、时间序列分析"><a href="#一、时间序列分析" class="headerlink" title="一、时间序列分析"></a>一、时间序列分析</h1><h2 id="1-1-聚合时间数据"><a href="#1-1-聚合时间数据" class="headerlink" title="1.1 聚合时间数据"></a>1.1 聚合时间数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">total_balance = data_balance.groupby([<span class="string">'date'</span>])[<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>].sum().reset_index()</span><br></pre></td></tr></table></figure>
@@ -258,6 +300,14 @@
 <li><strong>the mean/max/min value of the same week in last month</strong></li>
 <li><strong>the value in last day of last month</strong></li>
 </ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>金融数据的时序分析主要还是看风险、用户手头紧否(比如月初就容易赎回，月末)、市场利率</li>
+<li>异常点分析：现实中不容忽视，是个关键问题，需要好好分析并给出一个合理的解释。</li>
+</ul>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a href="https://github.com/datawhalechina/team-learning-data-mining/tree/master/PurchaseAndRedemptionForecast" target="_blank" rel="noopener">https://github.com/datawhalechina/team-learning-data-mining/tree/master/PurchaseAndRedemptionForecast</a></li>
+<li><a href="https://shimo.im/docs/CtrTpTgKh8phwqCW/read" target="_blank" rel="noopener">https://shimo.im/docs/CtrTpTgKh8phwqCW/read</a></li>
+</ul>
  
       <!-- reward -->
       
