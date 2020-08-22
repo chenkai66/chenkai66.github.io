@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Microsoft Recommenders应用 |  言念君子
+    推荐系统实战（三） |  言念君子
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -47,7 +47,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-Microsoft Recommenders应用"
+  id="post-推荐系统实战（三）"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -58,15 +58,15 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Microsoft Recommenders应用
+  推荐系统实战（三）
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/posts/7f98fd00.html" class="article-date">
-  <time datetime="2020-08-08T02:35:54.683Z" itemprop="datePublished">2020-08-08</time>
+      <a href="/posts/c7c89ecf.html" class="article-date">
+  <time datetime="2020-08-21T13:37:59.861Z" itemprop="datePublished">2020-08-21</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/Recommender-system/">Recommender system</a>
@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">6</span>
+            <span class="post-count">501</span>
         </span>
     </span>
 
@@ -93,21 +93,80 @@
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-  <div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <div class="hbe-input-container">
-  <input type="password" id="hbePass" placeholder="" />
-    <label for="hbePass">Hey, password is required here.</label>
-    <div class="bottom-line"></div>
-  </div>
-  <script id="hbeData" type="hbeData" data-hmacdigest="d1767b88449b7ea88e4bf79176c25139f77a42b6bfa61b40f7c875b7af78e8ca">ca92632ce0d9be1239d2a7e448117bc3e342ef55d0462f2c82d877213d699b61722d47f6d828ee39ba60a66d72be00104245110fdd91568f88499c116b786fe5f8726941696e3d78b6891f7e1850c68673969e5018e5074dc25b73c1f2ceaeba4ed333e9959540ffe2d65c5b44930e5a0ff6fa7b018bbcb49a179256ff060eaf15427fa22653bbb56854f71ae2565280ae269cef465be412e3df8911b209c685e5fbe057b8f009fe0f3ad4457c1ea942e7e534588cd1cf7567e2632f85c64ee0</script>
-</div>
-<script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css"> 
+  <h1 id="推荐系统的冷启动问题"><a href="#推荐系统的冷启动问题" class="headerlink" title="推荐系统的冷启动问题"></a>推荐系统的冷启动问题</h1><h2 id="推荐系统冷启动概念"><a href="#推荐系统冷启动概念" class="headerlink" title="推荐系统冷启动概念"></a>推荐系统冷启动概念</h2><ul>
+<li>⽤户冷启动：如何为新⽤户做个性化推荐</li>
+<li>物品冷启动：如何将新物品推荐给⽤户（协同过滤）</li>
+<li>系统冷启动：⽤户冷启动+物品冷启动</li>
+<li>本质是推荐系统依赖历史数据，没有历史数据⽆法预测⽤户偏好</li>
+</ul>
+<h2 id="用户冷启动"><a href="#用户冷启动" class="headerlink" title="用户冷启动"></a>用户冷启动</h2><ul>
+<li><p>收集⽤户特征</p>
+<ul>
+<li><p>⽤户注册信息：性别、年龄、地域</p>
+</li>
+<li><p>设备信息：定位、⼿机型号、app列表</p>
+</li>
+<li><p>社交信息、推⼴素材、安装来源</p>
+<p><img src=" /Pic/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%89%EF%BC%89/recommend4.png" style="zoom:67%;"></p>
+</li>
+</ul>
+</li>
+<li><p>引导用户填写兴趣</p>
+<p><img src=" /Pic/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%89%EF%BC%89/recommend5.png" style="zoom:67%;"></p>
+</li>
+<li><p>使用其它站点的行为数据, 例如腾讯视频&amp;QQ音乐 今日头条&amp;抖音</p>
+</li>
+<li><p>新老用户推荐策略的差异</p>
+<ul>
+<li>新⽤户在冷启动阶段更倾向于热门排⾏榜，⽼⽤户会更加需要长尾推荐</li>
+<li>Explore Exploit⼒度</li>
+<li>使⽤单独的特征和模型预估</li>
+</ul>
+</li>
+<li><p>举例 性别与电视剧的关系</p>
+</li>
+</ul>
+<p><img src=" /Pic/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%89%EF%BC%89/firststart.png" style="zoom:67%;"></p>
+<p><img src=" /Pic/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%89%EF%BC%89/firststart1.png" style="zoom:56%;"></p>
+<h2 id="物品冷启动"><a href="#物品冷启动" class="headerlink" title="物品冷启动"></a>物品冷启动</h2><ul>
+<li>给物品打标签</li>
+<li>利用物品的内容信息，将新物品先投放给曾经喜欢过和它内容相似的其他物品的用户。</li>
+</ul>
+<p><img src="/Pic/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%89%EF%BC%89/firststart2.png" style="zoom:67%;"></p>
+<h2 id="系统冷启动"><a href="#系统冷启动" class="headerlink" title="系统冷启动"></a>系统冷启动</h2><ul>
+<li>如果应用缺少用户行为数据，可以做基于内容的推荐</li>
+<li>随着用户行为越来越多，可以转到协同过滤</li>
+<li>基于内容的推荐和协同过滤的推荐结果都计算出来，加权求和得到最终的推荐结果</li>
+</ul>
+<h1 id="基于内容的推荐"><a href="#基于内容的推荐" class="headerlink" title="基于内容的推荐"></a>基于内容的推荐</h1><ul>
+<li>给物品打标签<ul>
+<li>可以是系统提取（从业务数据库中提取）</li>
+<li>用户填写</li>
+</ul>
+</li>
+<li>利用标签的文字转换成词向量<ul>
+<li>Word2Vec转换成词向量，表示语义</li>
+</ul>
+</li>
+<li>利用词向量构建物品的向量<ul>
+<li>一个物品有N个关键词，一个关键词对应一个词向量</li>
+<li>对这N个关键词加权求和取平均，得到物品向量</li>
+</ul>
+</li>
+<li>通过物品向量计算相似度<ul>
+<li>利用皮尔逊相关系数计算物品向量相似度</li>
+</ul>
+</li>
+</ul>
+ 
       <!-- reward -->
       
     </div>
@@ -169,7 +228,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/7f98fd00.html" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/c7c89ecf.html" alt="微信分享二维码">
     </div>
 </div>
 
@@ -180,19 +239,19 @@
    
   <nav class="article-nav">
     
-      <a href="/posts/135a295c.html" class="article-nav-link">
+      <a href="/posts/88b8265c.html" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            金融量化分析基础（三）—— 高频交易
+            推荐系统实战（四）—— 电影协同过滤推荐
           
         </div>
       </a>
     
     
-      <a href="/posts/12d4b8eb.html" class="article-nav-link">
+      <a href="/posts/add9b4f4.html" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">金融量化分析基础（二）—— 套利</div>
+        <div class="article-nav-title">金融分析基础（十三）—— 双均线区间突破模型</div>
       </a>
     
   </nav>
