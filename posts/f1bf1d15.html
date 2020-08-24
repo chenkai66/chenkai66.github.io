@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">8.9k</span>
+            <span class="post-count">9.4k</span>
         </span>
     </span>
 
@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">33 分钟</span>
+            <span class="post-count">35 分钟</span>
         </span>
     </span>
 </div>
@@ -246,7 +246,9 @@
 <p><strong>模板总结：</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for i in range(len(nums)):</span><br><span class="line">    for j in range(n):</span><br><span class="line">    	if s[i]&#x3D;&#x3D;s[j]:</span><br><span class="line">            dp[i][j]&#x3D;dp[i][j]+...</span><br><span class="line">        else:</span><br><span class="line">        	dp[i][j]&#x3D;最值(...)</span><br></pre></td></tr></table></figure>
 <p>当然，动态规划除了解决子序列问题，也可以用来解决其他实际的问题，比如之前提到过的各种AI的经典算法，接下来我们来看一道动态规划的高频面试题，也是实际开发中很常用的。</p>
-<h2 id="Leetcode72-编辑距离"><a href="#Leetcode72-编辑距离" class="headerlink" title="Leetcode72. 编辑距离"></a><a href="https://leetcode-cn.com/problems/edit-distance/" target="_blank" rel="noopener">Leetcode72. 编辑距离</a></h2><p>给定两个单词 word1 和 word2，计算出将 word1 转换成 word2 所使用的最少操作数 。</p>
+<h2 id="Leetcode72-编辑距离"><a href="#Leetcode72-编辑距离" class="headerlink" title="Leetcode72. 编辑距离"></a><a href="https://leetcode-cn.com/problems/edit-distance/" target="_blank" rel="noopener">Leetcode72. 编辑距离</a></h2><p>说到编辑距离（Edit distance），大家可能都比较熟悉。在自然语言处理（Natural Language Processing，又NLP）中，编辑距离是计算文本相似度的一种基本距离计算方式。简单来说，就是只能通过替换，删除，插入操作，将一串字符串变为另一串字符串的操作数。而求最小编辑距离的过程，就是一个典型的动态规划的过程。</p>
+<p>如果计算两个字符串的编辑距离，我们可以看做是父问题，那他的子问题自然就是如何求更小字符串之间的编辑距离。那上面提到，动态规划不仅要将父问题拆分成子问题，更要记下子问题的解，以达到节省空间和时间的效果。</p>
+<p>给定两个单词 word1 和 word2，计算出将 word1 转换成 word2 所使用的最少操作数 。</p>
 <h3 id="题目描述-4"><a href="#题目描述-4" class="headerlink" title="题目描述"></a>题目描述</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">你可以对一个单词进行如下三种操作：</span><br><span class="line"></span><br><span class="line">插入一个字符</span><br><span class="line">删除一个字符</span><br><span class="line">替换一个字符</span><br><span class="line">示例 1:</span><br><span class="line"></span><br><span class="line">输入: word1 &#x3D; &quot;horse&quot;, word2 &#x3D; &quot;ros&quot;</span><br><span class="line">输出: 3</span><br><span class="line">解释: </span><br><span class="line">horse -&gt; rorse (将 &#39;h&#39; 替换为 &#39;r&#39;)</span><br><span class="line">rorse -&gt; rose (删除 &#39;r&#39;)</span><br><span class="line">rose -&gt; ros (删除 &#39;e&#39;)</span><br></pre></td></tr></table></figure>
 <h3 id="解题思路-4"><a href="#解题思路-4" class="headerlink" title="解题思路"></a>解题思路</h3><ul>
 <li><strong>第一步：确定动态规划状态</strong></li>
@@ -265,6 +267,8 @@
 </ul>
 <p>总结起来代码如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">def minDistance(self, word1, word2):</span><br><span class="line"> #m,n 表示两个字符串的长度</span><br><span class="line"> m&#x3D;len(word1) </span><br><span class="line"> n&#x3D;len(word2)</span><br><span class="line"> #构建二维数组来存储子问题</span><br><span class="line"> dp&#x3D;[[0 for _ in range(n+1)] for _ in range(m+1)]</span><br><span class="line"> #考虑边界条件，第一行和第一列的条件</span><br><span class="line"> for i in range(n+1):</span><br><span class="line">     dp[0][i]&#x3D;i  #对于第一行，每次操作都是前一次操作基础上增加一个单位的操作</span><br><span class="line"> for j in range(m+1):</span><br><span class="line">     dp[j][0]&#x3D;j #对于第一列也一样，所以应该是1,2,3,4,5...</span><br><span class="line"> for i in range(1,m+1):  #对其他情况进行填充</span><br><span class="line">     for j in range(1,n+1):</span><br><span class="line">         if word1[i-1]&#x3D;&#x3D;word2[j-1]: #当最后一个字符相等的时候，就不会产生任何操作代价，所以与dp[i-1][j-1]一样</span><br><span class="line">             dp[i][j]&#x3D;dp[i-1][j-1]</span><br><span class="line">         else:</span><br><span class="line">             dp[i][j]&#x3D;min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1])+1 #分别对应删除，添加和替换操作</span><br><span class="line"> return dp[-1][-1] #返回最终状态就是所求最小的编辑距离</span><br></pre></td></tr></table></figure>
+<h3 id="动态时间规整"><a href="#动态时间规整" class="headerlink" title="动态时间规整"></a>动态时间规整</h3><p>说完NLP里的相似度计算，咱们再来看看语音识别里有没有类似的算法用到动态规划呢？答案是肯定的。这个算法就叫动态时间规整（Dynamic time warping），简称DTW，一听名字是不是感觉就很动态规划。DTW算法是传统语音识别中的重要方法，起初是用于孤立词的语音识别，判断两段语音是否为同一个单词。实际上，只要是时间序列，如下图[2]，都可以用来计算相似度，不局限于语音识别当中，例如股市的交易策略，手势识别等等场景都有应用。</p>
+<p>在语音信号中，有一个很大的问题就是，信号长度并不相等，即使是同一个人说同一个单词，也会有语速上的差别。那这个时候基于欧几里得距离（Euclidean Distance）的方法就不奏效了，但是两个时间序列形状上又非常的相似，于是我们就希望可以通过某种对齐的方式来衡量这两个时间序列的相似性。我们用所有相似点之间的距离和来表示这种相似度，称之为规整路径距离。</p>
 <p>如果上面的题目看起来还是有点吃力的话，接下我们来来看轻松一点的题目，下面的题目和斐波那契数列求解类似，既可用迭代也可用动态规划做。</p>
 <h2 id="Leetcode198-打家劫舍"><a href="#Leetcode198-打家劫舍" class="headerlink" title="Leetcode198. 打家劫舍"></a><a href="https://leetcode-cn.com/problems/house-robber/" target="_blank" rel="noopener">Leetcode198. 打家劫舍</a></h2><p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
 <h3 id="题目描述-5"><a href="#题目描述-5" class="headerlink" title="题目描述"></a>题目描述</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">给定一个代表每个房屋存放金额的非负整数数组，计算你在不触动警报装置的情况下，能够偷窃到的最高金额。</span><br><span class="line"></span><br><span class="line">示例 1:</span><br><span class="line"></span><br><span class="line">输入: [1,2,3,1]</span><br><span class="line">输出: 4</span><br><span class="line">解释: 偷窃 1 号房屋 (金额 &#x3D; 1) ，然后偷窃 3 号房屋 (金额 &#x3D; 3)。</span><br><span class="line">     偷窃到的最高金额 &#x3D; 1 + 3 &#x3D; 4 。</span><br></pre></td></tr></table></figure>
