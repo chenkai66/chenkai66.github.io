@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">317</span>
+            <span class="post-count">2k</span>
         </span>
     </span>
 
@@ -86,20 +86,22 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">8 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>在时间序列数据中一个很重要的模型是ARIMA模型，当我们拿到一个股票数据我们希望预测他未来的情况或者是获得前一个月的天气情况想要知道下一个月的天气情况，我们就可以根据ARIMA模型建立一个回归或分析。当然进行预测之前我们拿到的时间序列模型是需要有惯性的（平稳性）：</p>
+  <h1 id="数据平稳性与差分法"><a href="#数据平稳性与差分法" class="headerlink" title="数据平稳性与差分法"></a>数据平稳性与差分法</h1><p>在时间序列数据中一个很重要的模型是ARIMA模型，当我们拿到一个股票数据我们希望预测他未来的情况或者是获得前一个月的天气情况想要知道下一个月的天气情况，我们就可以根据ARIMA模型建立一个回归或分析。当然进行预测之前我们拿到的时间序列模型是需要有惯性的（平稳性）：</p>
 <blockquote>
 <p>平稳性要求经由样本时间序列所得到的拟合曲线在未来的一短期间内仍能顺着现有的形态延续下去，平稳性要求序列的均值和方差不发生明显变化</p>
 </blockquote>
@@ -108,7 +110,109 @@
 <li>严平稳：严平稳表示的分布不随时间的改变而改变。如：白噪声（正态），无论怎么取都是期望为0，方差为1</li>
 <li>弱平稳：期望与相关系数（依赖性）不变，未来某时刻的t的值就要依赖于它的过去信息，所以需要依赖性</li>
 </ul>
-<p>为了让数据不发生明显变化 ，一个方法就是差分法：时间序列在t与t-1时刻的差值</p>
+<p>为了让数据不发生明显变化 ，一个方法就是差分法：时间序列在t与t-1时刻的差值，我们首先导入相应的包，读取经典的机场乘客数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> os, re</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line">dateparse = <span class="keyword">lambda</span> date: datetime.strptime(date, <span class="string">"%Y-%m"</span>)</span><br><span class="line">data = pd.read_csv(<span class="string">"data/AirPassengers.csv"</span>, parse_dates=[<span class="string">"Month"</span>], index_col=<span class="string">"Month"</span>, date_parser=dateparse)</span><br></pre></td></tr></table></figure>
+<p>dataparse的作用是将原来的不规整的月份信息转变成datetime承认的时间信息，我们看一下数据长什么样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">            #Passengers</span><br><span class="line">Month                                  </span><br><span class="line">1949-01-01          112</span><br><span class="line">1949-02-01          118</span><br><span class="line">1949-03-01          132</span><br><span class="line">1949-04-01          129</span><br><span class="line">1949-05-01          121</span><br></pre></td></tr></table></figure>
+<p>经过初步的处理这个数据已经是一个标准的时间序列数据，我们直接观察该数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line">data.plot(figsize=(<span class="number">12</span>, <span class="number">8</span>))</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/image-20200823095328888.png" alt="image-20200823095328888" style="zoom:67%;"></p>
+<p>可以看到这个数据集不是很平稳，我们可以对其做一阶差分以及二阶差分，其中二阶差分是在一阶差分的基础上再做的一次差分：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对数据做差分</span></span><br><span class="line">data[<span class="string">"diff_1"</span>] = data[<span class="string">"#Passengers"</span>].diff(<span class="number">1</span>)</span><br><span class="line">data[<span class="string">"diff_2"</span>] = data[<span class="string">"diff_1"</span>].diff(<span class="number">1</span>)</span><br><span class="line">data.plot(subplots=<span class="literal">True</span>, figsize=(<span class="number">18</span>, <span class="number">12</span>))</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/image-20200823095444737.png" alt="image-20200823095444737"></p>
+<p>可以看到数据变得平稳多了，这将有助于我们做进一步的数据探索。</p>
+<h1 id="ARIMA模型"><a href="#ARIMA模型" class="headerlink" title="ARIMA模型"></a>ARIMA模型</h1><p>ARIMA是由三个英文字母的缩写组合而成：AR、MA和I，下面一一阐述。</p>
+<p><strong>自回归模型（AR）</strong></p>
+<ul>
+<li>描述当前值和历史之之间的关系，用变量自身的历史时间数据对自身进行预测，因此数据必须具有自相关性，若自相关系数（$\phi_i$）小于0.5则不宜采用，自回归只适用于预测与自身前期相关的现象</li>
+<li>自回归模型必须满足平稳性的要求，因此自回归模型首先需要整差分项</li>
+<li>p阶自回归过程的公式定义：$y_t = \mu+\sum_{i=1}^p\gamma_i y_{t-i}+\epsilon_t$，其中$y_t$是当前值，$\mu$是常数项，$p$是阶数，$\gamma_i$是相关系数，$\epsilon_t$是误差</li>
+</ul>
+<p><strong>移动平均模型（MA）</strong></p>
+<ul>
+<li>移动平均模型关注的是自回归模型中的误差项的累加</li>
+<li><p>$q$阶自回归过程的公式的定义：$y_t = \mu+\epsilon_t+\sum_{i=1}^q\phi_i\epsilon_{t-i}$</p>
+</li>
+<li><p>移动平均法能有效地消除预测中地随机波动</p>
+</li>
+</ul>
+<p><strong>自回归移动平均模型</strong></p>
+<ul>
+<li>自回归与移动平均的结合</li>
+<li>公式定义：$y_t = \mu+\sum_{i=1}^p\gamma_i y_{t-i}+\epsilon_t+\sum_{i=1}^q\phi_i\epsilon_{t-i}$</li>
+<li>ARIMA中的I指的是差分</li>
+<li>原理：将非平稳的时间序列转化为平稳的时间序列然后将因变量仅对它的滞后值以及随机误差项的现值和滞后值进行回归建立的模型</li>
+</ul>
+<p>我们可以直接使用statsmodels包中的函数实现这一过程，只需传入三个参数：$(p,d,q)$，其中$p$和$q$分别为自回归模型和移动平均模型的阶数称为自回归项与移动平均项，$d$为使时间序列成为平稳时所做的差分阶数（通常使用一阶）：</p>
+<h1 id="相关函数评估方法"><a href="#相关函数评估方法" class="headerlink" title="相关函数评估方法"></a>相关函数评估方法</h1><p><strong>自相关函数ACF（autocorrelation function）</strong></p>
+<ul>
+<li><p>有序的随机变量序列与其自身相比较，自相关函数反应了同一序列在不同时序取值之间的相关性（对原数据与其N阶差分算相关系数）</p>
+</li>
+<li><p>公式为：$ACF(k) = \rho_k = \frac{Cov(y_t,y_{t-k})}{Var(y_t)}$，$\rho_k$的取值范围为$[-1,1]$</p>
+</li>
+</ul>
+<p><strong>偏自相关函数PACF（partial autocorrelation function）</strong></p>
+<ul>
+<li>对于一个平稳$AR(p)$模型，求出滞后$k$自相关系数$p(k)$时实际上得到的并不是$x(t)$与$x(t-k)$之间的单纯相关关系</li>
+<li>$x(t)$同时还会受到中间$k-1$个随机变量$x(t-1),x(t-2),…,x(t-k+1)$的影响，而这$k-1$个随机变量又和$x(t-k)$具有相关关系，所以自相关系数$p(k)$里实际掺杂了其他变量对$x(t)$与$x(t-k)$的影响</li>
+<li>剔除了中间$k-1$个随机变量$x(t-1),x(t-2),…,x(t-k+1)$的干扰后$x(t-k)$对$x(t)$影响的相关程度</li>
+<li>ACF还包含了其他变量的影响，而偏自相关系数PACF是严格这两个变量之间的相关性</li>
+</ul>
+<h1 id="建立ARIMA模型"><a href="#建立ARIMA模型" class="headerlink" title="建立ARIMA模型"></a>建立ARIMA模型</h1><h2 id="ARIMA建模流程"><a href="#ARIMA建模流程" class="headerlink" title="ARIMA建模流程"></a>ARIMA建模流程</h2><ul>
+<li>将序列平稳（差分法确定d）</li>
+<li>p和q阶数确定：ACF和PACF</li>
+<li>ARIMA(p,d,q)</li>
+</ul>
+<h2 id="ARIMA-p-d-q-阶数确定"><a href="#ARIMA-p-d-q-阶数确定" class="headerlink" title="ARIMA(p,d,q)阶数确定"></a>ARIMA(p,d,q)阶数确定</h2><p>我们首先导入所需的库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> statsmodels.api <span class="keyword">as</span> sm</span><br><span class="line"><span class="keyword">import</span> statsmodels.formula.api <span class="keyword">as</span> smf</span><br><span class="line"><span class="keyword">import</span> statsmodels.tsa.api <span class="keyword">as</span> smt</span><br></pre></td></tr></table></figure>
+<p>然后调用两个函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">dateparse = <span class="keyword">lambda</span> date: datetime.strptime(date, <span class="string">"%Y-%m"</span>)</span><br><span class="line">data = pd.read_csv(<span class="string">"data/AirPassengers.csv"</span>, parse_dates=[<span class="string">"Month"</span>], index_col=<span class="string">"Month"</span>, date_parser=dateparse)</span><br><span class="line">fig = plt.figure(figsize=(<span class="number">12</span>, <span class="number">8</span>))</span><br><span class="line"></span><br><span class="line">ax1 = fig.add_subplot(<span class="number">211</span>)</span><br><span class="line">fig = sm.graphics.tsa.plot_acf(data, lags=<span class="number">20</span>, ax=ax1)</span><br><span class="line">ax1.xaxis.set_ticks_position(<span class="string">"bottom"</span>)</span><br><span class="line">fig.tight_layout();</span><br><span class="line"></span><br><span class="line">ax2 = fig.add_subplot(<span class="number">212</span>)</span><br><span class="line">fig = sm.graphics.tsa.plot_pacf(data, lags=<span class="number">20</span>, ax=ax2)</span><br><span class="line">ax1.xaxis.set_ticks_position(<span class="string">"bottom"</span>)</span><br><span class="line">fig.tight_layout();</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/acf.png" alt="acf"></p>
+<p>上图即为得到的结果，阴影部分表示置信区间，这里可以看出不同阶数的自相关性的变化规律。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>ACF</th>
+<th>PACF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$AR(p)$</td>
+<td>衰减趋于零（几何型或震荡型）</td>
+<td>$p$阶后截尾</td>
+</tr>
+<tr>
+<td>$MA(q)$</td>
+<td>$q$阶后截尾</td>
+<td>衰减趋于零（几何型或震荡型）</td>
+</tr>
+<tr>
+<td>$ARMA(p,q)$</td>
+<td>$q$阶后衰减趋于零（几何型或震荡型）</td>
+<td>$p$阶后衰减趋于零（几何型或震荡型）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>截尾：落在置信区间内（95%的点都符合该规则）</p>
+</blockquote>
+<p>在上面的PACF图中我们可以看到$p=2$就截尾了，因此我们可以直接取$p$为2，我们同时也可以看到ACF图中约为13截尾，因此取$q=13$。</p>
+<p>我们也可以画出散点图，本质和前面一样，不过更直观：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 散点图</span></span><br><span class="line">lags = <span class="number">9</span></span><br><span class="line">ncols = <span class="number">3</span></span><br><span class="line">nrows = int(np.ceil(lags/ncols))</span><br><span class="line"></span><br><span class="line">fig, axes = plt.subplots(ncols=ncols, nrows=nrows, figsize=(<span class="number">4</span>*ncols, <span class="number">4</span>*nrows))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ax, lag <span class="keyword">in</span> zip(axes.flat, np.arange(<span class="number">1</span>, lags+<span class="number">1</span>, <span class="number">1</span>)):</span><br><span class="line">    lag_str = <span class="string">"t-&#123;&#125;"</span>.format(lag)</span><br><span class="line">    X = (pd.concat([data, data.shift(-lag)], axis=<span class="number">1</span>, keys=[<span class="string">"#Passengers"</span>]+[lag_str]).dropna())</span><br><span class="line">    X.plot(ax=ax, kind=<span class="string">"scatter"</span>, y=<span class="string">"#Passengers"</span>, x=lag_str);</span><br><span class="line">    corr = X.corr().as_matrix()[<span class="number">0</span>][<span class="number">1</span>]</span><br><span class="line">    ax.set_ylabel(<span class="string">"Original"</span>)</span><br><span class="line">    ax.set_title(<span class="string">"Lag:&#123;&#125;(corr=&#123;:.2f&#125;)"</span>.format(lag_str, corr));</span><br><span class="line">    ax.set_aspect(<span class="string">"equal"</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/lag.png" alt="lag"></p>
+<p>为了方便我们可以整一个画图函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tsplot</span><span class="params">(y, lags=None, title=<span class="string">""</span>, figsize=<span class="params">(<span class="number">14</span>, <span class="number">8</span>)</span>)</span>:</span></span><br><span class="line">    fig = plt.figure(figsize=figsize)</span><br><span class="line">    layout = (<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">    ts_ax = plt.subplot2grid(layout, (<span class="number">0</span>, <span class="number">0</span>))</span><br><span class="line">    hist_ax = plt.subplot2grid(layout, (<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">    acf_ax = plt.subplot2grid(layout, (<span class="number">1</span>, <span class="number">0</span>))</span><br><span class="line">    pacf_ax = plt.subplot2grid(layout, (<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">    </span><br><span class="line">    y.plot(ax=ts_ax)</span><br><span class="line">    ts_ax.set_title(title)</span><br><span class="line">    y.plot(ax=hist_ax, kind=<span class="string">"hist"</span>, bins=<span class="number">25</span>)</span><br><span class="line">    hist_ax.set_title(<span class="string">"Histogram"</span>)</span><br><span class="line">    smt.graphics.plot_acf(y, lags=lags, ax=acf_ax)</span><br><span class="line">    smt.graphics.plot_pacf(y, lags=lags, ax=pacf_ax)</span><br><span class="line">    [ax.set_xlim(<span class="number">0</span>) <span class="keyword">for</span> ax <span class="keyword">in</span> [acf_ax, pacf_ax]]</span><br><span class="line">    plt.tight_layout()</span><br><span class="line">    <span class="keyword">return</span> ts_ax, acf_ax, pacf_ax</span><br></pre></td></tr></table></figure>
+<p>以后需要用到直接调用即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tsplot(data, title=<span class="string">"Passenger count"</span>, lags=<span class="number">36</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/image-20200823111537908.png" alt="image-20200823111537908"></p>
+<h2 id="参数选择"><a href="#参数选择" class="headerlink" title="参数选择"></a>参数选择</h2><p>下面我们切分数据集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">dateparse = <span class="keyword">lambda</span> date: datetime.strptime(date, <span class="string">"%Y-%m"</span>)</span><br><span class="line">data = pd.read_csv(<span class="string">"data/AirPassengers.csv"</span>, parse_dates=[<span class="string">"Month"</span>], index_col=<span class="string">"Month"</span>, date_parser=dateparse)</span><br><span class="line"></span><br><span class="line">n_train = int(<span class="number">0.8</span>*len(data))</span><br><span class="line">n_forcast = len(data)-n_train</span><br><span class="line"></span><br><span class="line">ts_train = data.iloc[:n_train][<span class="string">"#Passengers"</span>]</span><br><span class="line">ts_test = data.iloc[n_train:][<span class="string">"#Passengers"</span>]</span><br><span class="line">print(ts_train.shape, ts_test.shape)</span><br><span class="line">ts_train.head()</span><br></pre></td></tr></table></figure>
+<p>然后可以建立模型：</p>
  
       <!-- reward -->
       
