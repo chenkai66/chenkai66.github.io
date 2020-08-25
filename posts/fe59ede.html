@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    资金流入流出预测比赛（五） |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-资金流入流出预测比赛（五）"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  资金流入流出预测比赛（五）
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/fe59ede.html" class="article-date">
+  <time datetime="2020-08-25T14:28:07.283Z" itemprop="datePublished">2020-08-25</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.6k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">21 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>本文涉及内容为时间序列规则，参考链接为<a href="https://github.com/datawhalechina/team-learning-data-mining/tree/master/PurchaseAndRedemptionForecast" target="_blank" rel="noopener">Datawhale 资金流入流出学习内容</a></p>
+<h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> sklearn <span class="keyword">as</span> skr</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">from</span> dateutil.relativedelta <span class="keyword">import</span> relativedelta</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> GradientBoostingRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.neural_network <span class="keyword">import</span> MLPRegressor</span><br><span class="line"><span class="keyword">import</span> xgboost <span class="keyword">as</span> xgb</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br><span class="line">np.random.seed(<span class="number">1024</span>)</span><br><span class="line"></span><br><span class="line">labels = [<span class="string">'total_purchase_amt'</span>, <span class="string">'total_redeem_amt'</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分割数据集</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">split_data_underline</span><span class="params">(data: pd.DataFrame)</span>-&gt;pd.DataFrame:</span></span><br><span class="line">    trainset = data[(datetime.date(<span class="number">2014</span>,<span class="number">4</span>,<span class="number">1</span>) &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">8</span>,<span class="number">1</span>))]</span><br><span class="line">    testset = data[(datetime.date(<span class="number">2014</span>,<span class="number">8</span>,<span class="number">1</span>) &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">9</span>,<span class="number">1</span>))]</span><br><span class="line">    <span class="keyword">return</span> trainset, testset</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">split_data_online</span><span class="params">(data: pd.DataFrame)</span>-&gt;pd.DataFrame:</span></span><br><span class="line">    trainset = data[(datetime.date(<span class="number">2014</span>,<span class="number">4</span>,<span class="number">1</span>) &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">9</span>,<span class="number">1</span>))]</span><br><span class="line">    testset = data[(datetime.date(<span class="number">2014</span>,<span class="number">9</span>,<span class="number">1</span>) &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">10</span>,<span class="number">1</span>))]</span><br><span class="line">    <span class="keyword">return</span> trainset, testset</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义评价函数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">AE</span><span class="params">(y: Iterable, yhat: Iterable)</span>-&gt;Iterable:</span></span><br><span class="line">    <span class="keyword">return</span> np.abs(y - yhat) / np.abs(y)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">total_AE</span><span class="params">(purchasehat: Iterable, redeemhat: Iterable, purchase: Iterable, redeem: Iterable, h: int = <span class="number">0.3</span>)</span>-&gt;Iterable:</span></span><br><span class="line">    <span class="keyword">return</span> sum(map(<span class="keyword">lambda</span> x : np.exp(-x/h)*<span class="number">10</span>, AE(purchase, purchasehat))) * <span class="number">0.45</span> + sum(map(<span class="keyword">lambda</span> x : np.exp(-x/h)*<span class="number">10</span>, AE(redeem, redeemhat))) * <span class="number">0.55</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在不同的时间段对模型进行验证</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">week_evalution_single</span><span class="params">(data: pd.DataFrame, model: object, types: str)</span>-&gt;pd.DataFrame:</span></span><br><span class="line">    results = []</span><br><span class="line">    a_month = relativedelta(months=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> [datetime.date(<span class="number">2014</span>, <span class="number">8</span>, <span class="number">1</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">25</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">18</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">11</span>), </span><br><span class="line">          datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">4</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>, <span class="number">27</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>,<span class="number">20</span>)]:</span><br><span class="line">        trainset = data[(i - <span class="number">4</span> * a_month &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; i)]</span><br><span class="line">        testset = data[(i &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; i + a_month)]</span><br><span class="line">        <span class="keyword">if</span> len(testset) == <span class="number">0</span> <span class="keyword">or</span> len(trainset) == <span class="number">0</span>:</span><br><span class="line">            i = datetime.date(<span class="number">2014</span>, <span class="number">4</span>, <span class="number">20</span>)</span><br><span class="line">            trainset = data[(i - <span class="number">4</span> * a_month &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; i)]</span><br><span class="line">            testset = data[(i &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>, <span class="number">9</span>, <span class="number">1</span>))]</span><br><span class="line">        feature = [x <span class="keyword">for</span> x <span class="keyword">in</span> trainset.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]]</span><br><span class="line">        </span><br><span class="line">        model.fit(X=trainset[feature], y=trainset[<span class="string">'total_'</span> + types + <span class="string">'_amt'</span>])</span><br><span class="line">        result_lr = model.predict(testset[feature])</span><br><span class="line">        </span><br><span class="line">        h = <span class="number">0.3</span></span><br><span class="line">        results.append(sum(AE(testset[<span class="string">'total_'</span> + types + <span class="string">'_amt'</span>], result_lr).apply(<span class="keyword">lambda</span> x : np.exp(-x/h))*<span class="number">10</span>))</span><br><span class="line">    <span class="keyword">return</span> pd.DataFrame(results)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 输出评级表格</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">draw_eva_table</span><span class="params">(df: pd.DataFrame)</span>-&gt;pd.DataFrame:</span></span><br><span class="line">    rest = df.copy()</span><br><span class="line">    rest[<span class="string">'interval'</span>] = [datetime.date(<span class="number">2014</span>, <span class="number">8</span>, <span class="number">1</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">25</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">18</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">11</span>), </span><br><span class="line">          datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">4</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>, <span class="number">27</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>,<span class="number">20</span>)]</span><br><span class="line">    <span class="keyword">return</span> rest</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对生成结果进行可视化</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">visual</span><span class="params">(result_purchase_lr: Iterable, result_redeem_lr: Iterable, testset: pd.DataFrame)</span>-&gt;<span class="keyword">None</span>:</span></span><br><span class="line">    fig = plt.figure(figsize=(<span class="number">10</span>,<span class="number">4</span>))</span><br><span class="line">    plt.plot(testset[<span class="string">'date'</span>], result_purchase_lr, label=<span class="string">'predicted_purchase'</span>)</span><br><span class="line">    plt.plot(testset[<span class="string">'date'</span>], testset[<span class="string">'total_purchase_amt'</span>], label=<span class="string">'real_redeem'</span>)</span><br><span class="line"></span><br><span class="line">    plt.legend(loc=<span class="string">'best'</span>)</span><br><span class="line">    plt.title(<span class="string">"The distribution of real and predict purchase"</span>)</span><br><span class="line">    plt.xlabel(<span class="string">"Time"</span>)</span><br><span class="line">    plt.ylabel(<span class="string">"Amount"</span>)</span><br><span class="line">    plt.show()</span><br><span class="line">    fig = plt.figure(figsize=(<span class="number">10</span>,<span class="number">4</span>))</span><br><span class="line">    sns.barplot(testset[<span class="string">'date'</span>].dt.day ,result_purchase_lr - testset[<span class="string">'total_purchase_amt'</span>])</span><br><span class="line"></span><br><span class="line">    fig = plt.figure(figsize=(<span class="number">10</span>,<span class="number">4</span>))</span><br><span class="line">    plt.plot(testset[<span class="string">'date'</span>], result_redeem_lr, label=<span class="string">'predicted_redeem'</span>)</span><br><span class="line">    plt.plot(testset[<span class="string">'date'</span>], testset[<span class="string">'total_redeem_amt'</span>], label=<span class="string">'real_redeem'</span>)</span><br><span class="line"></span><br><span class="line">    plt.legend(loc=<span class="string">'best'</span>)</span><br><span class="line">    plt.title(<span class="string">"The distribution of real and predict redeem"</span>)</span><br><span class="line">    plt.xlabel(<span class="string">"Time"</span>)</span><br><span class="line">    plt.ylabel(<span class="string">"Amount"</span>)</span><br><span class="line">    plt.show()</span><br><span class="line">    fig = plt.figure(figsize=(<span class="number">10</span>,<span class="number">4</span>))</span><br><span class="line">    sns.barplot(testset[<span class="string">'date'</span>].dt.day ,result_redeem_lr - testset[<span class="string">'total_redeem_amt'</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义提取线下最好效果特征的函数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">feature_extract</span><span class="params">(data: pd.DataFrame, model: object, types: str)</span>-&gt;Tuple[List[str], List[float]]:</span></span><br><span class="line">    features = [x <span class="keyword">for</span> x <span class="keyword">in</span> data.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> labels + [<span class="string">'date'</span>]]</span><br><span class="line">    random.shuffle(features)</span><br><span class="line">    results = []</span><br><span class="line">    score = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> features:</span><br><span class="line">        score_update = np.mean(week_evalution_single(data[results + [i] + labels + [<span class="string">'date'</span>]], model, types))</span><br><span class="line">        <span class="keyword">if</span> score_update &gt; score:</span><br><span class="line">            score = score_update</span><br><span class="line">            results.append(i)</span><br><span class="line">    <span class="keyword">return</span> results, score</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">robust_feature_extract</span><span class="params">(data: pd.DataFrame, model: object, types: str)</span>:</span></span><br><span class="line">    results = []</span><br><span class="line">    score = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</span><br><span class="line">        results_update, score_update = feature_extract(data, model, types)</span><br><span class="line">        <span class="keyword">if</span> score_update &gt; score:</span><br><span class="line">            score = score_update</span><br><span class="line">            results = results_update</span><br><span class="line">        print(results_update, score_update)</span><br><span class="line">    <span class="keyword">return</span> results</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义AIC,BIC评价指标</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">AIC</span><span class="params">(L: Iterable, delta: float, n_features: int)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> L * np.log10(delta) + <span class="number">2</span> * (n_features + <span class="number">1</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">AIC</span><span class="params">(L: Iterable, delta: float, n_features: int)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> L * np.log10(delta) + (n_features + <span class="number">1</span>) * np.log10(L)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用AIC指标融合模型</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">feature_extract_AIC</span><span class="params">(data: pd.DataFrame, model: object, types: str)</span>-&gt;Tuple[List[str], float]:</span></span><br><span class="line">    features = [x <span class="keyword">for</span> x <span class="keyword">in</span> data.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> labels + [<span class="string">'date'</span>]]</span><br><span class="line">    random.shuffle(features)</span><br><span class="line">    results = []</span><br><span class="line">    test_score = <span class="number">1e9</span></span><br><span class="line">    train_score = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> features:</span><br><span class="line">        test_score_update = np.mean(week_evalution_single(data[results + [i] + labels + [<span class="string">'date'</span>]], model, types)[<span class="number">0</span>])</span><br><span class="line">        <span class="keyword">if</span> test_score_update &lt; test_score:</span><br><span class="line">            test_score = test_score_update</span><br><span class="line">            results.append(i)</span><br><span class="line">            </span><br><span class="line">    trainset, testset = split_data_underline(data)</span><br><span class="line">    feature = results</span><br><span class="line">    model.fit(X=trainset[feature], y=trainset[<span class="string">'total_'</span> + types + <span class="string">'_amt'</span>])</span><br><span class="line">    train_result_lr = model.predict(trainset[feature])</span><br><span class="line">    delta = mean_squared_error(train_result_lr, trainset[<span class="string">'total_'</span> + types + <span class="string">'_amt'</span>])</span><br><span class="line">    <span class="comment">#delta = np.sum(AE(trainset['total_' + types + '_amt'], train_result_lr).apply(lambda x : np.exp(-x/0.1))*10)</span></span><br><span class="line">    <span class="keyword">return</span> results, AIC(len(trainset), delta, len(feature))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multi_model</span><span class="params">(data: pd.DataFrame, model: object, types: str)</span>-&gt;Tuple[List[List[str]], float]:</span></span><br><span class="line">    features = []</span><br><span class="line">    weights = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">        results_update, score_update = feature_extract_AIC(data, model, types)</span><br><span class="line">        features.append(results_update)</span><br><span class="line">        weights.append(score_update)</span><br><span class="line">    avg = np.mean(weights)</span><br><span class="line">    weights = [x - avg <span class="keyword">for</span> x <span class="keyword">in</span> weights]</span><br><span class="line">    weights = [np.power((<span class="number">-1</span> * x / <span class="number">2</span>), <span class="number">10</span>) <span class="keyword">for</span> x <span class="keyword">in</span> weights]</span><br><span class="line">    summ = np.sum(weights)</span><br><span class="line">    weights = [x / summ <span class="keyword">for</span> x <span class="keyword">in</span> weights]</span><br><span class="line">    <span class="keyword">return</span> features, weights</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成线上结果</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_online_result</span><span class="params">(df: pd.DataFrame, feature: Iterable, model = LinearRegression<span class="params">()</span>, target:str = <span class="string">'total_purchase_amt'</span>)</span>-&gt;Iterable:</span></span><br><span class="line">    trainset, testset = split_data_online(df)</span><br><span class="line">    model.fit(X=trainset[feature], y=trainset[target])</span><br><span class="line">    result_purchase_lr = model.predict(testset[feature])</span><br><span class="line">    <span class="keyword">return</span> result_purchase_lr</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_under_result</span><span class="params">(df: pd.DataFrame, feature: Iterable, model = LinearRegression<span class="params">()</span>, target:str = <span class="string">'total_purchase_amt'</span>)</span>-&gt;Iterable:</span></span><br><span class="line">    trainset, testset = split_data_underline(df)</span><br><span class="line">    model.fit(X=trainset[feature], y=trainset[target])</span><br><span class="line">    result_purchase_lr = model.predict(testset[feature])</span><br><span class="line">    <span class="keyword">return</span> result_purchase_lr</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成线上提交的格式</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">normalize_upload_file</span><span class="params">(result_purchase_lr: Iterable, result_redeem_lr: Iterable, testset: pd.DataFrame)</span>-&gt;pd.DataFrame:</span></span><br><span class="line">    testset[<span class="string">'total_purchase_amt'</span>] = result_purchase_lr</span><br><span class="line">    testset[<span class="string">'total_redeem_amt'</span>] = result_redeem_lr</span><br><span class="line">    online_upload = testset[[<span class="string">'date'</span>,<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>]]</span><br><span class="line">    online_upload[<span class="string">'date'</span>] = online_upload[<span class="string">'date'</span>].astype(str)</span><br><span class="line">    online_upload[<span class="string">'date'</span>] = online_upload[<span class="string">'date'</span>].str.replace(<span class="string">'-'</span>,<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">return</span> online_upload</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 线上结果可视化</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">draw_result</span><span class="params">(result_purchase_lr: Iterable, result_redeem_lr: Iterable, testset: pd.DataFrame)</span>:</span></span><br><span class="line">    fig = plt.figure(figsize=(<span class="number">10</span>,<span class="number">4</span>))</span><br><span class="line">    plt.plot(testset[<span class="string">'date'</span>].dt.day, result_purchase_lr, label=<span class="string">'online_purchase'</span>)</span><br><span class="line">    plt.plot(testset[<span class="string">'date'</span>].dt.day, result_redeem_lr, label=<span class="string">'online_redeem'</span>)</span><br><span class="line"></span><br><span class="line">    plt.legend(loc=<span class="string">'best'</span>)</span><br><span class="line">    plt.title(<span class="string">"The predict values"</span>)</span><br><span class="line">    plt.xlabel(<span class="string">"Time"</span>)</span><br><span class="line">    plt.ylabel(<span class="string">"Amount"</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重载DataFrame加法</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_two_df</span><span class="params">(df1, df2, features = None, left_a = <span class="number">0.45</span>, right_a = <span class="number">0.55</span>)</span>:</span></span><br><span class="line">    data = df1.copy()</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> features:</span><br><span class="line">        features = [x <span class="keyword">for</span> x <span class="keyword">in</span> data.columns <span class="keyword">if</span> x != <span class="string">'interval'</span>]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> features:</span><br><span class="line">        data[i] = (data[i] * left_a + df2[i] * right_a)</span><br><span class="line">    <span class="keyword">return</span> data</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重载DataFrame乘法</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">scale_df</span><span class="params">(df1, features = None, eta = <span class="number">1</span>)</span>:</span></span><br><span class="line">    data = df1.copy()</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> features:</span><br><span class="line">        features = [x <span class="keyword">for</span> x <span class="keyword">in</span> data.columns <span class="keyword">if</span> x != <span class="string">'interval'</span>]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> features:</span><br><span class="line">        data[i] *= eta</span><br><span class="line">    <span class="keyword">return</span> data</span><br></pre></td></tr></table></figure>
+<h1 id="建模测试"><a href="#建模测试" class="headerlink" title="建模测试"></a>建模测试</h1><h2 id="一、仅使用IS特征"><a href="#一、仅使用IS特征" class="headerlink" title="一、仅使用IS特征"></a>一、仅使用IS特征</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data = pd.read_csv(<span class="string">'Dataset/feature0522.csv'</span>)</span><br><span class="line">data[<span class="string">'date'</span>] = pd.to_datetime(data[<span class="string">'date'</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">trainset, testset = split_data_underline(data)</span><br><span class="line">result_purchase_lr = generate_under_result(data, [x <span class="keyword">for</span> x <span class="keyword">in</span> data.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], target=<span class="string">'total_purchase_amt'</span>)</span><br><span class="line">result_redeem_lr = generate_under_result(data, [x <span class="keyword">for</span> x <span class="keyword">in</span> data.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], target=<span class="string">'total_redeem_amt'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="在八月份预测结果"><a href="#在八月份预测结果" class="headerlink" title="在八月份预测结果"></a>在八月份预测结果</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">total_AE(result_purchase_lr, result_redeem_lr, testset[<span class="string">'total_purchase_amt'</span>], testset[<span class="string">'total_redeem_amt'</span>])</span><br><span class="line"><span class="comment"># 189.31445991054966</span></span><br></pre></td></tr></table></figure>
+<h3 id="滑窗测试结果"><a href="#滑窗测试结果" class="headerlink" title="滑窗测试结果"></a>滑窗测试结果</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">draw_eva_table(week_evalution_single(data, model=LinearRegression(), types = <span class="string">'purchase'</span>))</span><br></pre></td></tr></table></figure>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>interval</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>197.277321</td>
+      <td>2014-08-01</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>167.809363</td>
+      <td>2014-07-25</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>162.569572</td>
+      <td>2014-07-18</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>159.214733</td>
+      <td>2014-07-11</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>144.062633</td>
+      <td>2014-07-04</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>142.332339</td>
+      <td>2014-06-27</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>126.240393</td>
+      <td>2014-06-20</td>
+    </tr>
+  </tbody>
+</table>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">draw_eva_table(week_evalution_single(data, LinearRegression(), <span class="string">'redeem'</span>))</span><br></pre></td></tr></table></figure>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>interval</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>182.799392</td>
+      <td>2014-08-01</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>172.093440</td>
+      <td>2014-07-25</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>181.210211</td>
+      <td>2014-07-18</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>168.488252</td>
+      <td>2014-07-11</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>175.160622</td>
+      <td>2014-07-04</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>174.465494</td>
+      <td>2014-06-27</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>175.201245</td>
+      <td>2014-06-20</td>
+    </tr>
+  </tbody>
+</table>
+### 八月份预测图与真实图
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">visual(result_purchase_lr, result_redeem_lr, testset)</span><br></pre></td></tr></table></figure>
+
+
+![png](../Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_26_0.png)
+
+![png](../Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_26_1.png)
+
+![png](../Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_26_2.png)
+
+![png](../Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_26_3.png)
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result_purchase_lr = generate_online_result(data, [x <span class="keyword">for</span> x <span class="keyword">in</span> trainset.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], LinearRegression(),<span class="string">'total_purchase_amt'</span>)</span><br><span class="line">result_redeem_lr = generate_online_result(data, [x <span class="keyword">for</span> x <span class="keyword">in</span> trainset.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], LinearRegression(),<span class="string">'total_redeem_amt'</span>)</span><br></pre></td></tr></table></figure>
+
+### 九月份预测效果图(线性)
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">trainset, testset = split_data_online(data)</span><br><span class="line">draw_result(result_purchase_lr, result_redeem_lr, testset)</span><br></pre></td></tr></table></figure>
+
+
+![png](../Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_29_0.png)
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">normalize_upload_file(result_purchase_lr, result_redeem_lr, testset).to_csv(<span class="string">'20190612_only_is.csv'</span>,index=<span class="literal">False</span>,header=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+
+## 二、多模型对比
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multi_model_eva</span><span class="params">(data, types:str = <span class="string">'purchase'</span>)</span>:</span></span><br><span class="line">    results = pd.DataFrame()</span><br><span class="line">    <span class="keyword">for</span> model <span class="keyword">in</span> [LinearRegression(), DecisionTreeRegressor(), RandomForestRegressor(), GradientBoostingRegressor(), MLPRegressor(solver=<span class="string">'lbfgs'</span>), xgb.XGBRegressor(objective=<span class="string">'reg:squarederror'</span>)]:</span><br><span class="line">        <span class="keyword">if</span> results.empty:</span><br><span class="line">            results = draw_eva_table(week_evalution_single(data, model, types)).rename(columns=&#123;<span class="number">0</span>: repr(model).split(<span class="string">'('</span>)[<span class="number">0</span>]&#125;)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            results = pd.merge(results, \</span><br><span class="line">                               draw_eva_table(week_evalution_single(data, model, types)).rename(columns=&#123;<span class="number">0</span>: repr(model).split(<span class="string">'('</span>)[<span class="number">0</span>]&#125;), on=<span class="string">'interval'</span>)</span><br><span class="line">    results = results[[<span class="string">'interval'</span>] + [x <span class="keyword">for</span> x <span class="keyword">in</span> results.columns <span class="keyword">if</span> x != <span class="string">'interval'</span>]]</span><br><span class="line">    <span class="keyword">return</span> results</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add_two_df(multi_model_eva(data, <span class="string">'purchase'</span>), multi_model_eva(data, <span class="string">'redeem'</span>))</span><br></pre></td></tr></table></figure>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>interval</th>
+      <th>LinearRegression</th>
+      <th>DecisionTreeRegressor</th>
+      <th>RandomForestRegressor</th>
+      <th>GradientBoostingRegressor</th>
+      <th>MLPRegressor</th>
+      <th>XGBRegressor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2014-08-01</td>
+      <td>189.314460</td>
+      <td>188.743896</td>
+      <td>187.715746</td>
+      <td>188.808471</td>
+      <td>188.744889</td>
+      <td>189.283918</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2014-07-25</td>
+      <td>170.165605</td>
+      <td>171.123954</td>
+      <td>172.599158</td>
+      <td>171.155189</td>
+      <td>169.383859</td>
+      <td>171.483486</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2014-07-18</td>
+      <td>172.821924</td>
+      <td>175.689847</td>
+      <td>176.236757</td>
+      <td>175.700583</td>
+      <td>174.238004</td>
+      <td>175.781053</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2014-07-11</td>
+      <td>164.315168</td>
+      <td>167.489060</td>
+      <td>168.552495</td>
+      <td>167.497959</td>
+      <td>164.755084</td>
+      <td>167.463230</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2014-07-04</td>
+      <td>161.166527</td>
+      <td>164.436476</td>
+      <td>163.818487</td>
+      <td>164.457772</td>
+      <td>162.257028</td>
+      <td>164.322969</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2014-06-27</td>
+      <td>160.005574</td>
+      <td>163.849417</td>
+      <td>162.010456</td>
+      <td>163.820346</td>
+      <td>160.703909</td>
+      <td>163.713086</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2014-06-20</td>
+      <td>153.168861</td>
+      <td>156.563393</td>
+      <td>157.063395</td>
+      <td>156.511847</td>
+      <td>156.539468</td>
+      <td>156.445360</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h2 id="三、劣汰后特征对比"><a href="#三、劣汰后特征对比" class="headerlink" title="三、劣汰后特征对比"></a>三、劣汰后特征对比</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_purchase = pd.read_csv(<span class="string">'Feature/purchase_feature_droped_0614.csv'</span>)</span><br><span class="line">data_purchase[<span class="string">'date'</span>] = pd.to_datetime(data_purchase[<span class="string">'date'</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_redeem = pd.read_csv(<span class="string">'Feature/redeem_feature_droped_0614.csv'</span>)</span><br><span class="line">data_redeem[<span class="string">'date'</span>] = pd.to_datetime(data_redeem[<span class="string">'date'</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trainset_purchase, testset_purchase = split_data_underline(data_purchase)</span><br><span class="line">result_purchase_lr = generate_under_result(data_purchase, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_purchase.columns</span><br><span class="line">                                                           <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                           target=<span class="string">'total_purchase_amt'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trainset_redeem, testset_redeem = split_data_underline(data_redeem)</span><br><span class="line">result_redeem_lr = generate_under_result(data_redeem, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_redeem.columns</span><br><span class="line">                                                           <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                           target=<span class="string">'total_redeem_amt'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">total_AE(result_purchase_lr, result_redeem_lr, testset_purchase[<span class="string">'total_purchase_amt'</span>], testset_redeem[<span class="string">'total_redeem_amt'</span>])</span><br><span class="line"><span class="comment"># 189.90232809854422</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add_two_df(multi_model_eva(data_purchase, <span class="string">'purchase'</span>), multi_model_eva(data_redeem, <span class="string">'redeem'</span>))</span><br></pre></td></tr></table></figure>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>interval</th>
+      <th>LinearRegression</th>
+      <th>DecisionTreeRegressor</th>
+      <th>RandomForestRegressor</th>
+      <th>GradientBoostingRegressor</th>
+      <th>MLPRegressor</th>
+      <th>XGBRegressor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2014-08-01</td>
+      <td>189.902328</td>
+      <td>167.901814</td>
+      <td>170.798802</td>
+      <td>177.216664</td>
+      <td>186.847975</td>
+      <td>178.177163</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2014-07-25</td>
+      <td>177.650078</td>
+      <td>167.752839</td>
+      <td>177.877918</td>
+      <td>169.722728</td>
+      <td>180.481298</td>
+      <td>171.346027</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2014-07-18</td>
+      <td>182.113181</td>
+      <td>184.259270</td>
+      <td>176.164814</td>
+      <td>175.773043</td>
+      <td>180.043535</td>
+      <td>177.470257</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2014-07-11</td>
+      <td>182.092305</td>
+      <td>178.165773</td>
+      <td>184.042765</td>
+      <td>178.501400</td>
+      <td>179.125274</td>
+      <td>181.784144</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2014-07-04</td>
+      <td>181.210428</td>
+      <td>172.354412</td>
+      <td>164.208141</td>
+      <td>170.061840</td>
+      <td>176.928324</td>
+      <td>165.812636</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2014-06-27</td>
+      <td>185.309340</td>
+      <td>178.630136</td>
+      <td>182.713216</td>
+      <td>189.882640</td>
+      <td>177.631714</td>
+      <td>186.246480</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2014-06-20</td>
+      <td>169.342125</td>
+      <td>168.941842</td>
+      <td>173.833505</td>
+      <td>173.421845</td>
+      <td>169.514554</td>
+      <td>172.578523</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h3 id="八月份预测效果-线性"><a href="#八月份预测效果-线性" class="headerlink" title="八月份预测效果(线性)"></a>八月份预测效果(线性)</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">trainset, testset = split_data_underline(data)</span><br><span class="line">visual(result_purchase_lr, result_redeem_lr, testset)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_43_0.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_43_1.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_43_2.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_43_3.png" alt="output_43_3"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result_purchase_lr = generate_online_result(data_purchase, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_purchase.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], LinearRegression(),<span class="string">'total_purchase_amt'</span>)</span><br><span class="line">result_redeem_lr = generate_online_result(data_redeem, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_redeem.columns <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], LinearRegression(),<span class="string">'total_redeem_amt'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="生成线上效果（线性）"><a href="#生成线上效果（线性）" class="headerlink" title="生成线上效果（线性）"></a>生成线上效果（线性）</h3><p>可以看到28号很高（work in Sunday）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">trainset, testset = split_data_online(data)</span><br><span class="line">draw_result(result_purchase_lr, result_redeem_lr, testset)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_46_0.png" alt="png"></p>
+<p>purchase feature</p>
+<blockquote>
+<p>‘dis_to_nowork’, ‘dis_to_work’, ‘dis_from_work’, ‘purchase_weekdayrate’,<br>       ‘redeem_dayrate’, ‘weekday_onehot_5’, ‘weekday_onehot_6’,<br>       ‘dis_from_nowork’, ‘is_holiday’, ‘weekday_onehot_1’, ‘weekday_onehot_2’,<br>       ‘weekday_onehot_0’, ‘dis_from_middleofweek’, ‘dis_from_holiendday’,<br>       ‘weekday_onehot_3’, ‘is_lastday_of_holiday’, ‘is_firstday_of_holiday’,<br>       ‘weekday_onehot_4’, ‘is_worked_yestday’, ‘is_second_week’,<br>       ‘is_third_week’, ‘dis_from_startofmonth’, ‘dis_from_holiday’,<br>       ‘dis_to_nowork%%%%dis_from_purchase_peak’, ‘total_purchase_amt’,<br>       ‘total_redeem_amt’, ‘date’</p>
+</blockquote>
+<p>Redeem feature</p>
+<blockquote>
+<p>‘is_work’, ‘dis_from_redeem_valley’, ‘purchase_weekdayrate’,<br>       ‘redeem_dayrate’, ‘weekday_onehot_5’, ‘is_gonna_work_tomorrow’,<br>       ‘is_holiday’, ‘dis_from_nowork’, ‘weekday_onehot_0’, ‘weekday_onehot_1’,<br>       ‘is_firstday_of_holiday’, ‘weekday_onehot_2’, ‘is_lastday_of_holiday’,<br>       ‘dis_from_holiday’, ‘is_work_on_sunday’, ‘is_firstday_of_work’,<br>       ‘is_secday_of_month’, ‘dis_from_holiendday’,<br>       ‘dis_from_redeem_valley%%%%dis_from_redeem_peak’, ‘total_purchase_amt’,<br>       ‘total_redeem_amt’, ‘date’</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">normalize_upload_file(result_purchase_lr, result_redeem_lr, testset).to_csv(<span class="string">'20190614_droped.csv'</span>,index=<span class="literal">False</span>,header=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="生成线上效果（MLP）"><a href="#生成线上效果（MLP）" class="headerlink" title="生成线上效果（MLP）"></a>生成线上效果（MLP）</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">result_purchase_lr = generate_online_result(data_purchase, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_purchase.columns </span><br><span class="line">                                                            <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                            MLPRegressor(solver=<span class="string">'lbfgs'</span>),<span class="string">'total_purchase_amt'</span>)</span><br><span class="line">result_redeem_lr = generate_online_result(data_redeem, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_redeem.columns </span><br><span class="line">                                                        <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                          MLPRegressor(solver=<span class="string">'lbfgs'</span>),<span class="string">'total_redeem_amt'</span>)</span><br><span class="line">trainset, testset = split_data_online(data)</span><br><span class="line">draw_result(result_purchase_lr, result_redeem_lr, testset)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_52_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">normalize_upload_file(result_purchase_lr, result_redeem_lr, testset).to_csv(<span class="string">'20190614_droped_MLP.csv'</span>,index=<span class="literal">False</span>,header=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="生成线上效果（Xgboost）"><a href="#生成线上效果（Xgboost）" class="headerlink" title="生成线上效果（Xgboost）"></a>生成线上效果（Xgboost）</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">result_purchase_lr = generate_online_result(data_purchase, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_purchase.columns </span><br><span class="line">                                                            <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                            xgb.XGBRegressor(objective=<span class="string">'reg:squarederror'</span>),<span class="string">'total_purchase_amt'</span>)</span><br><span class="line">result_redeem_lr = generate_online_result(data_redeem, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_redeem.columns </span><br><span class="line">                                                        <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                          xgb.XGBRegressor(objective=<span class="string">'reg:squarederror'</span>),<span class="string">'total_redeem_amt'</span>)</span><br><span class="line">trainset, testset = split_data_online(data)</span><br><span class="line">draw_result(result_purchase_lr, result_redeem_lr, testset)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_56_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">normalize_upload_file(result_purchase_lr, result_redeem_lr, testset).to_csv(<span class="string">'20190615_droped_XGB.csv'</span>,index=<span class="literal">False</span>,header=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="四、AIC模型平均"><a href="#四、AIC模型平均" class="headerlink" title="四、AIC模型平均"></a>四、AIC模型平均</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">purchase_features, purchase_weight = multi_model(data_purchase, model=LinearRegression(), types = <span class="string">'purchase'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redeem_features, redeem_weight = multi_model(data_redeem, model=LinearRegression(), types = <span class="string">'redeem'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">eva_for_aic</span><span class="params">(data_purchase, purchase_features, purchase_weight)</span>:</span></span><br><span class="line">    results = pd.DataFrame()</span><br><span class="line">    <span class="keyword">for</span> index, feature <span class="keyword">in</span> enumerate(purchase_features):</span><br><span class="line">        <span class="keyword">if</span> results.empty:</span><br><span class="line">            results = scale_df(multi_model_eva(data_purchase[[<span class="string">'date'</span>] + labels + feature], <span class="string">'purchase'</span>), </span><br><span class="line">                               eta = purchase_weight[index])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            results = add_two_df(results, multi_model_eva(data_purchase[[<span class="string">'date'</span>] + labels + feature], <span class="string">'purchase'</span>)</span><br><span class="line">                                 , left_a = <span class="number">1</span>,</span><br><span class="line">                                 right_a = purchase_weight[index])</span><br><span class="line">    <span class="keyword">return</span> results</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_two_df(eva_for_aic(data_purchase, purchase_features, purchase_weight), </span><br><span class="line">           eva_for_aic(data_redeem, redeem_features, redeem_weight))</span><br></pre></td></tr></table></figure>
+<p><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>interval</th>
+      <th>LinearRegression</th>
+      <th>DecisionTreeRegressor</th>
+      <th>RandomForestRegressor</th>
+      <th>GradientBoostingRegressor</th>
+      <th>MLPRegressor</th>
+      <th>XGBRegressor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2014-08-01</td>
+      <td>196.963095</td>
+      <td>183.792030</td>
+      <td>186.524287</td>
+      <td>190.406781</td>
+      <td>203.741264</td>
+      <td>191.603561</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2014-07-25</td>
+      <td>166.890259</td>
+      <td>162.282961</td>
+      <td>165.155036</td>
+      <td>167.600603</td>
+      <td>170.796653</td>
+      <td>168.847170</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2014-07-18</td>
+      <td>164.275651</td>
+      <td>164.099009</td>
+      <td>165.696601</td>
+      <td>165.439729</td>
+      <td>166.863106</td>
+      <td>166.027208</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2014-07-11</td>
+      <td>165.406218</td>
+      <td>173.410333</td>
+      <td>175.492379</td>
+      <td>174.605650</td>
+      <td>171.207335</td>
+      <td>172.707320</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2014-07-04</td>
+      <td>159.754349</td>
+      <td>159.385969</td>
+      <td>157.523226</td>
+      <td>159.920750</td>
+      <td>165.437567</td>
+      <td>159.528064</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2014-06-27</td>
+      <td>170.536885</td>
+      <td>170.257129</td>
+      <td>172.330545</td>
+      <td>172.594357</td>
+      <td>173.168680</td>
+      <td>172.330513</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2014-06-20</td>
+      <td>171.443469</td>
+      <td>162.639913</td>
+      <td>164.623205</td>
+      <td>164.944005</td>
+      <td>171.675562</td>
+      <td>166.762065</td>
+    </tr>
+  </tbody>
+</table></p>
+<h2 id="五、针对残差建模"><a href="#五、针对残差建模" class="headerlink" title="五、针对残差建模"></a>五、针对残差建模</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_purchase = pd.read_csv(<span class="string">'Feature/residual_feature_purchase_0621.csv'</span>)</span><br><span class="line">data_purchase[<span class="string">'date'</span>] = pd.to_datetime(data_purchase[<span class="string">'date'</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data_redeem = pd.read_csv(<span class="string">'Feature/residual_feature_redeem_0621.csv'</span>)</span><br><span class="line">data_redeem[<span class="string">'date'</span>] = pd.to_datetime(data_redeem[<span class="string">'date'</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">base = pd.read_csv(<span class="string">'Dataset/base.csv'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_residual_result</span><span class="params">(data, base, model=LinearRegression<span class="params">()</span>, types = <span class="string">'purchase'</span>, split_time = datetime.date<span class="params">(<span class="number">2014</span>,<span class="number">8</span>,<span class="number">1</span>)</span>)</span>:</span></span><br><span class="line">    a_month = relativedelta(months=<span class="number">1</span>)</span><br><span class="line">    trainset = data[(datetime.date(<span class="number">2014</span>,<span class="number">4</span>,<span class="number">1</span>) &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; split_time)]</span><br><span class="line">    testset = data[(split_time &lt;= data[<span class="string">'date'</span>]) &amp; (data[<span class="string">'date'</span>] &lt; split_time + a_month)]</span><br><span class="line">    feature = [x <span class="keyword">for</span> x <span class="keyword">in</span> data_purchase.columns </span><br><span class="line">               <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]]</span><br><span class="line">    model.fit(X=trainset[feature], y=trainset[<span class="string">'total_'</span> + types + <span class="string">'_amt'</span>])</span><br><span class="line">    result_purchase_rate = model.predict(testset[feature])</span><br><span class="line">    </span><br><span class="line">    base[<span class="string">'date'</span>] = pd.to_datetime(base[<span class="string">'date'</span>], format= <span class="string">"%Y%m%d"</span>)</span><br><span class="line">    result_purchase_cycle = np.array(base[(base[<span class="string">'date'</span>] &gt;= split_time)</span><br><span class="line">                                          &amp;(base[<span class="string">'date'</span>] &lt; split_time + a_month)][<span class="string">'total_'</span>+types+<span class="string">'_predicted_by_cycle'</span>])</span><br><span class="line">    result_purchase_residual =  result_purchase_rate * np.array(result_purchase_cycle)</span><br><span class="line">    <span class="keyword">return</span> result_purchase_residual</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_evaluate_for_residual</span><span class="params">(model=LinearRegression<span class="params">()</span>)</span>:</span></span><br><span class="line">    result = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> [datetime.date(<span class="number">2014</span>, <span class="number">8</span>, <span class="number">1</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">25</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">18</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">11</span>), </span><br><span class="line">              datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">4</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>, <span class="number">27</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>,<span class="number">20</span>)]:</span><br><span class="line">        result_purchase_residual = generate_residual_result(data_purchase, base, model=model, types=<span class="string">'purchase'</span>, split_time = i)</span><br><span class="line">        result_redeem_residual = generate_residual_result(data_purchase, base, model=model, types=<span class="string">'redeem'</span>, split_time= i)</span><br><span class="line">        a_month = relativedelta(months=<span class="number">1</span>)</span><br><span class="line">        testset = data[(data[<span class="string">'date'</span>] &gt;= i) &amp; (data[<span class="string">'date'</span>] &lt; i + a_month)]</span><br><span class="line">        real_purchase = testset[<span class="string">'total_purchase_amt'</span>]</span><br><span class="line">        real_redeem = testset[<span class="string">'total_redeem_amt'</span>]</span><br><span class="line">        result.append(total_AE(result_purchase_residual, result_redeem_residual, real_purchase, real_redeem))</span><br><span class="line">    <span class="keyword">return</span> pd.DataFrame(result)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multi_model_eva_for_residual</span><span class="params">()</span>:</span></span><br><span class="line">    results = pd.DataFrame()</span><br><span class="line">    <span class="keyword">for</span> model <span class="keyword">in</span> [LinearRegression(), DecisionTreeRegressor(), RandomForestRegressor(), GradientBoostingRegressor(), MLPRegressor(solver=<span class="string">'lbfgs'</span>), xgb.XGBRegressor(objective=<span class="string">'reg:squarederror'</span>)]:</span><br><span class="line">        <span class="keyword">if</span> results.empty:</span><br><span class="line">            results = draw_eva_table(generate_evaluate_for_residual(model)).rename(columns=&#123;<span class="number">0</span>: repr(model).split(<span class="string">'('</span>)[<span class="number">0</span>]&#125;)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            results = pd.merge(results, \</span><br><span class="line">                               draw_eva_table(generate_evaluate_for_residual(model)).rename(columns=&#123;<span class="number">0</span>: repr(model).split(<span class="string">'('</span>)[<span class="number">0</span>]&#125;))</span><br><span class="line">    results = results[[<span class="string">'interval'</span>] + [x <span class="keyword">for</span> x <span class="keyword">in</span> results.columns <span class="keyword">if</span> x != <span class="string">'interval'</span>]]</span><br><span class="line">    <span class="keyword">return</span> results</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_evaluate_for_cycle</span><span class="params">()</span>:</span></span><br><span class="line">    result = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> [datetime.date(<span class="number">2014</span>, <span class="number">8</span>, <span class="number">1</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">25</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">18</span>), datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">11</span>), </span><br><span class="line">                  datetime.date(<span class="number">2014</span>, <span class="number">7</span>, <span class="number">4</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>, <span class="number">27</span>), datetime.date(<span class="number">2014</span>, <span class="number">6</span>,<span class="number">20</span>)]:</span><br><span class="line">        a_month = relativedelta(months=<span class="number">1</span>)</span><br><span class="line">        testset = base[(base[<span class="string">'date'</span>] &gt;= i) &amp; (base[<span class="string">'date'</span>] &lt; i + a_month)].reset_index(drop=<span class="literal">True</span>)</span><br><span class="line">        result_purchase_residual = testset[<span class="string">'total_purchase_predicted_by_cycle'</span>]</span><br><span class="line">        result_redeem_residual = testset[<span class="string">'total_redeem_predicted_by_cycle'</span>]</span><br><span class="line">        testset = data[(data[<span class="string">'date'</span>] &gt;= i) &amp; (data[<span class="string">'date'</span>] &lt; i + a_month)].reset_index(drop=<span class="literal">True</span>)</span><br><span class="line">        real_purchase = testset[<span class="string">'total_purchase_amt'</span>]</span><br><span class="line">        real_redeem = testset[<span class="string">'total_redeem_amt'</span>]</span><br><span class="line">        result.append(total_AE(result_purchase_residual, result_redeem_residual, real_purchase, real_redeem))</span><br><span class="line">    <span class="keyword">return</span> pd.DataFrame(result).rename(columns=&#123;<span class="number">0</span>: <span class="string">'PureTimeSeries'</span>&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.merge(multi_model_eva_for_residual(), draw_eva_table(generate_evaluate_for_cycle()))</span><br></pre></td></tr></table></figure>
+<p><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>interval</th>
+      <th>LinearRegression</th>
+      <th>DecisionTreeRegressor</th>
+      <th>RandomForestRegressor</th>
+      <th>GradientBoostingRegressor</th>
+      <th>MLPRegressor</th>
+      <th>XGBRegressor</th>
+      <th>PureTimeSeries</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2014-08-01</td>
+      <td>180.766534</td>
+      <td>155.580904</td>
+      <td>167.712675</td>
+      <td>171.177173</td>
+      <td>171.180097</td>
+      <td>175.335191</td>
+      <td>175.933714</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2014-07-25</td>
+      <td>161.447048</td>
+      <td>159.351623</td>
+      <td>161.705225</td>
+      <td>162.192265</td>
+      <td>158.220680</td>
+      <td>163.794727</td>
+      <td>155.916275</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2014-07-18</td>
+      <td>172.796145</td>
+      <td>153.972984</td>
+      <td>170.188452</td>
+      <td>169.297901</td>
+      <td>156.933699</td>
+      <td>173.068241</td>
+      <td>169.890622</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2014-07-11</td>
+      <td>165.437181</td>
+      <td>154.819818</td>
+      <td>166.759593</td>
+      <td>161.607800</td>
+      <td>158.148139</td>
+      <td>165.108007</td>
+      <td>165.668307</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2014-07-04</td>
+      <td>150.715908</td>
+      <td>140.131046</td>
+      <td>148.064148</td>
+      <td>147.667609</td>
+      <td>148.554344</td>
+      <td>151.872781</td>
+      <td>155.458113</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2014-06-27</td>
+      <td>161.207466</td>
+      <td>157.575158</td>
+      <td>161.413391</td>
+      <td>160.319942</td>
+      <td>145.957128</td>
+      <td>160.949321</td>
+      <td>160.758547</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2014-06-20</td>
+      <td>146.011833</td>
+      <td>147.507212</td>
+      <td>149.043333</td>
+      <td>154.453050</td>
+      <td>142.023337</td>
+      <td>155.435619</td>
+      <td>154.336379</td>
+    </tr>
+  </tbody>
+</table></p>
+<h3 id="1-只使用周期因子在8月份的预测效果"><a href="#1-只使用周期因子在8月份的预测效果" class="headerlink" title="(1) 只使用周期因子在8月份的预测效果"></a>(1) 只使用周期因子在8月份的预测效果</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_, testset = split_data_underline(data)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">real_purchase = testset[<span class="string">'total_purchase_amt'</span>]</span><br><span class="line">real_redeem = testset[<span class="string">'total_redeem_amt'</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">result_purchase_cycle = np.array(base[(base[<span class="string">'date'</span>] &gt;= datetime.date(<span class="number">2014</span>,<span class="number">8</span>,<span class="number">1</span>))&amp;(base[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">9</span>,<span class="number">1</span>))][<span class="string">'total_purchase_predicted_by_cycle'</span>])</span><br><span class="line">result_redeem_cycle = np.array(base[(base[<span class="string">'date'</span>] &gt;= datetime.date(<span class="number">2014</span>,<span class="number">8</span>,<span class="number">1</span>))&amp;(base[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">9</span>,<span class="number">1</span>))][<span class="string">'total_redeem_predicted_by_cycle'</span>])</span><br><span class="line">total_AE(result_purchase_cycle, result_redeem_cycle, real_purchase, real_redeem)</span><br><span class="line"><span class="comment"># 175.93371418259747</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">trainset, testset = split_data_underline(data)</span><br><span class="line">visual(result_purchase_cycle, result_redeem_cycle, testset)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_77_0.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_77_1.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_77_2.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_77_3.png" alt="png"></p>
+<h3 id="2-只使用周期因子-预测残差在8月份的预测效果（比单纯用因子好）"><a href="#2-只使用周期因子-预测残差在8月份的预测效果（比单纯用因子好）" class="headerlink" title="(2) 只使用周期因子+预测残差在8月份的预测效果（比单纯用因子好）"></a>(2) 只使用周期因子+预测残差在8月份的预测效果（比单纯用因子好）</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trainset_purchase, testset_purchase = split_data_underline(data_purchase)</span><br><span class="line">result_purchase_rate = generate_under_result(data_purchase, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_purchase.columns</span><br><span class="line">                                                           <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                           target=<span class="string">'total_purchase_amt'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trainset_redeem, testset_redeem = split_data_underline(data_redeem)</span><br><span class="line">result_redeem_rate = generate_under_result(data_redeem, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_redeem.columns</span><br><span class="line">                                                           <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                           target=<span class="string">'total_redeem_amt'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">total_AE(result_purchase_rate * result_purchase_cycle, result_redeem_rate * result_redeem_cycle, real_purchase, real_redeem)</span><br><span class="line"><span class="comment"># 182.628220303351</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">trainset, testset = split_data_underline(data)</span><br><span class="line">visual(result_purchase_rate * result_purchase_cycle, result_redeem_rate * result_redeem_cycle, testset)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_82_0.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_82_1.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_82_2.png" alt="png"></p>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_82_3.png" alt="png"></p>
+<h3 id="3-生成线上结果"><a href="#3-生成线上结果" class="headerlink" title="(3) 生成线上结果"></a>(3) 生成线上结果</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trainset_purchase, testset_purchase = split_data_online(data_purchase)</span><br><span class="line">result_purchase_rate = generate_online_result(data_purchase, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_purchase.columns</span><br><span class="line">                                                           <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                           target=<span class="string">'total_purchase_amt'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trainset_redeem, testset_redeem = split_data_online(data_redeem)</span><br><span class="line">result_redeem_rate = generate_online_result(data_redeem, [x <span class="keyword">for</span> x <span class="keyword">in</span> data_redeem.columns</span><br><span class="line">                                                           <span class="keyword">if</span> x <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">'total_purchase_amt'</span>,<span class="string">'total_redeem_amt'</span>,<span class="string">'date'</span>]], </span><br><span class="line">                                           target=<span class="string">'total_redeem_amt'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修正一下预测结果试试</span></span><br><span class="line">result_purchase_rate = result_purchase_rate / np.mean(result_purchase_rate)</span><br><span class="line">result_redeem_rate = result_redeem_rate / np.mean(result_redeem_rate)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result_purchase_cycle = np.array(base[(base[<span class="string">'date'</span>] &gt;= datetime.date(<span class="number">2014</span>,<span class="number">9</span>,<span class="number">1</span>))&amp;(base[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">10</span>,<span class="number">1</span>))][<span class="string">'total_purchase_predicted_by_cycle'</span>])</span><br><span class="line">result_redeem_cycle = np.array(base[(base[<span class="string">'date'</span>] &gt;= datetime.date(<span class="number">2014</span>,<span class="number">9</span>,<span class="number">1</span>))&amp;(base[<span class="string">'date'</span>] &lt; datetime.date(<span class="number">2014</span>,<span class="number">10</span>,<span class="number">1</span>))][<span class="string">'total_redeem_predicted_by_cycle'</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result_purchase_residual = result_purchase_rate * result_purchase_cycle</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result_redeem_residual = result_redeem_rate * result_redeem_cycle</span><br></pre></td></tr></table></figure>
+<h4 id="月份周期因子线上结果（135）"><a href="#月份周期因子线上结果（135）" class="headerlink" title="月份周期因子线上结果（135）"></a>月份周期因子线上结果（135）</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">draw_result(result_purchase_cycle, result_redeem_cycle, testset_redeem)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_91_0.png" alt="png"></p>
+<h4 id="残差处理后结果"><a href="#残差处理后结果" class="headerlink" title="残差处理后结果"></a>残差处理后结果</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">draw_result(result_purchase_residual, result_redeem_residual, testset_redeem)</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/Pic/%E8%B5%84%E9%87%91%E6%B5%81%E5%85%A5%E6%B5%81%E5%87%BA%E9%A2%84%E6%B5%8B%E6%AF%94%E8%B5%9B%EF%BC%88%E4%BA%94%EF%BC%89/output_93_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">normalize_upload_file(result_purchase_residual, result_redeem_residual, testset_redeem).to_csv(<span class="string">'20190622_residual_liner.csv'</span>,index=<span class="literal">False</span>,header=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="仅用与修正节假日的结果"><a href="#仅用与修正节假日的结果" class="headerlink" title="仅用与修正节假日的结果"></a>仅用与修正节假日的结果</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result_score135 = pd.read_csv(<span class="string">'Result/timeseries0606.csv'</span>,header=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result_residual = normalize_upload_file(result_purchase_residual, result_redeem_residual, testset_redeem).reset_index(drop=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result_residual[<span class="string">'date'</span>] = result_residual[<span class="string">'date'</span>].astype(int)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">days_need_to_change = [</span><br><span class="line">    <span class="number">20140906</span>,</span><br><span class="line">    <span class="number">20140907</span>,</span><br><span class="line">    <span class="number">20140908</span>,</span><br><span class="line">    <span class="number">20140928</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> index,row <span class="keyword">in</span> result_score135.iterrows():</span><br><span class="line">    <span class="keyword">if</span> row[<span class="number">0</span>] <span class="keyword">in</span> days_need_to_change:</span><br><span class="line">        result_score135.loc[index, <span class="number">1</span>] =  result_residual.loc[index, <span class="string">'total_purchase_amt'</span>]</span><br><span class="line">        result_score135.loc[index, <span class="number">2</span>] =   result_residual.loc[index, <span class="string">'total_redeem_amt'</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result_score135.to_csv(<span class="string">'result135_fixed_by_residual_0621.csv'</span>,index=<span class="literal">False</span>,header=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/fe59ede.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/171a3f59.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Leetcode刷题专题打卡——查找</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>

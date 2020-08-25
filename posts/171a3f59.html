@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Leetcode刷题专题打卡——查找 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Leetcode刷题专题打卡——查找"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Leetcode刷题专题打卡——查找
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/171a3f59.html" class="article-date">
+  <time datetime="2020-08-25T14:10:01.985Z" itemprop="datePublished">2020-08-25</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Leetcode/">Leetcode</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">11.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">51 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>注：由于<a href="https://github.com/datawhalechina/team-learning-program/blob/master/LeetCodeClassification/1.%E5%88%86%E6%B2%BB.md" target="_blank" rel="noopener">Datawhale组队学习资料</a>中对查找也讲的太美丽了，本文以直接搬运为主，对算法进行优化为辅，感兴趣的可以直接上Github相应组队学习内容中进行学习。</p>
+<h1 id="一-查找表"><a href="#一-查找表" class="headerlink" title="一.查找表"></a>一.查找表</h1><h2 id="考虑的基本数据结构"><a href="#考虑的基本数据结构" class="headerlink" title="考虑的基本数据结构"></a>考虑的基本数据结构</h2><p><strong>第一类： 查找有无—set</strong></p>
+<p>元素’a’是否存在，通常用set：集合</p>
+<p>set只存储键，而不需要对应其相应的值。</p>
+<p>set中的键不允许重复</p>
+<p><strong>第二类： 查找对应关系(键值对应)—dict</strong></p>
+<p>元素’a’出现了几次：dict—&gt;字典</p>
+<p>dict中的键不允许重复</p>
+<p><strong>第三类： 改变映射关系—map</strong></p>
+<p>通过将原有序列的关系映射统一表示为其他</p>
+<h2 id="算法应用"><a href="#算法应用" class="headerlink" title="算法应用"></a>算法应用</h2><h3 id="LeetCode-349-Intersection-Of-Two-Arrays-1"><a href="#LeetCode-349-Intersection-Of-Two-Arrays-1" class="headerlink" title="LeetCode 349 Intersection Of Two Arrays 1"></a>LeetCode 349 Intersection Of Two Arrays 1</h3><h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><p>给定两个数组nums,求两个数组的公共元素。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如nums1 &#x3D; [1,2,2,1],nums2 &#x3D; [2,2]</span><br><span class="line"></span><br><span class="line">结果为[2]</span><br><span class="line">结果中每个元素只能出现一次</span><br><span class="line">出现的顺序可以是任意的</span><br></pre></td></tr></table></figure>
+<h4 id="分析实现"><a href="#分析实现" class="headerlink" title="分析实现"></a>分析实现</h4><p>由于每个元素只出现一次，因此不需要关注每个元素出现的次数，用set的数据结构就可以了。记录元素的有和无。</p>
+<p>把nums1记录为set，判断nums2的元素是否在set中，是的话，就放在一个公共的set中，最后公共的set就是我们要的结果。</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def intersection(self, nums1: List[int], nums2: List[int]) -&gt; List[int]:</span><br><span class="line">        nums1 &#x3D; set(nums1)</span><br><span class="line">        return set([i for i in nums2 if i in nums1])</span><br></pre></td></tr></table></figure>
+<p>也可以通过set的内置方法来实现，直接求set的交集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def intersection(self, nums1: List[int], nums2: List[int]) -&gt; List[int]:</span><br><span class="line">        set1 &#x3D; set(nums1)</span><br><span class="line">        set2 &#x3D; set(nums2)</span><br><span class="line">        return set2 &amp; set1</span><br></pre></td></tr></table></figure>
+<h3 id="LeetCode-350-Intersection-Of-Two-Arrays-2"><a href="#LeetCode-350-Intersection-Of-Two-Arrays-2" class="headerlink" title="LeetCode 350 Intersection Of Two Arrays 2"></a>LeetCode 350 Intersection Of Two Arrays 2</h3><h4 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a>题目描述</h4><p>给定两个数组nums,求两个数组的交集。</p>
+<p>— 如nums1=[1,2,2,1],nums=[2,2]</p>
+<p>— 结果为[2,2]</p>
+<p>— 出现的顺序可以是任意的</p>
+<h4 id="分析实现-1"><a href="#分析实现-1" class="headerlink" title="分析实现"></a>分析实现</h4><p>元素出现的次数有用，那么对于存储次数就是有意义的，所以选择数据结构时，就应该选择dict的结构，通过字典的比较来判断；</p>
+<p>记录每个元素的同时要记录这个元素的频次。</p>
+<p>记录num1的字典，遍历nums2，比较nums1的字典的nums的key是否大于零，从而进行判断。</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def intersect(self, nums1: List[int], nums2: List[int]) -&gt; List[int]:</span><br><span class="line">        from collections import Counter</span><br><span class="line">        nums1_dict &#x3D; Counter(nums1)</span><br><span class="line">        res &#x3D; []</span><br><span class="line">        for num in nums2:</span><br><span class="line">            if nums1_dict[num] &gt; 0:</span><br><span class="line">                # 说明找到了一个元素即在num1也在nums2</span><br><span class="line">                res.append(num)</span><br><span class="line">                nums1_dict[num] -&#x3D; 1</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<h3 id="LeetCode-242-Intersection-Of-Two-Arrays-2"><a href="#LeetCode-242-Intersection-Of-Two-Arrays-2" class="headerlink" title="LeetCode 242 Intersection Of Two Arrays 2"></a>LeetCode 242 Intersection Of Two Arrays 2</h3><h4 id="题目描述-2"><a href="#题目描述-2" class="headerlink" title="题目描述"></a>题目描述</h4><p>给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">示例1:</span><br><span class="line"></span><br><span class="line">输入: s &#x3D; &quot;anagram&quot;, t &#x3D; &quot;nagaram&quot;</span><br><span class="line">输出: true</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line"></span><br><span class="line">输入: s &#x3D; &quot;rat&quot;, t &#x3D; &quot;car&quot;</span><br><span class="line">输出: false</span><br></pre></td></tr></table></figure>
+<h4 id="分析实现-2"><a href="#分析实现-2" class="headerlink" title="分析实现"></a>分析实现</h4><p>判断异位词即判断变换位置后的字符串和原来是否相同，那么不仅需要存储元素，还需要记录元素的个数。可以选择dict的数据结构，将字符串s和t都用dict存储，而后直接比较两个dict是否相同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def isAnagram(self, s: str, t: str) -&gt; bool:</span><br><span class="line">        from collections import Counter</span><br><span class="line">        s &#x3D; Counter(s)</span><br><span class="line">        t &#x3D; Counter(t)</span><br><span class="line">        if s &#x3D;&#x3D; t:</span><br><span class="line">            return True</span><br><span class="line">        else:</span><br><span class="line">            return False</span><br></pre></td></tr></table></figure>
+<h3 id="LeetCode-202-Happy-number"><a href="#LeetCode-202-Happy-number" class="headerlink" title="LeetCode 202 Happy number"></a>LeetCode 202 Happy number</h3><h4 id="题目描述-3"><a href="#题目描述-3" class="headerlink" title="题目描述"></a>题目描述</h4><p>编写一个算法来判断一个数是不是“快乐数”。</p>
+<p>一个“快乐数”定义为：对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和，然后重复这个过程直到这个数变为 1，也可能是无限循环但始终变不到 1。如果可以变为 1，那么这个数就是快乐数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">示例: </span><br><span class="line">输入: 19</span><br><span class="line">输出: true</span><br><span class="line">解释: </span><br><span class="line">1^2 + 9^2 &#x3D; 82</span><br><span class="line">8^2 + 2^2 &#x3D; 68</span><br><span class="line">6^2 + 8^2 &#x3D; 100</span><br><span class="line">1^2 + 0^2 + 0^2 &#x3D; 1</span><br></pre></td></tr></table></figure>
+<h4 id="分析实现-3"><a href="#分析实现-3" class="headerlink" title="分析实现"></a>分析实现</h4><p>这道题目思路很明显，当n不等于1时就循环，每次循环时，将其最后一位到第一位的数依次平方求和，比较求和是否为1。</p>
+<p>难点在于，什么时候跳出循环？</p>
+<p>开始笔者的思路是，循环个100次，还没得出结果就false，但是小学在算无限循环小数时有一个特征，就是当除的数中，和之前历史的得到的数有重合时，这时就是无限循环小数。</p>
+<p>那么这里也可以按此判断，因为只需要判断有或无，不需要记录次数，故用set的数据结构。每次对求和的数进行append，当新一次求和的值存在于set中时，就return false.</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def isHappy(self, n: int) -&gt; bool:</span><br><span class="line">        already &#x3D; set()</span><br><span class="line">        while n !&#x3D; 1:</span><br><span class="line">            sum &#x3D; 0</span><br><span class="line">            while n &gt; 0:</span><br><span class="line">                # 取n的最后一位数</span><br><span class="line">                tmp &#x3D; n % 10   </span><br><span class="line">                sum +&#x3D; tmp ** 2</span><br><span class="line">                # 将n的最后一位截掉</span><br><span class="line">                n &#x2F;&#x2F;&#x3D; 10</span><br><span class="line">            # 如果求的和在过程中出现过</span><br><span class="line">            if sum in already:</span><br><span class="line">                return False</span><br><span class="line">            else:</span><br><span class="line">                already.add(sum)</span><br><span class="line">            n &#x3D; sum</span><br><span class="line">        return True</span><br></pre></td></tr></table></figure>
+<h4 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#一般对多位数计算的套路是：</span><br><span class="line">#循环从后向前取位数</span><br><span class="line">while n &gt;0 :</span><br><span class="line">#取最后一位： </span><br><span class="line">tmp &#x3D; n % 10</span><br><span class="line">#再截掉最后一位：</span><br><span class="line">n &#x3D; n &#x2F;&#x2F; 10</span><br></pre></td></tr></table></figure>
+<h3 id="LeetCode-290-Word-Pattern"><a href="#LeetCode-290-Word-Pattern" class="headerlink" title="LeetCode 290 Word Pattern"></a>LeetCode 290 Word Pattern</h3><h4 id="题目描述-4"><a href="#题目描述-4" class="headerlink" title="题目描述"></a>题目描述</h4><p>给出一个模式(pattern)以及一个字符串，判断这个字符串是否符合模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">示例1:</span><br><span class="line">输入: pattern &#x3D; &quot;abba&quot;, </span><br><span class="line">str &#x3D; &quot;dog cat cat dog&quot;</span><br><span class="line">输出: true</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入:pattern &#x3D; &quot;abba&quot;, </span><br><span class="line">str &#x3D; &quot;dog cat cat fish&quot;</span><br><span class="line">输出: false</span><br><span class="line"></span><br><span class="line">示例 3:</span><br><span class="line">输入: pattern &#x3D; &quot;aaaa&quot;, str &#x3D; &quot;dog cat cat dog&quot;</span><br><span class="line">输出: false</span><br><span class="line"></span><br><span class="line">示例 4:</span><br><span class="line">输入: pattern &#x3D; &quot;abba&quot;, str &#x3D; &quot;dog dog dog dog&quot;</span><br><span class="line">输出: false</span><br></pre></td></tr></table></figure>
+<h4 id="分析实现-4"><a href="#分析实现-4" class="headerlink" title="分析实现"></a>分析实现</h4><p>抓住变与不变，笔者开始的思路是选择了dict的数据结构，比较count值和dict对应的keys的个数是否相同，但是这样无法判断顺序的关系，如测试用例：’aba’,’cat cat dog’。</p>
+<p>那么如何能<strong>既考虑顺序</strong>，也考虑<strong>键值对应的关系</strong>呢？</p>
+<p>抓住变与不变，变的是键，但是不变的是各个字典中，对应的相同index下的值，如dict1[index] = dict2[index]，那么我们可以创建两个新的字典，遍历index对两个新的字典赋值，并比较value。</p>
+<p>还有一个思路比较巧妙，既然不同，那么可以考虑怎么让它们相同，将原来的dict通过map映射为相同的key，再比较相同key的dict是否相同。</p>
+<p>代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def wordPattern(self,pattern, str):</span><br><span class="line">        str &#x3D; str.split()</span><br><span class="line">        return list(map(pattern.index,pattern)) &#x3D;&#x3D; list(map(str.index,str))</span><br></pre></td></tr></table></figure>
+<h4 id="tips-1"><a href="#tips-1" class="headerlink" title="tips"></a>tips</h4><ol>
+<li>因为str是字符串，不是由单个字符组成，所以开始需要根据空格拆成字符list：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">str &#x3D; str.split()</span><br></pre></td></tr></table></figure>
+<ol>
+<li>通过map将字典映射为index的list:</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">map(pattern.index, pattern)</span><br></pre></td></tr></table></figure>
+<ol>
+<li>map是通过hash存储的，不能直接进行比较，需要转换为list比较list</li>
+</ol>
+<h3 id="LeetCode-205-Isomorphic-Strings"><a href="#LeetCode-205-Isomorphic-Strings" class="headerlink" title="LeetCode 205 Isomorphic Strings"></a>LeetCode 205 Isomorphic Strings</h3><h4 id="题目描述-5"><a href="#题目描述-5" class="headerlink" title="题目描述"></a>题目描述</h4><p>给定两个字符串 s 和 t，判断它们是否是同构的。</p>
+<p>如果 s 中的字符可以被替换得到 t ，那么这两个字符串是同构的。</p>
+<p>所有出现的字符都必须用另一个字符替换，同时保留字符的顺序。两个字符不能映射到同一个字符上，但字符可以映射自己本身。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">示例 1:</span><br><span class="line">输入: s &#x3D; &quot;egg&quot;, t &#x3D; &quot;add&quot;</span><br><span class="line">输出: true</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入: s &#x3D; &quot;foo&quot;, t &#x3D; &quot;bar&quot;</span><br><span class="line">输出: false</span><br><span class="line"></span><br><span class="line">示例 3:</span><br><span class="line">输入: s &#x3D; &quot;paper&quot;, t &#x3D; &quot;title&quot;</span><br><span class="line">输出: true</span><br></pre></td></tr></table></figure>
+<h4 id="分析实现-5"><a href="#分析实现-5" class="headerlink" title="分析实现"></a>分析实现</h4><p>思路与上题一致，可以考虑通过建两个dict，比较怎样不同，也可以将不同转化为相同。</p>
+<p>直接用上题的套路代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def isIsomorphic(self, s: str, t: str) -&gt; bool:</span><br><span class="line">        return list(map(s.index,s)) &#x3D;&#x3D; list(map(t.index,t))</span><br></pre></td></tr></table></figure>
+<h3 id="LeetCode-451-Sort-Characters-By-Frequency"><a href="#LeetCode-451-Sort-Characters-By-Frequency" class="headerlink" title="LeetCode 451 Sort Characters By Frequency"></a>LeetCode 451 Sort Characters By Frequency</h3><h4 id="题目描述-6"><a href="#题目描述-6" class="headerlink" title="题目描述"></a>题目描述</h4><p>给定一个字符串，请将字符串里的字符按照出现的频率降序排列。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">示例 1:</span><br><span class="line">输入:</span><br><span class="line">&quot;tree&quot;</span><br><span class="line">输出:</span><br><span class="line">&quot;eert&quot;</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入:</span><br><span class="line">&quot;cccaaa&quot;</span><br><span class="line">输出:</span><br><span class="line">&quot;cccaaa&quot;</span><br><span class="line"></span><br><span class="line">示例 3:</span><br><span class="line">输入:</span><br><span class="line">&quot;Aabb&quot;</span><br><span class="line">输出:</span><br><span class="line">&quot;bbAa&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="分析实现-6"><a href="#分析实现-6" class="headerlink" title="分析实现"></a>分析实现</h4><p>对于相同频次的字母，顺序任意，需要考虑大小写，返回的是字符串。</p>
+<p>使用字典统计频率，对字典的value进行排序，最终根据key的字符串乘上value次数，组合在一起输出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def frequencySort(self, s: str) -&gt; str:</span><br><span class="line">        from collections import Counter</span><br><span class="line">        s_dict &#x3D; Counter(s)</span><br><span class="line">        # sorted返回的是列表元组</span><br><span class="line">        s &#x3D; sorted(s_dict.items(), key&#x3D;lambda item:item[1], reverse &#x3D; True)</span><br><span class="line">        # 因为返回的是字符串</span><br><span class="line">        res &#x3D; &#39;&#39;</span><br><span class="line">        for key, value in s:</span><br><span class="line">            res +&#x3D; key * value   </span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<h4 id="tips-2"><a href="#tips-2" class="headerlink" title="tips"></a>tips</h4><ol>
+<li>通过sorted的方法进行value排序，对字典排序后无法直接按照字典进行返回，返回的为列表元组：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 对value值由大到小排序</span><br><span class="line">s &#x3D; sorted(s_dict.items(), key&#x3D;lambda item:item[1], reverse &#x3D; True)</span><br><span class="line"></span><br><span class="line"># 对key由小到大排序</span><br><span class="line">s &#x3D; sorted(s_dict.items(), key&#x3D;lambda item:item[0])</span><br></pre></td></tr></table></figure>
+<ol>
+<li>输出为字符串的情况下，可以由字符串直接进行拼接:</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 由key和value相乘进行拼接</span><br><span class="line">&#39;s&#39; * 5 + &#39;d&#39;*2</span><br></pre></td></tr></table></figure>
+<h1 id="二-对撞指针"><a href="#二-对撞指针" class="headerlink" title="二. 对撞指针"></a>二. 对撞指针</h1><h1 id="LeetCode-1-Two-Sum"><a href="#LeetCode-1-Two-Sum" class="headerlink" title="LeetCode 1 Two Sum"></a>LeetCode 1 Two Sum</h1><h2 id="题目描述-7"><a href="#题目描述-7" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出一个整型数组nums，返回这个数组中两个数字的索引值i和j，使得nums[i] + nums[j]等于一个给定的target值，两个索引不能相等。</p>
+<p>如：nums= [2,7,11,15],target=9 返回[0,1]</p>
+<h2 id="审题"><a href="#审题" class="headerlink" title="审题:"></a>审题:</h2><p>需要考虑：</p>
+<ol>
+<li>开始数组是否有序；</li>
+<li>索引从0开始计算还是1开始计算？</li>
+<li>没有解该怎么办？</li>
+<li>有多个解怎么办？保证有唯一解。</li>
+</ol>
+<h2 id="分析实现-7"><a href="#分析实现-7" class="headerlink" title="分析实现"></a>分析实现</h2><h2 id="暴力法O-n-2"><a href="#暴力法O-n-2" class="headerlink" title="暴力法O(n^2)"></a>暴力法O(n^2)</h2><p>时间复杂度为O(n^2),第一遍遍历数组，第二遍遍历当前遍历值之后的元素，其和等于target则return。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def twoSum(self, nums: List[int], target: int) -&gt; List[int]:</span><br><span class="line">        len_nums &#x3D; len(nums)</span><br><span class="line">        for i in range(len_nums):</span><br><span class="line">            for j in range(i+1,len_nums):</span><br><span class="line">                if nums[i] + nums[j] &#x3D;&#x3D; target:</span><br><span class="line">                    return [i,j]</span><br></pre></td></tr></table></figure>
+<h2 id="排序-指针对撞-O-n-O-nlogn-O-n"><a href="#排序-指针对撞-O-n-O-nlogn-O-n" class="headerlink" title="排序+指针对撞(O(n)+O(nlogn)=O(n))"></a>排序+指针对撞(O(n)+O(nlogn)=O(n))</h2><p>在数组篇的LeetCode 167题中，也遇到了找到两个数使得它们相加之和等于目标数，但那是对于排序的情况，因此也可以使用上述的思路来完成。</p>
+<p>因为问题本身不是有序的，因此需要对原来的数组进行一次排序，排序后就可以用O(n)的指针对撞进行解决。</p>
+<p>但是问题是，返回的是数字的索引，如果只是对数组的值进行排序，那么数组原来表示的索引的信息就会丢失，所以在排序前要进行些处理。</p>
+<p><strong>错误代码示例—只使用dict来进行保存：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def twoSum(self, nums: List[int], target: int) -&gt; List[int]:</span><br><span class="line">        record &#x3D; dict()</span><br><span class="line">        for index in range(len(nums)):</span><br><span class="line">            record[nums[index]] &#x3D; index </span><br><span class="line">        nums.sort()</span><br><span class="line">        l,r &#x3D; 0,len(nums)-1</span><br><span class="line">        while l &lt; r:</span><br><span class="line">            if nums[l] + nums[r] &#x3D;&#x3D; target:</span><br><span class="line">                return [record[nums[l]],record[nums[r]]]</span><br><span class="line">            elif nums[l] + nums[r] &lt; target:</span><br><span class="line">                l +&#x3D; 1</span><br><span class="line">            else:</span><br><span class="line">                r -&#x3D; 1</span><br></pre></td></tr></table></figure>
+<p>当遇到<strong>相同的元素的索引</strong>问题时，会不满足条件：</p>
+<p>如：[3,3] 6</p>
+<p>在排序前先使用一个额外的数组<strong>拷贝</strong>一份原来的数组，对于两个相同元素的索引问题，使用一个<strong>bool型变量</strong>辅助将两个索引都找到，总的时间复杂度为O(n)+O(nlogn) = O(nlogn)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def twoSum(self, nums: List[int], target: int) -&gt; List[int]:</span><br><span class="line">        record &#x3D; dict()</span><br><span class="line">        nums_copy &#x3D; nums.copy()</span><br><span class="line">        sameFlag &#x3D; True;</span><br><span class="line">        nums.sort()</span><br><span class="line">        l,r &#x3D; 0,len(nums)-1</span><br><span class="line">        while l &lt; r:</span><br><span class="line">            if nums[l] + nums[r] &#x3D;&#x3D; target:</span><br><span class="line">                break</span><br><span class="line">            elif nums[l] + nums[r] &lt; target:</span><br><span class="line">                l +&#x3D; 1</span><br><span class="line">            else:</span><br><span class="line">                r -&#x3D; 1</span><br><span class="line">        res &#x3D; []</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            if nums_copy[i] &#x3D;&#x3D; nums[l] and sameFlag:</span><br><span class="line">                res.append(i)</span><br><span class="line">                sameFlag &#x3D; False</span><br><span class="line">            elif nums_copy[i] &#x3D;&#x3D; nums[r]:</span><br><span class="line">                res.append(i)</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<h3 id="小套路"><a href="#小套路" class="headerlink" title="小套路:"></a>小套路:</h3><p>如果只是对数组的值进行排序，那么数组原来表示的索引的信息就会丢失的情况，可以在排序前：</p>
+<h3 id="更加pythonic的实现"><a href="#更加pythonic的实现" class="headerlink" title="更加pythonic的实现"></a>更加pythonic的实现</h3><p>通过list(enumerate(nums))开始实现下标和值的绑定，不用专门的再copy加bool判断。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">nums &#x3D; list(enumerate(nums))</span><br><span class="line">nums.sort(key &#x3D; lambda x:x[1])</span><br><span class="line">i,j &#x3D; 0, len(nums)-1</span><br><span class="line">while i &lt; j:</span><br><span class="line">    if nums[i][1] + nums[j][1] &gt; target:</span><br><span class="line">        j -&#x3D; 1</span><br><span class="line">    elif nums[i][1] + nums[j][1] &lt; target:</span><br><span class="line">        i +&#x3D; 1</span><br><span class="line">    else:</span><br><span class="line">        if nums[j][0] &lt; nums[i][0]:</span><br><span class="line">            nums[j],nums[i] &#x3D; nums[i],nums[j]</span><br><span class="line">        return num[i][0],nums[j][0]</span><br></pre></td></tr></table></figure>
+<p><strong>拷贝数组 + bool型变量辅助</strong></p>
+<h2 id="查找表—O-n"><a href="#查找表—O-n" class="headerlink" title="查找表—O(n)"></a>查找表—O(n)</h2><p>遍历数组过程中，当遍历到元素v时，可以只看v前面的元素，是否含有target-v的元素存在。</p>
+<ol>
+<li>如果查找成功，就返回解；</li>
+<li>如果没有查找成功，就把v放在查找表中，继续查找下一个解。</li>
+</ol>
+<p>即使v放在了之前的查找表中覆盖了v，也不影响当前v元素的查找。因为只需要找到两个元素，只需要找target-v的另一个元素即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def twoSum(self, nums: List[int], target: int) -&gt; List[int]:</span><br><span class="line">        record &#x3D; dict()</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            complement &#x3D; target - nums[i]</span><br><span class="line">            # 已经在之前的字典中找到这个值</span><br><span class="line">            if record.get(complement) is not None:</span><br><span class="line">                res &#x3D; [i,record[complement]]</span><br><span class="line">                return res</span><br><span class="line">            record[nums[i]] &#x3D; i</span><br></pre></td></tr></table></figure>
+<p>只进行一次循环，故时间复杂度O(n),空间复杂度为O(n)</p>
+<h2 id="补充思路："><a href="#补充思路：" class="headerlink" title="补充思路："></a>补充思路：</h2><p>通过enumerate来把索引和值进行绑定，进而对value进行sort，前后对撞指针进行返回。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def twoSum(self, nums: List[int], target: int) -&gt; List[int]:</span><br><span class="line">        nums &#x3D; list(enumerate(nums))</span><br><span class="line">        # 根据value来排序</span><br><span class="line">        nums.sort(key &#x3D; lambda x:x[1])</span><br><span class="line">        l,r &#x3D; 0, len(nums)-1</span><br><span class="line">        while l &lt; r:</span><br><span class="line">            if nums[l][1] + nums[r][1] &#x3D;&#x3D; target:</span><br><span class="line">                return nums[l][0],nums[r][0]</span><br><span class="line">            elif nums[l][1] + nums[r][1] &lt; target:</span><br><span class="line">                l +&#x3D; 1</span><br><span class="line">            else:</span><br><span class="line">                r -&#x3D; 1</span><br></pre></td></tr></table></figure>
+<h1 id="LeetCode-15-3Sum"><a href="#LeetCode-15-3Sum" class="headerlink" title="LeetCode 15 3Sum"></a>LeetCode 15 3Sum</h1><h2 id="题目描述-8"><a href="#题目描述-8" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出一个整型数组，寻找其中的所有不同的三元组(a,b,c)，使得a+b+c=0</p>
+<p>注意：答案中不可以包含重复的三元组。</p>
+<p>如：nums = [-1, 0, 1, 2, -1, -4]，</p>
+<p>结果为：[[-1, 0, 1],[-1, -1, 2]]</p>
+<h2 id="审题-1"><a href="#审题-1" class="headerlink" title="审题"></a>审题</h2><ol>
+<li>数组不是有序的；</li>
+<li>返回结果为全部解，多个解的顺序是否需要考虑？—不需要考虑顺序</li>
+<li>什么叫不同的三元组？索引不同即不同，还是值不同？—题目定义的是，值不同才为不同的三元组</li>
+<li>没有解时怎么返回？—空列表</li>
+</ol>
+<h2 id="分析实现-8"><a href="#分析实现-8" class="headerlink" title="分析实现"></a>分析实现</h2><p>因为上篇中已经实现了Two Sum的问题，因此对于3Sum，首先想到的思路就是，开始固定一个k，然后在其后都当成two sum问题来进行解决，但是这样就ok了吗？</p>
+<h3 id="没有考虑重复元素导致错误"><a href="#没有考虑重复元素导致错误" class="headerlink" title="没有考虑重复元素导致错误"></a>没有考虑重复元素导致错误</h3><p>直接使用Two Sum问题中的查找表的解法，根据第一层遍历的i，将i之后的数组作为two sum问题进行解决。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def threeSum(self, nums: [int]) -&gt; [[int]]:</span><br><span class="line">        res &#x3D; []</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            num &#x3D; 0 - nums[i]</span><br><span class="line">            record &#x3D; dict()</span><br><span class="line">            for j in range(i + 1, len(nums)):</span><br><span class="line">                complement &#x3D; num - nums[j]</span><br><span class="line">                # 已经在之前的字典中找到这个值</span><br><span class="line">                if record.get(complement) is not None:</span><br><span class="line">                    res_lis &#x3D; [nums[i], nums[j], complement]</span><br><span class="line">                    res.append(res_lis)</span><br><span class="line">                record[nums[j]] &#x3D; i</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<p>但是这样会导致一个错误，错误用例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">输入：</span><br><span class="line">[-1,0,1,2,-1,-4]</span><br><span class="line">输出：</span><br><span class="line">[[-1,1,0],[-1,-1,2],[0,-1,1]]</span><br><span class="line">预期结果：</span><br><span class="line">[[-1,-1,2],[-1,0,1]]</span><br></pre></td></tr></table></figure>
+<p>代码在实现的过程中没有把第一次遍历的i的索引指向相同元素的情况排除掉，于是出现了当i指针后面位置的元素有和之前访问过的相同的值，于是重复遍历。</p>
+<p>那么可以考虑，开始时对nums数组进行排序，排序后，当第一次遍历的指针k遇到下一个和前一个指向的值重复时，就将其跳过。为了方便计算，在第二层循环中，可以使用<strong>对撞指针</strong>的套路：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 对撞指针套路</span><br><span class="line">l,r &#x3D; 0, len(nums)-1</span><br><span class="line">while l &lt; r:</span><br><span class="line">    if nums[l] + nums[r] &#x3D;&#x3D; target:</span><br><span class="line">        return nums[l],nums[r]</span><br><span class="line">    elif nums[l] + nums[r] &lt; target:</span><br><span class="line">        l +&#x3D; 1</span><br><span class="line">    else:</span><br><span class="line">        r -&#x3D; 1</span><br></pre></td></tr></table></figure>
+<p>其中需要注意的是，在里层循环中，也要考虑重复值的情况，因此当值相等时，再次移动指针时，需要保证其指向的值和前一次指向的值不重复，因此可以：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 对撞指针套路</span><br><span class="line">l,r &#x3D; 0, len(nums)-1</span><br><span class="line">while l &lt; r:</span><br><span class="line">    sum &#x3D; nums[i] + nums[l] + nums[r]</span><br><span class="line">    if sum &#x3D;&#x3D; target:</span><br><span class="line">        res.append([nums[i],nums[l],nums[r])</span><br><span class="line">        l +&#x3D; 1</span><br><span class="line">        r -&#x3D; 1</span><br><span class="line">        while l &lt; r and nums[l] &#x3D;&#x3D; nums[l-1]: l +&#x3D; 1</span><br><span class="line">        while l &lt; r and nums[r] &#x3D;&#x3D; nums[r+1]: r -&#x3D; 1</span><br><span class="line">    elif sum &lt; target:</span><br><span class="line">        l +&#x3D; 1</span><br><span class="line">    else:</span><br><span class="line">        r -&#x3D; 1</span><br></pre></td></tr></table></figure>
+<p>再调整下遍历的范围，因为设了3个索引：i，l，r。边界情况下，r索引指向len-1, l指向len-2，索引i遍历的边界为len-3，故for循环是从0到len-2。</p>
+<p>代码实现如下：</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def threeSum(self, nums: [int]) -&gt; [[int]]:</span><br><span class="line">        nums.sort()</span><br><span class="line">        res &#x3D; []</span><br><span class="line">        for i in range(len(nums)-2):</span><br><span class="line">            # 因为是排序好的数组，如果最小的都大于0可以直接排除</span><br><span class="line">            if nums[i] &gt; 0: break</span><br><span class="line">            # 排除i的重复值</span><br><span class="line">            if i &gt; 0 and nums[i] &#x3D;&#x3D; nums[i-1]: continue</span><br><span class="line">            l,r &#x3D; i+1, len(nums)-1</span><br><span class="line">            while l &lt; r:</span><br><span class="line">                sum &#x3D; nums[i] + nums[l] + nums[r]</span><br><span class="line">                if sum &#x3D;&#x3D; 0:</span><br><span class="line">                    res.append([nums[i],nums[l],nums[r]])</span><br><span class="line">                    l +&#x3D; 1</span><br><span class="line">                    r -&#x3D; 1</span><br><span class="line">                    while l &lt; r and nums[l] &#x3D;&#x3D; nums[l-1]: l +&#x3D; 1</span><br><span class="line">                    while l &lt; r and nums[r] &#x3D;&#x3D; nums[r+1]: r -&#x3D; 1</span><br><span class="line">                elif sum &lt; 0:</span><br><span class="line">                    l +&#x3D; 1</span><br><span class="line">                else:</span><br><span class="line">                    r -&#x3D; 1</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<h2 id="小套路-1"><a href="#小套路-1" class="headerlink" title="小套路"></a>小套路</h2><ol>
+<li>采用<strong>for + while</strong>的形式来处理三索引；</li>
+<li>当数组不是有序时需要注意，有序的特点在哪里，有序就可以用哪些方法解决？无序的话不便在哪里？</li>
+<li>对撞指针套路：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 对撞指针套路</span><br><span class="line">l,r &#x3D; 0, len(nums)-1</span><br><span class="line">while l &lt; r:</span><br><span class="line">    if nums[l] + nums[r] &#x3D;&#x3D; target:</span><br><span class="line">        return nums[l],nums[r]</span><br><span class="line">    elif nums[l] + nums[r] &lt; target:</span><br><span class="line">        l +&#x3D; 1</span><br><span class="line">    else:</span><br><span class="line">        r -&#x3D; 1</span><br></pre></td></tr></table></figure>
+<ol>
+<li>处理重复值的套路：先转换为有序数组，再循环判断其与上一次值是否重复：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 1.</span><br><span class="line">for i in range(len(nums)):</span><br><span class="line">    if i &gt; 0 and nums[i] &#x3D;&#x3D; nums[i-1]: continue</span><br><span class="line"># 2.</span><br><span class="line">while l &lt; r:</span><br><span class="line">    while l &lt; r and nums[l] &#x3D;&#x3D; nums[l-1]: l +&#x3D; 1</span><br></pre></td></tr></table></figure>
+<h1 id="LeetCode-18-4Sum"><a href="#LeetCode-18-4Sum" class="headerlink" title="LeetCode 18 4Sum"></a>LeetCode 18 4Sum</h1><h2 id="题目描述-9"><a href="#题目描述-9" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出一个整形数组，寻找其中的所有不同的四元组(a,b,c,d)，使得a+b+c+d等于一个给定的数字target。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如:</span><br><span class="line">nums &#x3D; [1, 0, -1, 0, -2, 2]，target &#x3D; 0</span><br><span class="line"></span><br><span class="line">结果为：</span><br><span class="line">[[-1,  0, 0, 1],[-2, -1, 1, 2],[-2,  0, 0, 2]]</span><br></pre></td></tr></table></figure>
+<h2 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h2><p>4Sum可以当作是3Sum问题的扩展，注意事项仍是一样的，同样是不能返回重复值得解。首先排序。接着从[0,len-1]遍历i，跳过i的重复元素，再在[i+1,len-1]中遍历j，得到i，j后，再选择首尾的l和r，通过对撞指针的思路，四数和大的话r—，小的话l++,相等的话纳入结果list，最后返回。</p>
+<p>套用3Sum得代码，在其前加一层循环，对边界情况进行改动即可:</p>
+<ol>
+<li>原来3个是到len-2,现在外层循环是到len-3;</li>
+<li>在中间层得迭代中，当第二个遍历得值在第一个遍历得值之后且后项大于前项时，认定为重复；</li>
+<li>加些边界条件判断：当len小于4时，直接返回；当只有4个值且长度等于target时，直接返回本身即可。</li>
+</ol>
+<p>代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def fourSum(self, nums: List[int], target: int) -&gt; List[List[int]]:</span><br><span class="line">        nums.sort()</span><br><span class="line">        res &#x3D; []</span><br><span class="line">        if len(nums) &lt; 4: return res</span><br><span class="line">        if len(nums) &#x3D;&#x3D; 4 and sum(nums) &#x3D;&#x3D; target:</span><br><span class="line">            res.append(nums)</span><br><span class="line">            return res</span><br><span class="line">        for i in range(len(nums)-3):</span><br><span class="line">            if i &gt; 0 and nums[i] &#x3D;&#x3D; nums[i-1]: continue</span><br><span class="line">            for j in range(i+1,len(nums)-2):</span><br><span class="line">                if j &gt; i+1 and nums[j] &#x3D;&#x3D; nums[j-1]: continue</span><br><span class="line">                l,r &#x3D; j+1, len(nums)-1</span><br><span class="line">                while l &lt; r:</span><br><span class="line">                    sum_value &#x3D; nums[i] + nums[j] + nums[l] + nums[r]</span><br><span class="line">                    if sum_value &#x3D;&#x3D; target:</span><br><span class="line">                        res.append([nums[i],nums[j],nums[l],nums[r]])</span><br><span class="line">                        l +&#x3D; 1</span><br><span class="line">                        r -&#x3D; 1</span><br><span class="line">                        while l &lt; r and nums[l] &#x3D;&#x3D; nums[l-1]: l +&#x3D; 1</span><br><span class="line">                        while l &lt; r and nums[r] &#x3D;&#x3D; nums[r+1]: r -&#x3D; 1</span><br><span class="line">                    elif sum_value &lt; target:</span><br><span class="line">                        l +&#x3D; 1</span><br><span class="line">                    else:</span><br><span class="line">                        r -&#x3D; 1</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<p>还可以使用combinations(nums, 4)来对原数组中得4个元素全排列，在开始sort后，对排列得到得元素进行set去重。但单纯利用combinations实现会超时。</p>
+<h2 id="超出时间限制"><a href="#超出时间限制" class="headerlink" title="超出时间限制"></a>超出时间限制</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def fourSum(self, nums: List[int], target: int) -&gt; List[List[int]]:</span><br><span class="line">        nums.sort()</span><br><span class="line">        from itertools import combinations</span><br><span class="line">        res &#x3D; []</span><br><span class="line">        for i in combinations(nums, 4):</span><br><span class="line">            if sum(i) &#x3D;&#x3D; target:</span><br><span class="line">                res.append(i)</span><br><span class="line">        res &#x3D; set(res)</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<h1 id="LeetCode-16-3Sum-Closest"><a href="#LeetCode-16-3Sum-Closest" class="headerlink" title="LeetCode 16 3Sum Closest"></a>LeetCode 16 3Sum Closest</h1><h2 id="题目描述-10"><a href="#题目描述-10" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出一个整形数组，寻找其中的三个元素a,b,c，使得a+b+c的值最接近另外一个给定的数字target。</p>
+<p>如：给定数组 nums = [-1，2，1，-4], 和 target = 1.</p>
+<p>与 target 最接近的三个数的和为 2. (-1 + 2 + 1 = 2).</p>
+<h2 id="分析实现-9"><a href="#分析实现-9" class="headerlink" title="分析实现"></a>分析实现</h2><p>这道题也是2sum,3sum等题组中的，只不过变形的地方在于不是找相等的target，而是找最近的。</p>
+<p>那么开始时可以随机设定一个三个数的和为结果值，在每次比较中，先判断三个数的和是否和target相等，如果相等直接返回和。如果不相等，则判断三个数的和与target的差是否小于这个结果值时，如果小于则进行则进行替换，并保存和的结果值。</p>
+<h3 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># 先排序</span><br><span class="line">nums.sort()</span><br><span class="line"># 随机选择一个和作为结果值</span><br><span class="line">res &#x3D; nums[0] + nums[1] + nums[2]</span><br><span class="line"># 记录这个差值</span><br><span class="line">diff &#x3D; abs(nums[0]+nums[1]+nums[2]-target)</span><br><span class="line"># 第一遍遍历</span><br><span class="line">for i in range(len(nums)):</span><br><span class="line">    # 标记好剩余元素的l和r</span><br><span class="line">    l,r &#x3D; i+1, len(nums-1)</span><br><span class="line">    while l &lt; r:</span><br><span class="line">        if 后续的值等于target:</span><br><span class="line">            return 三个数值得和</span><br><span class="line">        else:</span><br><span class="line">            if 差值小于diff:</span><br><span class="line">                更新diff值</span><br><span class="line">                更新res值</span><br><span class="line">            if 和小于target:</span><br><span class="line">                将l移动</span><br><span class="line">            else:(开始已经排除了等于得情况，要判断和大于target)</span><br><span class="line">                将r移动</span><br></pre></td></tr></table></figure>
+<h3 id="3Sum问题两层遍历得套路代码："><a href="#3Sum问题两层遍历得套路代码：" class="headerlink" title="3Sum问题两层遍历得套路代码："></a>3Sum问题两层遍历得套路代码：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">nums.sort()</span><br><span class="line">res &#x3D; []</span><br><span class="line">for i in range(len(nums)-2):</span><br><span class="line">    l,r &#x3D; i+1, len(nums)-1</span><br><span class="line">    while l &lt; r:</span><br><span class="line">        sum &#x3D; nums[i] + nums[l] + nums[r]</span><br><span class="line">        if sum &#x3D;&#x3D; 0:</span><br><span class="line">            res.append([nums[i],nums[l],nums[r]])</span><br><span class="line">        elif sum &lt; 0:</span><br><span class="line">            l +&#x3D; 1</span><br><span class="line">        else:</span><br><span class="line">            r -&#x3D; 1</span><br></pre></td></tr></table></figure>
+<h3 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def threeSumClosest(self, nums: List[int], target: int) -&gt; int:</span><br><span class="line">        nums.sort()</span><br><span class="line">        diff &#x3D; abs(nums[0]+nums[1]+nums[2]-target)</span><br><span class="line">        res &#x3D; nums[0] + nums[1] + nums[2]</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            l,r &#x3D; i+1,len(nums)-1</span><br><span class="line">            t &#x3D; target - nums[i]</span><br><span class="line">            while l &lt; r:</span><br><span class="line">                if nums[l] + nums[r] &#x3D;&#x3D; t:</span><br><span class="line">                    return nums[i] + t</span><br><span class="line">                else:</span><br><span class="line">                    if abs(nums[l]+nums[r]-t) &lt; diff:</span><br><span class="line">                        diff &#x3D; abs(nums[l]+nums[r]-t)</span><br><span class="line">                        res &#x3D; nums[i]+nums[l]+nums[r]</span><br><span class="line">                    if nums[l]+nums[r] &lt; t:</span><br><span class="line">                        l +&#x3D; 1</span><br><span class="line">                    else:</span><br><span class="line">                        r -&#x3D; 1</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<p>时间复杂度为O(n^2)，空间复杂度为O(1);</p>
+<h1 id="LeetCode-454-4SumⅡ"><a href="#LeetCode-454-4SumⅡ" class="headerlink" title="LeetCode 454 4SumⅡ"></a>LeetCode 454 4SumⅡ</h1><h2 id="题目描述-11"><a href="#题目描述-11" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出四个整形数组A,B,C,D,寻找有多少i,j,k,l的组合,使得A[i]+B[j]+C[k]+D[l]=0。其中,A,B,C,D中均含有相同的元素个数N，且0&lt;=N&lt;=500；</p>
+<p>输入:</p>
+<p>A = [ 1, 2] B = [-2,-1] C = [-1, 2] D = [ 0, 2]</p>
+<p>输出:2</p>
+<h2 id="分析实现-10"><a href="#分析实现-10" class="headerlink" title="分析实现"></a>分析实现</h2><p>这个问题同样是Sum类问题得变种，其将同一个数组的条件，变为了四个数组中，依然可以用查找表的思想来实现。</p>
+<p>首先可以考虑把D数组中的元素都放入查找表，然后遍历前三个数组，判断target减去每个元素后的值是否在查找表中存在，存在的话，把结果值加1。那么查找表的数据结构选择用set还是dict？考虑到数组中可能存在重复的元素，而重复的元素属于不同的情况，因此用dict存储，最后的结果值加上dict相应key的value，代码如下：</p>
+<h3 id="O-n-3-代码"><a href="#O-n-3-代码" class="headerlink" title="$O(n^3)$代码"></a>$O(n^3)$代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">from collections import Counter</span><br><span class="line">record &#x3D; Counter()</span><br><span class="line"># 先建立数组D的查找表</span><br><span class="line">for i in range(len(D)):</span><br><span class="line">    record[D[i]] +&#x3D; 1</span><br><span class="line">res &#x3D; 0 </span><br><span class="line">for i in range(len(A)):</span><br><span class="line">    for j in range(len(B)):</span><br><span class="line">        for k in range(len(C)):</span><br><span class="line">            num_find &#x3D; 0-A[i]-B[j]-C[k]</span><br><span class="line">            if record.get(num_find) !&#x3D; None:</span><br><span class="line">                res +&#x3D; record(num_find)</span><br><span class="line">return res</span><br></pre></td></tr></table></figure>
+<p>但是对于题目中给出的数据规模：N&lt;=500，如果N为500时，n^3的算法依然消耗很大，能否再进行优化呢？</p>
+<p>根据之前的思路继续往前走，如果只遍历两个数组，那么就可以得到O(n^2)级别的算法，但是遍历两个数组，那么还剩下C和D两个数组，上面的值怎么放？</p>
+<p>对于查找表问题而言，<strong>很多时候到底要查找什么</strong>，是解决的关键。对于C和D的数组，可以通过dict来记录其中和的个数，之后遍历结果在和中进行查找。代码如下：</p>
+<h3 id="O-n-2-级代码"><a href="#O-n-2-级代码" class="headerlink" title="$O(n^2)$级代码"></a>$O(n^2)$级代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def fourSumCount(self, A: List[int], B: List[int], C: List[int], D: List[int]) -&gt; int:</span><br><span class="line">        from collections import Counter</span><br><span class="line">        record &#x3D; Counter()</span><br><span class="line">        for i in range(len(A)):</span><br><span class="line">            for j in range(len(B)):</span><br><span class="line">                record[A[i]+B[j]] +&#x3D; 1</span><br><span class="line">        res &#x3D; 0</span><br><span class="line">        for i in range(len(C)):</span><br><span class="line">            for j in range(len(D)):</span><br><span class="line">                find_num &#x3D; 0 - C[i] - D[j]</span><br><span class="line">                if record.get(find_num) !&#x3D; None:</span><br><span class="line">                    res +&#x3D; record[find_num]</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<p>再使用Pythonic的列表生成式和sum函数进行优化，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def fourSumCount(self, A: List[int], B: List[int], C: List[int], D: List[int]) -&gt; int:</span><br><span class="line">        record &#x3D; collections.Counter(a + b for a in A for b in B)</span><br><span class="line">        return sum(record.get(- c - d, 0) for c in C for d in D)</span><br></pre></td></tr></table></figure>
+<h1 id="LeetCode-49-Group-Anagrams"><a href="#LeetCode-49-Group-Anagrams" class="headerlink" title="LeetCode 49 Group Anagrams"></a>LeetCode 49 Group Anagrams</h1><h2 id="题目描述-12"><a href="#题目描述-12" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出一个字符串数组，将其中所有可以通过颠倒字符顺序产生相同结果的单词进行分组。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">示例:</span><br><span class="line">输入: [&quot;eat&quot;, &quot;tea&quot;, &quot;tan&quot;, &quot;ate&quot;, &quot;nat&quot;, &quot;bat&quot;],</span><br><span class="line">输出:[[&quot;ate&quot;,&quot;eat&quot;,&quot;tea&quot;],[&quot;nat&quot;,&quot;tan&quot;],[&quot;bat&quot;]]</span><br><span class="line"></span><br><span class="line">说明：</span><br><span class="line">所有输入均为小写字母。</span><br><span class="line">不考虑答案输出的顺序。</span><br></pre></td></tr></table></figure>
+<h2 id="分析实现-11"><a href="#分析实现-11" class="headerlink" title="分析实现"></a>分析实现</h2><p>在之前LeetCode 242的问题中，对字符串t和s来判断，判断t是否是s的字母异位词。当时的方法是通过构建t和s的字典，比较字典是否相同来判断是否为异位词。</p>
+<p>在刚开始解决这个问题时，我也局限于了这个思路，以为是通过移动指针，来依次比较两个字符串是否对应的字典相等，进而确定异位词列表，再把异位词列表添加到结果集res中。于是有：</p>
+<h3 id="错误思路"><a href="#错误思路" class="headerlink" title="错误思路"></a>错误思路</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">nums &#x3D; [&quot;eat&quot;, &quot;tea&quot;, &quot;tan&quot;, &quot;ate&quot;, &quot;nat&quot;, &quot;bat&quot;]</span><br><span class="line"></span><br><span class="line">from collections import Counter</span><br><span class="line">cum &#x3D; []</span><br><span class="line">for i in range(len(nums)):</span><br><span class="line">    l,r &#x3D; i+1,len(nums)-1</span><br><span class="line">    i_dict &#x3D; Counter(nums[i])</span><br><span class="line">    res &#x3D; []</span><br><span class="line">    if nums[i] not in cum:</span><br><span class="line">        res.append(nums[i])</span><br><span class="line">    while l &lt; r:</span><br><span class="line">        l_dict &#x3D; Counter(nums[l])</span><br><span class="line">        r_dict &#x3D; Counter(nums[r])</span><br><span class="line">        if i_dict &#x3D;&#x3D; l_dict and l_dict &#x3D;&#x3D; r_dict:</span><br><span class="line">            res.append(nums[l],nums[r])</span><br><span class="line">            l +&#x3D; 1</span><br><span class="line">            r -&#x3D; 1</span><br><span class="line">        elif i_dict &#x3D;&#x3D; l_dict:</span><br><span class="line">            res.append(nums[l])</span><br><span class="line">            l +&#x3D; 1</span><br><span class="line">        elif i_dict &#x3D;&#x3D; r_dict:</span><br><span class="line">            res.append(nums[r])</span><br><span class="line">            r -&#x3D; 1</span><br><span class="line">        else:</span><br><span class="line">            l +&#x3D; 1</span><br><span class="line">    print(res)</span><br><span class="line">    cum.append(res)</span><br><span class="line">......................................</span><br></pre></td></tr></table></figure>
+<p>这时发现长长绵绵考虑不完，而且还要注意指针的条件，怎样遍历才能遍历所有的情况且判断列表是否相互间包含。。。</p>
+<p>于是立即开始反思是否哪块考虑错了?回顾第一开始的选择数据结构，在dict和list中，自己错误的选择了list来当作数据结构，进而用指针移动来判断元素的情况。而<strong>没有利用题目中不变的条件</strong>。</p>
+<p>题目的意思，对异位词的进行分组，同异位词的分为一组，那么考虑对这一组内什么是相同的，且这个相同的也能作为不同组的判断条件。</p>
+<p>不同组的判断条件，就可以用数据结构dict中的key来代表，那么什么相同的适合当作key呢？</p>
+<p>这时回顾下下LeetCode 242，当时是因为异位字符串中包含的<strong>字符串的字母个数</strong>都是相同的，故把字母当作key来进行判断是否为异位词。</p>
+<p>但是对于本题，把每个字符串的字母dict，再当作字符串数组的dict的key，显然不太合适，那么对于异位词，还有什么是相同的？</p>
+<p>显然，如果将字符串统一排序，<strong>异位词排序后的字符串</strong>，显然都是相同的。那么就可以把其当作key，把遍历的数组中的异位词当作value，对字典进行赋值，进而遍历字典的value，得到结果list。</p>
+<p>需要注意的细节是，<strong>字符串和list之间的转换</strong>：</p>
+<ol>
+<li>默认构造字典需为list的字典；</li>
+<li>排序使用sorted()函数，而不用list.sort()方法，因为其不返回值；</li>
+<li>通过’’.join(list)，将list转换为字符串；</li>
+<li>通过str.split(‘,’)将字符串整个转换为list中的一项；</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def groupAnagrams(self, strs: List[str]) -&gt; List[List[str]]:</span><br><span class="line">        from collections import defaultdict</span><br><span class="line">        strs_dict &#x3D; defaultdict(list)</span><br><span class="line">        res &#x3D; []</span><br><span class="line">        for str in strs:</span><br><span class="line">            key &#x3D; &#39;&#39;.join(sorted(list(str)))</span><br><span class="line">            strs_dict[key] +&#x3D; str.split(&#39;,&#39;)</span><br><span class="line">        for v in strs_dict.values():</span><br><span class="line">            res.append(v)</span><br><span class="line">        return res</span><br></pre></td></tr></table></figure>
+<p>再将能用列表生成式替换的地方替换掉,代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def groupAnagrams(self, strs: List[str]) -&gt; List[List[str]]:</span><br><span class="line">        from collections import defaultdict</span><br><span class="line">        strs_dict &#x3D; defaultdict(list)</span><br><span class="line">        for str in strs:</span><br><span class="line">            key &#x3D; &#39;&#39;.join(sorted(list(str)))</span><br><span class="line">            strs_dict[key] +&#x3D; str.split(&#39;,&#39;)</span><br><span class="line">        return [v for v in strs_dict.values()]</span><br></pre></td></tr></table></figure>
+<h1 id="LeetCode-447-Number-of-Boomerangs"><a href="#LeetCode-447-Number-of-Boomerangs" class="headerlink" title="LeetCode 447 Number of Boomerangs"></a>LeetCode 447 Number of Boomerangs</h1><h2 id="题目描述-13"><a href="#题目描述-13" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出一个平面上的n个点，寻找存在多少个由这些点构成的三元组(i,j,k)，<strong>使得i,j两点的距离等于i,k两点的距离</strong>。</p>
+<p>其中n最多为500,且所有的点坐标的范围在[-10000,10000]之间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">输入:</span><br><span class="line">[[0,0],[1,0],[2,0]]</span><br><span class="line"></span><br><span class="line">输出:</span><br><span class="line">2</span><br><span class="line">解释:</span><br><span class="line">两个结果为： [[1,0],[0,0],[2,0]] 和 [[1,0],[2,0],[0,0]]</span><br></pre></td></tr></table></figure>
+<h2 id="分析实现-12"><a href="#分析实现-12" class="headerlink" title="分析实现"></a>分析实现</h2><h3 id="原始思路"><a href="#原始思路" class="headerlink" title="原始思路"></a>原始思路</h3><p>题目的要求是：使得i,j两点的距离等于i,k两点的距离，那么相当于是比较三个点之间距离的，那么开始的思路就是三层遍历，i从0到len，j从i+1到len，k从j+1到len，然后比较三个点的距离，相等则结果数加一。</p>
+<p>显然这样的时间复杂度为O(n^3)，对于这道题目，能否用查找表的思路进行解决优化？</p>
+<h3 id="查找表"><a href="#查找表" class="headerlink" title="查找表"></a>查找表</h3><p>之前的查找表问题，大多是通过<strong>构建一个查找表</strong>，而避免了在查找中再内层嵌套循环，从而降低了时间复杂度。那么可以考虑在这道题中，可以通过查找表进行代替哪两层循环。</p>
+<p>当i,j两点距离等于i,k时，用查找表的思路，等价于：对距离key(i,j或i,k的距离)，其值value(个数)为2。</p>
+<p>那么就可以做一个查找表，用来查找相同距离key的个数value是多少。遍历每一个节点i，扫描得到其他点到节点i的距离，在查找表中，对应的键就是距离的值，对应的值就是距离值得个数。</p>
+<p>在拿到对于元素i的距离查找表后，接下来就是排列选择问题了：</p>
+<ol>
+<li>如果当距离为x的值有2个时，那么选择j,k的可能情况有：第一次选择有2种，第二次选择有1种，为2*1；</li>
+<li>如果当距离为x的值有3个时，那么选择j,k的可能的情况有：第一次选择有3种，第二次选择有2种，为3*2;</li>
+<li>那么当距离为x的值有n个时，选择j,k的可能情况有：第一次选择有n种，第二次选择有n-1种。</li>
+</ol>
+<h3 id="距离"><a href="#距离" class="headerlink" title="距离"></a>距离</h3><p>对于距离值的求算，按照欧式距离的方法进行求算的话，容易产生浮点数，可以将根号去掉，用差的平方和来进行比较距离。</p>
+<p>实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def numberOfBoomerangs(self, points: List[List[int]]) -&gt; int:</span><br><span class="line">        res &#x3D; 0</span><br><span class="line">        from collections import Counter</span><br><span class="line">        for i in points:</span><br><span class="line">            record &#x3D; Counter()</span><br><span class="line">            for j in points:</span><br><span class="line">                if i !&#x3D; j:</span><br><span class="line">                    record[self.dis(i,j)] +&#x3D; 1</span><br><span class="line">            for k,v in record.items():</span><br><span class="line">                res +&#x3D; v*(v-1)</span><br><span class="line">        return res</span><br><span class="line">    def dis(self,point1,point2):</span><br><span class="line">        return (point1[0]-point2[0]) ** 2 + (point1[1]-point2[1]) ** 2</span><br></pre></td></tr></table></figure>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p>对实现的代码进行优化：</p>
+<ol>
+<li>将for循环遍历改为列表生成式;</li>
+<li>对sum+=的操作，考虑使用sum函数。</li>
+<li>对不同的函数使用闭包的方式内嵌；</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def numberOfBoomerangs(self, points: List[List[int]]) -&gt; int:</span><br><span class="line">        from collections import Counter</span><br><span class="line">        def f(x1, y1):</span><br><span class="line">            # 对一个i下j,k的距离值求和</span><br><span class="line">            d &#x3D; Counter((x2 - x1) ** 2 + (y2 - y1) ** 2 for x2, y2 in points)</span><br><span class="line">            return sum(t * (t-1) for t in d.values())</span><br><span class="line">        # 对每个i的距离进行求和</span><br><span class="line">        return sum(f(x1, y1) for x1, y1 in points)</span><br></pre></td></tr></table></figure>
+<h1 id="LeetCode-149-Max-Points-on-a-Line"><a href="#LeetCode-149-Max-Points-on-a-Line" class="headerlink" title="LeetCode 149 Max Points on a Line"></a>LeetCode 149 Max Points on a Line</h1><h2 id="题目描述-14"><a href="#题目描述-14" class="headerlink" title="题目描述"></a>题目描述</h2><p>给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">示例 1:</span><br><span class="line">输入: [[1,1],[2,2],[3,3]]</span><br><span class="line">输出: 3</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]</span><br><span class="line">输出: 4</span><br></pre></td></tr></table></figure>
+<h2 id="分析实现-13"><a href="#分析实现-13" class="headerlink" title="分析实现"></a>分析实现</h2><p>本道题目的要求是：看有多少个点在同一条直线上，那么判断点是否在一条直线上，其实就等价于判断i,j两点的斜率是否等于i,k两点的斜率。</p>
+<p>回顾上道447题目中的要求：使得i,j两点的距离等于i,k两点的距离，那么在这里，直接考虑使用查找表实现，即<strong>查找相同斜率key的个数value是多少</strong>。</p>
+<p>在上个问题中，i和j，j和i算是两种不同的情况，但是这道题目中，这是属于相同的两个点， 因此在对遍历每个i,查找与i相同斜率的点时，不能再对结果数res++，而应该取查找表中的最大值。如果有两个斜率相同时，返回的应该是3个点，故返回的是结果数+1。</p>
+<p>查找表实现套路如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def maxPoints(self,points):</span><br><span class="line">        res &#x3D; 0</span><br><span class="line">        from collections import defaultdict</span><br><span class="line">        for i in range(len(points)):</span><br><span class="line">            record &#x3D; defaultdict(int)</span><br><span class="line">            for j in range(len(points)):</span><br><span class="line">                if i !&#x3D; j:</span><br><span class="line">                    record[self.get_Slope(points,i,j)] +&#x3D; 1</span><br><span class="line">            for v in record.values():</span><br><span class="line">                res &#x3D; max(res, v)</span><br><span class="line">        return res + 1</span><br><span class="line">    def get_Slope(self,points,i,j):</span><br><span class="line">        return (points[i][0] - points[j][0]) &#x2F; (points[i][1] - points[j][1])</span><br></pre></td></tr></table></figure>
+<p>但是这样会出现一个问题，即斜率的求算中，有时会出现直线为垂直的情况，故需要对返回的结果进行判断，如果分母为0，则返回inf，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def get_Slope(self,points,i,j):</span><br><span class="line">    if points[i][1] - points[j][1] &#x3D;&#x3D; 0:</span><br><span class="line">        return float(&#39;Inf&#39;)</span><br><span class="line">    else:</span><br><span class="line">        return (points[i][0] - points[j][0]) &#x2F; (points[i][1] - points[j][1])</span><br></pre></td></tr></table></figure>
+<p>再次提交，发现对于空列表的测试用例会判断错误，于是对边界情况进行判断，如果初始长度小于等于1,则直接返回len：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if len(points) &lt;&#x3D; 1:</span><br><span class="line">    return len(points)</span><br></pre></td></tr></table></figure>
+<p>再次提交，对于相同元素的测试用例会出现错误，回想刚才的过程，当有相同元素时，题目的要求是算作两个不同的点，但是在程序运行时，会将其考虑为相同的点，return回了inf。但在实际运行时，需要对相同元素的情况单独考虑。</p>
+<p>于是可以设定samepoint值，遍历时判断，如果相同时，same值++,最后取v+same的值作为结果数。</p>
+<p>考虑到如果全是相同值，那么这时dict中的record为空，也要将same值当作结果数返回，代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def maxPoints(self,points):</span><br><span class="line">        if len(points) &lt;&#x3D; 1:</span><br><span class="line">            return len(points)</span><br><span class="line">        res &#x3D; 0</span><br><span class="line">        from collections import defaultdict</span><br><span class="line">        for i in range(len(points)):</span><br><span class="line">            record &#x3D; defaultdict(int)</span><br><span class="line">            samepoint &#x3D; 0</span><br><span class="line">            for j in range(len(points)):</span><br><span class="line">                if points[i][0] &#x3D;&#x3D; points[j][0] and points[i][1] &#x3D;&#x3D; points[j][1]:</span><br><span class="line">                    samepoint +&#x3D; 1</span><br><span class="line">                else:</span><br><span class="line">                    record[self.get_Slope(points,i,j)] +&#x3D; 1</span><br><span class="line">            for v in record.values():</span><br><span class="line">                res &#x3D; max(res, v+samepoint)</span><br><span class="line">            res &#x3D; max(res, samepoint)</span><br><span class="line">        return res</span><br><span class="line">    def get_Slope(self,points,i,j):</span><br><span class="line">        if points[i][1] - points[j][1] &#x3D;&#x3D; 0:</span><br><span class="line">            return float(&#39;Inf&#39;)</span><br><span class="line">        else:</span><br><span class="line">            return (points[i][0] - points[j][0]) &#x2F; (points[i][1] - points[j][1])</span><br></pre></td></tr></table></figure>
+<p>时间复杂度为O(n^2)，空间复杂度为O(n)</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>遍历时多用索引，而不要直接用值进行遍历；</p>
+<h1 id="三-滑动数组"><a href="#三-滑动数组" class="headerlink" title="三. 滑动数组"></a>三. 滑动数组</h1><h1 id="LeetCode-219-Contains-Dupliccate-Ⅱ"><a href="#LeetCode-219-Contains-Dupliccate-Ⅱ" class="headerlink" title="LeetCode 219 Contains Dupliccate Ⅱ"></a>LeetCode 219 Contains Dupliccate Ⅱ</h1><h2 id="题目描述-15"><a href="#题目描述-15" class="headerlink" title="题目描述"></a>题目描述</h2><p>给出一个整形数组nums和一个整数k，是否存在索引i和j，使得nums[i]==nums[j]，且i和J之间的差不超过k。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">示例1:</span><br><span class="line">输入: nums &#x3D; [1,2,3,1], k &#x3D; 3</span><br><span class="line">输出: true</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line">输入: nums &#x3D; [1,2,3,1,2,3], k &#x3D; 2</span><br><span class="line">输出: false</span><br></pre></td></tr></table></figure>
+<h2 id="分析实现-14"><a href="#分析实现-14" class="headerlink" title="分析实现"></a>分析实现</h2><p>翻译下这个题目：在这个数组中，如果有两个元素索引i和j，它们对应的元素是相等的，且索引j-i是小于等于k，那么就返回True，否则返回False。</p>
+<p>因为对于这道题目可以用暴力解法双层循环，即：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for i in range(len(nums)):</span><br><span class="line">    for j in range(i+1,len(nums)):</span><br><span class="line">        if i &#x3D;&#x3D; j:</span><br><span class="line">            return True</span><br><span class="line">return False</span><br></pre></td></tr></table></figure>
+<p>故这道题目可以考虑使用滑动数组来解决：</p>
+<p>固定滑动数组的长度为K+1，当这个滑动数组内如果能找到两个元素的值相等，就可以保证两个元素的索引的差是小于等于k的。如果当前的滑动数组中没有元素相同，就右移滑动数组的右边界r,同时将左边界l右移。查看r++的元素是否在l右移过后的数组里，如果不在就将其添加数组，在的话返回true表示两元素相等。</p>
+<p>因为滑动数组中的元素是不同的，考虑用set作为数据结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def containsNearbyDuplicate(self, nums: List[int], k: int) -&gt; bool:</span><br><span class="line">        record &#x3D; set()</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            if nums[i] in record:</span><br><span class="line">                return True</span><br><span class="line">            record.add(nums[i])</span><br><span class="line">            if len(record) &#x3D;&#x3D; k+1:</span><br><span class="line">                record.remove(nums[i-k])</span><br><span class="line">        return False</span><br></pre></td></tr></table></figure>
+<p>时间复杂度为O(n)，空间复杂度为O(n)</p>
+<h1 id="LeetCode-220-Contains-Dupliccate-Ⅲ"><a href="#LeetCode-220-Contains-Dupliccate-Ⅲ" class="headerlink" title="LeetCode 220 Contains Dupliccate Ⅲ"></a>LeetCode 220 Contains Dupliccate Ⅲ</h1><h2 id="题目描述-16"><a href="#题目描述-16" class="headerlink" title="题目描述"></a>题目描述</h2><p>给定一个整数数组，判断数组中是否有两个不同的索引 i 和 j，使得nums [i] 和nums [j]的差的绝对值最大为 t，并且 i 和 j 之间的差的绝对值最大为 ķ。</p>
+<p>示例 1:</p>
+<p>输入: nums = [1,2,3,1], k = 3, t = 0</p>
+<p>输出: true</p>
+<p>示例 2:</p>
+<p>输入: nums = [1,0,1,1], k = 1, t = 2</p>
+<p>输出: true</p>
+<p>示例 3:</p>
+<p>输入: nums = [1,5,9,1,5,9], k = 2, t = 3</p>
+<p>输出: false</p>
+<h2 id="分析实现-15"><a href="#分析实现-15" class="headerlink" title="分析实现"></a>分析实现</h2><p>相比较上一个问题，这个问题多了一个限定条件，条件不仅索引差限定k，数值差也限定为了t。</p>
+<p>将索引的差值固定，于是问题和上道一样，同样转化为了固定长度K+1的滑动窗口内，是否存在两个值的差距不超过 t，考虑使用<strong>滑动窗口</strong>的思想来解决。</p>
+<p>在遍历的过程中，目的是要在“已经出现、但还未滑出滑动窗口”的所有数中查找，是否有一个数与滑动数组中的数的<strong>差的绝对值</strong>最大为 t。对于差的绝对值最大为t，实际上等价于所要找的这个元素v的范围是在v-t到v+t之间，即查找“滑动数组”中的元素有没有[v-t，v+t]范围内的数存在。</p>
+<p>因为只需证明是否存在即可，这时判断的逻辑是：如果在滑动数组<strong>查找比v-t大的最小的元素</strong>,如果这个元素小于等于v+t,即可以证明存在[v-t,v+t]。</p>
+<p>那么实现过程其实和上题是一致的，只是上题中的判断条件是<strong>在查找表中找到和nums[i]相同的元素</strong>，而这题中的判断条件是<strong>查找比v-t大的最小的元素，判断其小于等于v+t</strong>，下面是实现的框架：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def containsNearbyDuplicate(self, nums: List[int], k: int) -&gt; bool:</span><br><span class="line">        record &#x3D; set()</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            if 查找的比v-t大的最小的元素 &lt;&#x3D; v+t:</span><br><span class="line">                return True</span><br><span class="line">            record.add(nums[i])</span><br><span class="line">            if len(record) &#x3D;&#x3D; k+1:</span><br><span class="line">                record.remove(nums[i-k])</span><br><span class="line">        return False</span><br></pre></td></tr></table></figure>
+<p>接下来考虑，如何查找比v-t大的最小的元素呢？</p>
+<p>【注：C++中有lower_bound(v-t)的实现，py需要自己写函数】</p>
+<p>当然首先考虑可以通过O(n)的解法来完成，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def lower_bound(self,array,v):</span><br><span class="line">    array &#x3D; list(array)</span><br><span class="line">    for i in range(len(array)):</span><br><span class="line">        if array[i] &gt;&#x3D; v:</span><br><span class="line">            return i</span><br><span class="line">    return -1</span><br></pre></td></tr></table></figure>
+<p>但是滑动数组作为set，是有序的数组。对于有序的数组，应该第一反应就是<strong>二分查找</strong>，于是考虑二分查找实现，查找比v-t大的最小的元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def lower_bound(self, nums, target):</span><br><span class="line">    low, high &#x3D; 0, len(nums)-1</span><br><span class="line">    while low&lt;high:</span><br><span class="line">        mid &#x3D; int((low+high)&#x2F;2)</span><br><span class="line">        if nums[mid] &lt; target:</span><br><span class="line">            low &#x3D; mid+1</span><br><span class="line">        else:</span><br><span class="line">            high &#x3D; mid</span><br><span class="line">    return low if nums[low] &gt;&#x3D; target else -1</span><br></pre></td></tr></table></figure>
+<p>整体代码实现如下，时间复杂度为O(nlogn),空间复杂度为O(n):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def containsNearbyAlmostDuplicate(self, nums, k, t) -&gt; bool:</span><br><span class="line">        record &#x3D; set()</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            if len(record) !&#x3D; 0:</span><br><span class="line">                rec &#x3D; list(record)</span><br><span class="line">                find_index &#x3D; self.lower_bound(rec,nums[i]-t)</span><br><span class="line">                if find_index !&#x3D; -1 and rec[find_index] &lt;&#x3D; nums[i] + t:</span><br><span class="line">                    return True</span><br><span class="line">            record.add(nums[i])</span><br><span class="line">            if len(record) &#x3D;&#x3D; k + 1:</span><br><span class="line">                record.remove(nums[i - k])</span><br><span class="line">        return False</span><br><span class="line">    def lower_bound(self, nums, target):</span><br><span class="line">        low, high &#x3D; 0, len(nums)-1</span><br><span class="line">        while low&lt;high:</span><br><span class="line">            mid &#x3D; int((low+high)&#x2F;2)</span><br><span class="line">            if nums[mid] &lt; target:</span><br><span class="line">                low &#x3D; mid+1</span><br><span class="line">            else:</span><br><span class="line">                high &#x3D; mid</span><br><span class="line">        return low if nums[low] &gt;&#x3D; target else -1</span><br></pre></td></tr></table></figure>
+<p>当然。。。在和小伙伴一起刷的时候，这样写的O(n^2)的结果会比上面要高，讨论的原因应该是上面的步骤存在着大量set和list的转换导致，对于py，仍旧是考虑算法思想实现为主，下面是O(n^2)的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def containsNearbyAlmostDuplicate(self, nums: List[int], k: int, t: int) -&gt; bool:</span><br><span class="line">        if t &#x3D;&#x3D; 0 and len(nums) &#x3D;&#x3D; len(set(nums)):</span><br><span class="line">            return False</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            for j in range(1,k+1):</span><br><span class="line">                if i+j &gt;&#x3D; len(nums): break</span><br><span class="line">                if abs(nums[i+j]-nums[i]) &lt;&#x3D; t: return True</span><br><span class="line">        return False</span><br></pre></td></tr></table></figure>
+<h2 id="小套路："><a href="#小套路：" class="headerlink" title="小套路："></a>小套路：</h2><p>二分查找实现，查找比v-t大的最小的元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def lower_bound(self, nums, target):</span><br><span class="line">    low, high &#x3D; 0, len(nums)-1</span><br><span class="line">    while low&lt;high:</span><br><span class="line">        mid &#x3D; int((low+high)&#x2F;2)</span><br><span class="line">        if nums[mid] &lt; target:</span><br><span class="line">            low &#x3D; mid+1</span><br><span class="line">        else:</span><br><span class="line">            high &#x3D; mid</span><br><span class="line">    return low if nums[low] &gt;&#x3D; target else -1</span><br></pre></td></tr></table></figure>
+<p>二分查找实现，查找比v-t大的最小的元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def upper_bound(nums, target):</span><br><span class="line">    low, high &#x3D; 0, len(nums)-1</span><br><span class="line">    while low&lt;high:</span><br><span class="line">        mid&#x3D;(low+high)&#x2F;2</span><br><span class="line">        if nums[mid]&lt;&#x3D;target:</span><br><span class="line">            low &#x3D; mid+1</span><br><span class="line">        else:#&gt;</span><br><span class="line">            high &#x3D; mid</span><br><span class="line">            pos &#x3D; high</span><br><span class="line">    if nums[low]&gt;target:</span><br><span class="line">        pos &#x3D; low</span><br><span class="line">    return -1</span><br></pre></td></tr></table></figure>
+<h1 id="四-二分查找"><a href="#四-二分查找" class="headerlink" title="四. 二分查找"></a>四. 二分查找</h1><h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p>查找在算法题中是很常见的，但是怎么最大化查找的效率和写出bugfree的代码才是难的部分。一般查找方法有顺序查找、二分查找和双指针，推荐一开始可以直接用顺序查找，如果遇到TLE的情况再考虑剩下的两种，毕竟AC是最重要的。</p>
+<p>一般二分查找的对象是有序或者由有序部分变化的（可能暂时理解不了，看例题即可），但还存在一种可以运用的地方是按值二分查找，之后会介绍。</p>
+<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><p>总体来说二分查找是比较简单的算法，网上看到的写法也很多，掌握一种就可以了。 以下是我的写法，参考C++标准库里的写法。这种写法比较好的点在于：</p>
+<ul>
+<li>1.即使区间为空、答案不存在、有重复元素、搜索开/闭区间的上/下界也同样适用</li>
+<li>2.+-1 的位置调整只出现了一次，而且最后返回lo还是hi都是对的，无需纠结</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def firstBadVersion(self, arr):</span><br><span class="line">        # 第一点</span><br><span class="line">        lo, hi &#x3D; 0, len(arr)-1</span><br><span class="line">        while lo &lt; hi:</span><br><span class="line">            # 第二点</span><br><span class="line">            mid &#x3D; (lo+hi) &#x2F;&#x2F; 2</span><br><span class="line">            # 第三点</span><br><span class="line">            if f(x):</span><br><span class="line">                lo &#x3D; mid + 1</span><br><span class="line">            else:</span><br><span class="line">                hi &#x3D; mid</span><br><span class="line">        return lo</span><br></pre></td></tr></table></figure>
+<p><strong>解释</strong>：</p>
+<ul>
+<li>第一点：lo和hi分别对应搜索的上界和下界，但不一定为0和arr最后一个元素的下标。</li>
+<li>第二点：因为Python没有溢出，int型不够了会自动改成long int型，所以无需担心。如果再苛求一点，可以把这一行改成</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mid &#x3D; lo + (hi-lo) &#x2F;&#x2F; 2</span><br><span class="line"># 之所以 &#x2F;&#x2F;2 这部分不用位运算 &gt;&gt; 1 是因为会自动优化，效率不会提升</span><br></pre></td></tr></table></figure>
+<ul>
+<li>第三点： 比较重要的就是这个f(x)，在带入模板的情况下，写对函数就完了。</li>
+</ul>
+<p>那么我们一步一步地揭开二分查找的神秘面纱，首先来一道简单的题。</p>
+<h2 id="LeetCode-35-Search-Insert-Position"><a href="#LeetCode-35-Search-Insert-Position" class="headerlink" title="LeetCode 35. Search Insert Position"></a>LeetCode 35. Search Insert Position</h2><p>给定排序数组和目标值，如果找到目标，则返回索引。如果不是，则返回按顺序插入索引的位置的索引。 您可以假设数组中没有重复项。</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Example 1:</span><br><span class="line">Input: [1,3,5,6], 5</span><br><span class="line">Output: 2</span><br><span class="line"></span><br><span class="line">Example 2:</span><br><span class="line">Input: [1,3,5,6], 2</span><br><span class="line">Output: 1</span><br><span class="line"></span><br><span class="line">Example 3:</span><br><span class="line">Input: [1,3,5,6], 7</span><br><span class="line">Output: 4</span><br><span class="line"></span><br><span class="line">Example 4:</span><br><span class="line">Input: [1,3,5,6], 0</span><br><span class="line">Output: 0</span><br></pre></td></tr></table></figure>
+<p><strong>分析：</strong> 这里要注意的点是 high 要设置为 len(nums) 的原因是像第三个例子会超出数组的最大值，所以要让 lo 能到 这个下标。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def searchInsert(self, nums: List[int], target: int) -&gt; int:        </span><br><span class="line">        lo, hi &#x3D; 0, len(nums)</span><br><span class="line">        while lo &lt; hi:</span><br><span class="line">            mid &#x3D; (lo + hi) &#x2F;&#x2F; 2</span><br><span class="line">            if nums[mid] &lt; target:</span><br><span class="line">                lo &#x3D; mid + 1</span><br><span class="line">            else:</span><br><span class="line">                hi &#x3D; mid</span><br><span class="line">        return lo</span><br></pre></td></tr></table></figure>
+<h2 id="LeetCode540-Single-Element-in-a-Sorted-Array"><a href="#LeetCode540-Single-Element-in-a-Sorted-Array" class="headerlink" title="LeetCode540. Single Element in a Sorted Array"></a>LeetCode540. Single Element in a Sorted Array</h2><p>您将获得一个仅由整数组成的排序数组，其中每个元素精确出现两次，但一个元素仅出现一次。 找到只出现一次的单个元素。</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Example 1:</span><br><span class="line"></span><br><span class="line">Input: [1,1,2,3,3,4,4,8,8]</span><br><span class="line">Output: 2</span><br><span class="line"></span><br><span class="line">Example 2:</span><br><span class="line"></span><br><span class="line">Input: [3,3,7,7,10,11,11]</span><br><span class="line">Output: 10</span><br></pre></td></tr></table></figure>
+<p><strong>分析：</strong> 异或的巧妙应用！如果mid是偶数，那么和1异或的话，那么得到的是mid+1，如果mid是奇数，得到的是mid-1。如果相等的话，那么唯一的元素还在这之后，往后找就可以了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def singleNonDuplicate(self, nums):</span><br><span class="line">        lo, hi &#x3D; 0, len(nums) - 1</span><br><span class="line">        while lo &lt; hi:</span><br><span class="line">            mid &#x3D; (lo + hi) &#x2F;&#x2F; 2</span><br><span class="line">            if nums[mid] &#x3D;&#x3D; nums[mid ^ 1]:</span><br><span class="line">                lo &#x3D; mid + 1</span><br><span class="line">            else:</span><br><span class="line">                hi &#x3D; mid</span><br><span class="line">        return nums[lo]</span><br></pre></td></tr></table></figure>
+<p><strong>是不是还挺简单哈哈，那我们来道HARD难度的题!</strong></p>
+<h2 id="LeetCode-410-Split-Array-Largest-Sum"><a href="#LeetCode-410-Split-Array-Largest-Sum" class="headerlink" title="LeetCode 410. Split Array Largest Sum"></a>LeetCode 410. Split Array Largest Sum</h2><p>给定一个由非负整数和整数m组成的数组，您可以将该数组拆分为m个非空连续子数组。编写算法以最小化这m个子数组中的最大和。</p>
+<p><strong>Example</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Input:</span><br><span class="line">nums &#x3D; [7,2,5,10,8]</span><br><span class="line">m &#x3D; 2</span><br><span class="line"></span><br><span class="line">Output:</span><br><span class="line">18</span><br><span class="line"></span><br><span class="line">Explanation:</span><br><span class="line">There are four ways to split nums into two subarrays.</span><br><span class="line">The best way is to split it into [7,2,5] and [10,8],</span><br><span class="line">where the largest sum among the two subarrays is only 18.</span><br></pre></td></tr></table></figure>
+<p><strong>分析：</strong></p>
+<ul>
+<li>这其实就是二分查找里的按值二分了，可以看出这里的元素就无序了。但是我们的目标是找到一个合适的最小和，换个角度理解我们要找的值在最小值max(nums)和sum(nums)内，而这两个值中间是连续的。是不是有点难理解，那么看代码吧</li>
+<li>辅助函数的作用是判断当前的“最小和”的情况下，区间数是多少，来和m判断</li>
+<li>这里的下界是数组的最大值是因为如果比最大值小那么一个区间就装不下，数组的上界是数组和因为区间最少是一个，没必要扩大搜索的范围</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def splitArray(self, nums: List[int], m: int) -&gt; int:</span><br><span class="line"></span><br><span class="line">        def helper(mid):</span><br><span class="line">            res &#x3D; tmp &#x3D; 0</span><br><span class="line">            for num in nums:</span><br><span class="line">                if tmp + num &lt;&#x3D; mid:</span><br><span class="line">                    tmp +&#x3D; num</span><br><span class="line">                else:</span><br><span class="line">                    res +&#x3D; 1</span><br><span class="line">                    tmp &#x3D; num</span><br><span class="line">            return res + 1</span><br><span class="line"></span><br><span class="line">        lo, hi &#x3D; max(nums), sum(nums)</span><br><span class="line">        while lo &lt; hi:</span><br><span class="line">            mid &#x3D; (lo + hi) &#x2F;&#x2F; 2</span><br><span class="line">            if helper(mid) &gt; m:</span><br><span class="line">                lo &#x3D; mid + 1</span><br><span class="line">            else:</span><br><span class="line">                hi &#x3D; mid</span><br><span class="line">        return lo</span><br></pre></td></tr></table></figure> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/171a3f59.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/posts/fe59ede.html" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            资金流入流出预测比赛（五）
+          
+        </div>
+      </a>
+    
+    
+      <a href="/posts/5ed99bac.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">资金流入流出预测比赛（四）</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
