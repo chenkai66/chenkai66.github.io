@@ -4655,6 +4655,40 @@ R S A T(x, y)=R S A T(x, y)+R S A T(x-1, y+1)-R S A T(x-2, y) \\
       </categories>
   </entry>
   <entry>
+    <title>时间序列实战（四）</title>
+    <url>/posts/127b555b.html</url>
+    <content><![CDATA[<p>我们实际中一个时间序列可能有上千种特征，我们很难一个个提取，可以使用TSFRESH库帮我们提取时间序列 特征，这个库能提取的特征包括最大最小值，均值，峰值数目，中位数等等，据说能够提取出超过4000种特征，官方文档<a href="https://tsfresh.readthedocs.io/en/latest/" target="_blank" rel="noopener">戳这里</a></p>
+<p>我们首先导入一堆包：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">"ignore"</span>)</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> tsfresh.examples.robot_execution_failures <span class="keyword">import</span> download_robot_execution_failures, load_robot_execution_failures</span><br><span class="line"><span class="keyword">from</span> tsfresh.utilities.dataframe_functions <span class="keyword">import</span> impute</span><br><span class="line"><span class="keyword">from</span> tsfresh.feature_extraction <span class="keyword">import</span> ComprehensiveFCParameters</span><br><span class="line"><span class="keyword">from</span> tsfresh <span class="keyword">import</span> extract_features, extract_relevant_features, select_features</span><br></pre></td></tr></table></figure>
+<p>然后远程加载数据集：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">download_robot_execution_failures()</span><br><span class="line">df, y = load_robot_execution_failures()</span><br><span class="line">df.head()</span><br></pre></td></tr></table></figure>
+<p>得到的数据长这样：</p>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%9E%E6%88%98%EF%BC%88%E5%9B%9B%EF%BC%89/image-20200828233524683.png" alt="image-20200828233524683"></p>
+<p>我们的目的是预测时间序列数据是否为异常值，首先我们需要看看啥样的数据是正常的啥样是异常的：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">df[df.id==<span class="number">3</span>][[<span class="string">"time"</span>, <span class="string">"F_x"</span>, <span class="string">"F_y"</span>, <span class="string">"F_z"</span>, <span class="string">"T_x"</span>, <span class="string">"T_y"</span>, <span class="string">"T_z"</span>]].plot(x=<span class="string">"time"</span>, title=<span class="string">"Success example (id 3)"</span>, figsize=(<span class="number">12</span>, <span class="number">6</span>));</span><br><span class="line">df[df.id==<span class="number">20</span>][[<span class="string">"time"</span>, <span class="string">"F_x"</span>, <span class="string">"F_y"</span>, <span class="string">"F_z"</span>, <span class="string">"T_x"</span>, <span class="string">"T_y"</span>, <span class="string">"T_z"</span>]].plot(x=<span class="string">"time"</span>, title=<span class="string">"Success example (id 20)"</span>, figsize=(<span class="number">12</span>, <span class="number">6</span>))</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%9E%E6%88%98%EF%BC%88%E5%9B%9B%EF%BC%89/df_see.png" alt></p>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%9E%E6%88%98%EF%BC%88%E5%9B%9B%EF%BC%89/df_see1.png" alt></p>
+<p>第一个是正常的，第二个是异常的，我们人眼应该是很容易区分的，接下来我们基于时间序列做特征提取：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">extraction_settings = ComprehensiveFCParameters()</span><br><span class="line">X = extract_features(df, column_id=<span class="string">"id"</span>, column_sort=<span class="string">"time"</span>, default_fc_parameters=extraction_settings, impute_function=impute)</span><br></pre></td></tr></table></figure>
+<p>然后就会出现一个特征提取的进度条，完成了特征提取，打印一下X看看结果是啥：</p>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%9E%E6%88%98%EF%BC%88%E5%9B%9B%EF%BC%89/image-20200828234027149.png" alt="image-20200828234027149"></p>
+<p>这里一共提取出了 4578种时间序列特征，接下来我们需要筛选特征，提取最相关特征：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">X_filtered = extract_relevant_features(df, y, column_id=<span class="string">"id"</span>, column_sort=<span class="string">"time"</span>, default_fc_parameters=extraction_settings)</span><br></pre></td></tr></table></figure>
+<p>代码和前面的没啥区别，提取完之后还剩下635个特征：</p>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%AE%9E%E6%88%98%EF%BC%88%E5%9B%9B%EF%BC%89/image-20200828234350277.png" alt="image-20200828234350277"></p>
+<p>接下来将数据进行<code>train_test_split</code>等一系列分类常规操作完成分类：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">X_train, X_test, X_filtered_train, X_filtered_test, y_train, y_test = train_test_split(X, X_filtered, y, test_size=<span class="number">.4</span>)</span><br><span class="line">clf = DecisionTreeClassifier()</span><br><span class="line">clf.fit(X_train, y_train)</span><br><span class="line">print(classification_report(y_test, clf.predict(X_test)))</span><br></pre></td></tr></table></figure>
+<p>打印结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">       False       0.97      1.00      0.98        28</span><br><span class="line">        True       1.00      0.88      0.93         8</span><br><span class="line"></span><br><span class="line">    accuracy                           0.97        36</span><br><span class="line">   macro avg       0.98      0.94      0.96        36</span><br><span class="line">weighted avg       0.97      0.97      0.97        36</span><br></pre></td></tr></table></figure>
+<p>可以看到结果还是很不错的~我们看看经过<code>filtered</code>处理后的结果：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">clf = DecisionTreeClassifier()</span><br><span class="line">clf.fit(X_filtered_train, y_train)</span><br><span class="line">print(classification_report(y_test, clf.predict(X_filtered_test)))</span><br></pre></td></tr></table></figure>
+<p>打印输出和前面的一模一样===</p>
+]]></content>
+      <categories>
+        <category>TimeSeries</category>
+      </categories>
+  </entry>
+  <entry>
     <title>时间序列实战（三）</title>
     <url>/posts/a5564c3e.html</url>
     <content><![CDATA[<h1 id="数据获取"><a href="#数据获取" class="headerlink" title="数据获取"></a>数据获取</h1><p>我们下面借助<code>pandas_datareader</code>库中的<code>get_data_tiingo</code>获得我们的股票交易数据，首先我们需要在<code>tiingo</code>上注册我们的账号，然后<code>tiingo</code>会给我们提供一个<code>api-key</code>，我们下面假设这个<code>api-key</code>值为<code>API</code>，大家可以将这个<code>api-key</code>传入环境变量中，这样可以避免很多重复操作。</p>
