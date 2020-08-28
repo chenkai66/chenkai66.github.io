@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    时间序列 |  言念君子
+    时间序列实战（二） |  言念君子
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -47,7 +47,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-时间序列"
+  id="post-时间序列实战（二）"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -58,7 +58,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  时间序列
+  时间序列实战（二）
 </h1>
  
 
@@ -69,7 +69,7 @@
   <time datetime="2020-08-20T01:41:32.832Z" itemprop="datePublished">2020-08-20</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/Structure/">Structure</a>
+    <a class="article-category-link" href="/categories/TimeSeries/">TimeSeries</a>
   </div>
   
 <div class="word_count">
@@ -77,7 +77,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">2k</span>
+            <span class="post-count">2.5k</span>
         </span>
     </span>
 
@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">8 分钟</span>
+            <span class="post-count">10 分钟</span>
         </span>
     </span>
 </div>
@@ -203,7 +203,7 @@
 </blockquote>
 <p>在上面的PACF图中我们可以看到$p=2$就截尾了，因此我们可以直接取$p$为2，我们同时也可以看到ACF图中约为13截尾，因此取$q=13$。</p>
 <p>我们也可以画出散点图，本质和前面一样，不过更直观：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 散点图</span></span><br><span class="line">lags = <span class="number">9</span></span><br><span class="line">ncols = <span class="number">3</span></span><br><span class="line">nrows = int(np.ceil(lags/ncols))</span><br><span class="line"></span><br><span class="line">fig, axes = plt.subplots(ncols=ncols, nrows=nrows, figsize=(<span class="number">4</span>*ncols, <span class="number">4</span>*nrows))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ax, lag <span class="keyword">in</span> zip(axes.flat, np.arange(<span class="number">1</span>, lags+<span class="number">1</span>, <span class="number">1</span>)):</span><br><span class="line">    lag_str = <span class="string">"t-&#123;&#125;"</span>.format(lag)</span><br><span class="line">    X = (pd.concat([data, data.shift(-lag)], axis=<span class="number">1</span>, keys=[<span class="string">"#Passengers"</span>]+[lag_str]).dropna())</span><br><span class="line">    X.plot(ax=ax, kind=<span class="string">"scatter"</span>, y=<span class="string">"#Passengers"</span>, x=lag_str);</span><br><span class="line">    corr = X.corr().as_matrix()[<span class="number">0</span>][<span class="number">1</span>]</span><br><span class="line">    ax.set_ylabel(<span class="string">"Original"</span>)</span><br><span class="line">    ax.set_title(<span class="string">"Lag:&#123;&#125;(corr=&#123;:.2f&#125;)"</span>.format(lag_str, corr));</span><br><span class="line">    ax.set_aspect(<span class="string">"equal"</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 散点图</span></span><br><span class="line">lags = <span class="number">9</span></span><br><span class="line">ncols = <span class="number">3</span></span><br><span class="line">nrows = int(np.ceil(lags/ncols))</span><br><span class="line"></span><br><span class="line">fig, axes = plt.subplots(ncols=ncols, nrows=nrows, figsize=(<span class="number">4</span>*ncols, <span class="number">4</span>*nrows))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ax, lag <span class="keyword">in</span> zip(axes.flat, np.arange(<span class="number">1</span>, lags+<span class="number">1</span>, <span class="number">1</span>)):</span><br><span class="line">    lag_str = <span class="string">"t-&#123;&#125;"</span>.format(lag)</span><br><span class="line">    X = (pd.concat([data, data.shift(-lag)], axis=<span class="number">1</span>, keys=[<span class="string">"#Passengers"</span>]+[lag_str]).dropna())</span><br><span class="line">    X.plot(ax=ax, kind=<span class="string">"scatter"</span>, y=<span class="string">"#Passengers"</span>, x=lag_str);</span><br><span class="line">    corr = X.corr().as_matrix()[<span class="number">0</span>][<span class="number">1</span>]</span><br><span class="line">    <span class="comment"># 若是新版本的pandas，应使用corr = X.corr().value[0][1]</span></span><br><span class="line">    ax.set_ylabel(<span class="string">"Original"</span>)</span><br><span class="line">    ax.set_title(<span class="string">"Lag:&#123;&#125;(corr=&#123;:.2f&#125;)"</span>.format(lag_str, corr));</span><br><span class="line">    ax.set_aspect(<span class="string">"equal"</span>)</span><br></pre></td></tr></table></figure>
 <p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/lag.png" alt="lag"></p>
 <p>为了方便我们可以整一个画图函数：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tsplot</span><span class="params">(y, lags=None, title=<span class="string">""</span>, figsize=<span class="params">(<span class="number">14</span>, <span class="number">8</span>)</span>)</span>:</span></span><br><span class="line">    fig = plt.figure(figsize=figsize)</span><br><span class="line">    layout = (<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">    ts_ax = plt.subplot2grid(layout, (<span class="number">0</span>, <span class="number">0</span>))</span><br><span class="line">    hist_ax = plt.subplot2grid(layout, (<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">    acf_ax = plt.subplot2grid(layout, (<span class="number">1</span>, <span class="number">0</span>))</span><br><span class="line">    pacf_ax = plt.subplot2grid(layout, (<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">    </span><br><span class="line">    y.plot(ax=ts_ax)</span><br><span class="line">    ts_ax.set_title(title)</span><br><span class="line">    y.plot(ax=hist_ax, kind=<span class="string">"hist"</span>, bins=<span class="number">25</span>)</span><br><span class="line">    hist_ax.set_title(<span class="string">"Histogram"</span>)</span><br><span class="line">    smt.graphics.plot_acf(y, lags=lags, ax=acf_ax)</span><br><span class="line">    smt.graphics.plot_pacf(y, lags=lags, ax=pacf_ax)</span><br><span class="line">    [ax.set_xlim(<span class="number">0</span>) <span class="keyword">for</span> ax <span class="keyword">in</span> [acf_ax, pacf_ax]]</span><br><span class="line">    plt.tight_layout()</span><br><span class="line">    <span class="keyword">return</span> ts_ax, acf_ax, pacf_ax</span><br></pre></td></tr></table></figure>
@@ -213,6 +213,33 @@
 <h2 id="参数选择"><a href="#参数选择" class="headerlink" title="参数选择"></a>参数选择</h2><p>下面我们切分数据集</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">dateparse = <span class="keyword">lambda</span> date: datetime.strptime(date, <span class="string">"%Y-%m"</span>)</span><br><span class="line">data = pd.read_csv(<span class="string">"data/AirPassengers.csv"</span>, parse_dates=[<span class="string">"Month"</span>], index_col=<span class="string">"Month"</span>, date_parser=dateparse)</span><br><span class="line"></span><br><span class="line">n_train = int(<span class="number">0.8</span>*len(data))</span><br><span class="line">n_forcast = len(data)-n_train</span><br><span class="line"></span><br><span class="line">ts_train = data.iloc[:n_train][<span class="string">"#Passengers"</span>]</span><br><span class="line">ts_test = data.iloc[n_train:][<span class="string">"#Passengers"</span>]</span><br><span class="line">print(ts_train.shape, ts_test.shape)</span><br><span class="line">ts_train.head()</span><br></pre></td></tr></table></figure>
 <p>然后可以建立模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">arima211 = sm.tsa.SARIMAX(ts_train, order=(<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>), enforce_stationarity=<span class="literal">False</span>, enforce_invertibility=<span class="literal">False</span>)</span><br><span class="line">model_results = arima200.fit()</span><br><span class="line">model_results.summary()</span><br></pre></td></tr></table></figure>
+<p>结果如下:</p>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/1.png" style="zoom:75%;"></p>
+<p>下面我们希望对<code>order</code>的可能取值范围进行调参，我们编写以下函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 选择order参数</span></span><br><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"></span><br><span class="line">p_min = <span class="number">1</span></span><br><span class="line">d_min = <span class="number">1</span></span><br><span class="line">q_min = <span class="number">1</span></span><br><span class="line">p_max = <span class="number">4</span></span><br><span class="line">d_max = <span class="number">1</span></span><br><span class="line">q_max = <span class="number">4</span></span><br><span class="line"></span><br><span class="line">results_bic = pd.DataFrame(index=[<span class="string">"AR&#123;&#125;"</span>.format(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(p_min, p_max+<span class="number">1</span>)],</span><br><span class="line">                           columns=[<span class="string">"MA&#123;&#125;"</span>.format(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(q_min, q_max+<span class="number">1</span>)])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> p, d, q <span class="keyword">in</span> itertools.product(range(p_min, p_max+<span class="number">1</span>), range(d_min, d_max+<span class="number">1</span>), range(q_min, q_max+<span class="number">1</span>)):</span><br><span class="line">    <span class="keyword">if</span> p==<span class="number">1</span> <span class="keyword">and</span> d==<span class="number">1</span> <span class="keyword">and</span> q==<span class="number">1</span>:</span><br><span class="line">        results_bic.loc[<span class="string">"AR&#123;&#125;"</span>.format(p), <span class="string">"MA&#123;&#125;"</span>.format(q)] = np.nan</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        model = sm.tsa.SARIMAX(ts_train, order=(p, d, q), enforce_invertibility=<span class="literal">False</span>, enforce_stationarity=<span class="literal">False</span>)</span><br><span class="line">        results = model.fit()</span><br><span class="line">        results_bic.loc[<span class="string">"AR&#123;&#125;"</span>.format(p), <span class="string">"MA&#123;&#125;"</span>.format(q)] = results.bic</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">results_bic = results_bic[results_bic.columns].astype(float)</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>results_bic</code>是这个玩意：</p>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/2.png" alt></p>
+<p>可以展示一下热力图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fig, ax = plt.subplots(figsize=(<span class="number">10</span>, <span class="number">8</span>))</span><br><span class="line">ax = sns.heatmap(results_bic, mask=results_bic.isnull(), ax=ax, annot=<span class="literal">True</span>, fmt=<span class="string">".2f"</span>);</span><br><span class="line">ax.set_title(<span class="string">"BIC"</span>)</span><br><span class="line">plt.savefig(<span class="string">"output/Pic/BIC_passenger1.png"</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/BIC_passenger1-1598513021481.png" alt></p>
+<p>上面的<code>BIC</code>是什么意思呢，下面我们讲一下<code>AIC</code>与<code>BIC</code>：</p>
+<p><strong>AIC</strong>：赤池信息准则（Akaike Information Criterion）$AIC = 2k - 2ln(L)$</p>
+<p><strong>BIC</strong>：贝叶斯信息准则（Bayesian Information Criterion）$BIC = kln(n) - 2ln(L)$</p>
+<p>其中$k$为模型参数个数，$n$为样本数量，$L$为似然函数，由这两个公式我们可以看出，无论是<code>AIC</code>还是<code>BIC</code>都是越低越好（选择更简单的模型）</p>
+<p>我们可以直接调用<code>arma_order_select_ic</code>函数得到最佳的AIC和BIC的结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">train_results = sm.tsa.arma_order_select_ic(ts_train, ic=[<span class="string">"aic"</span>,<span class="string">"bic"</span>], trend=<span class="string">"nc"</span>, max_ar=<span class="number">4</span>, max_ma=<span class="number">4</span>)</span><br><span class="line">print(<span class="string">"AIC"</span>, train_results.aic_min_order)</span><br><span class="line">print(<span class="string">"BIC"</span>, train_results.bic_min_order)</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AIC (<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line">BIC (<span class="number">3</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<p>这两个结果还有些差异，我们可以自行选择。</p>
+<h2 id="模型残差检验"><a href="#模型残差检验" class="headerlink" title="模型残差检验"></a>模型残差检验</h2><ul>
+<li><code>ARIMA</code>模型的残差是否是平均值为0且方差为常数的正态分布</li>
+<li><code>QQ</code>图：线性即正态分布</li>
+</ul>
+<p>上述可以调用函数得到结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model_results.plot_diagnostics(figsize=(<span class="number">16</span>, <span class="number">12</span>))</span><br></pre></td></tr></table></figure>
+<p><img src="/Pic/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/model_results-1598513536956.png" alt></p>
+<p>可以看到<code>QQ</code>图近似呈一条直线，残差还是比较理想的可以通过检测。</p>
  
       <!-- reward -->
       
