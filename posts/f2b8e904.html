@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    每日论文（1）——Factorization Machines |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-每日论文（1）——Factorization Machines"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  每日论文（1）——Factorization Machines
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/f2b8e904.html" class="article-date">
+  <time datetime="2020-08-30T08:49:44.156Z" itemprop="datePublished">2020-08-30</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/paper/">paper</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">12 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>今天的论文阅读是<a href="https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf" target="_blank" rel="noopener">Factorization Machines</a></p>
+<h1 id="FM模型的引入"><a href="#FM模型的引入" class="headerlink" title="FM模型的引入"></a>FM模型的引入</h1><h2 id="逻辑回归模型及其缺点"><a href="#逻辑回归模型及其缺点" class="headerlink" title="逻辑回归模型及其缺点"></a>逻辑回归模型及其缺点</h2><p>FM模型其实是一种思路，具体的应用稍少。一般来说做推荐CTR预估时最简单的思路就是将特征做线性组合（逻辑回归LR），传入sigmoid中得到一个概率值，本质上这就是一个线性模型，因为sigmoid是单调增函数不会改变里面的线性模型的CTR预测顺序，因此逻辑回归模型效果会比较差。也就是LR的缺点有：</p>
+<ul>
+<li>是一个线性模型</li>
+<li>每个特征对最终输出结果独立，需要手动特征交叉（$x_i*x_j$），比较麻烦</li>
+</ul>
+<h2 id="二阶交叉项的考虑及改进"><a href="#二阶交叉项的考虑及改进" class="headerlink" title="二阶交叉项的考虑及改进"></a>二阶交叉项的考虑及改进</h2><p>由于LR模型的上述缺陷（主要是手动做特征交叉比较麻烦），干脆就考虑所有的二阶交叉项，也就是将目标函数由原来的</p>
+<script type="math/tex; mode=display">y = w_0+\sum_{i=1}^nw_ix_i</script><p>变为</p>
+<script type="math/tex; mode=display">y = w_0+\sum_{i=1}^nw_ix_i+\sum_{i=1}^{n-1}\sum_{i+1}^nw_{ij}x_ix_j</script><p>但这个式子有一个问题，<strong>只有当$x_i$与$x_j$均不为0时这个二阶交叉项才会生效</strong>，后面这个特征交叉项本质是和多项式核SVM等价的，为了解决这个问题，我们的FM登场了！</p>
+<p>FM模型使用了如下的优化函数：</p>
+<script type="math/tex; mode=display">y = w_0+\sum_{i=1}^nw_ix_i+\sum_{i=1}^{n}\sum_{i+1}^n<v_i,v_j>x_ix_j</script><p>事实上做的唯一改动就是把$w_{ij}$替换成了$<v_i,v_j>$，大家应该就看出来了，这实际上就有深度学习的意味在里面了，实质上就是给每个$x_i$计算一个encoding，然后将两个向量之间的encoding做内积得到之前所谓的$w_{ij}$好处就是这个模型泛化能力强 ，即使两个特征之前从未在训练集中<strong>同时</strong>出现，我们也不至于像之前一样训练不出$w_{ij}$，事实上只需要$x_i$和其他的$x_k$同时出现过就可以计算出$x_i$的embedding！</v_i,v_j></p>
+<h1 id="FM公式的理解"><a href="#FM公式的理解" class="headerlink" title="FM公式的理解"></a>FM公式的理解</h1><p>从公式来看，模型前半部分就是普通的LR线性组合，后半部分的交叉项：特征组合。首先，单从模型表达能力上来看，FM是要强于LR的，至少它不会比LR弱，当交叉项参数$w_{ij}$全为0的时候，整个模型就退化为普通的LR模型。对于有$n$个特征的模型，特征组合的参数数量共有$1+2+3+\cdots  + n-1=\frac{n(n-1)}{2}$个，并且任意两个参数之间是独立的。所以说特征数量比较多的时候，特征组合之后，维度自然而然就高了。</p>
+<blockquote>
+<p>定理：任意一个实对称矩阵（正定矩阵）$W$都存在一个矩阵$V$，使得 $W=V.V^{T}$成立。</p>
+</blockquote>
+<p>类似地，所有二次项参数$\omega_{ij}$可以组成一个对称阵$W$（为了方便说明FM的由来，对角元素可以设置为正实数），那么这个矩阵就可以分解为$W=V^TV$，$V$ 的第$j$列($v_{j}$)便是第$j$维特征($x_{j}$)的隐向量。</p>
+<script type="math/tex; mode=display">
+\hat{y}(X) = \omega_{0}+\sum_{i=1}^{n}{\omega_{i}x_{i}}+\sum_{i=1}^{n-1}{\sum_{j=i+1}^{n} \color{red}{<v_{i},v_{j}>x_{i}x_{j}}}</script><p>需要估计的参数有$\omega_{0}∈ R$，$\omega_{i}∈ R$，$V∈ R$，$&lt; \cdot, \cdot&gt;$是长度为$k$的两个向量的点乘，公式如下：</p>
+<script type="math/tex; mode=display"><v_{i},v_{j}> = \sum_{f=1}^{k}{v_{i,f}\cdot v_{j,f}}</script><p>上面的公式中： </p>
+<ul>
+<li>$\omega_{0}$为全局偏置；</li>
+<li>$\omega_{i}$是模型第$i$个变量的权重;</li>
+<li>$\omega_{ij} = &lt; v_{i}, v_{j}&gt;$特征$i$和$j$的交叉权重;</li>
+<li>$v_{i} $是第$i$维特征的隐向量;</li>
+<li>$&lt;\cdot, \cdot&gt;$代表向量点积;</li>
+<li>$k(k&lt;&lt;n)$为隐向量的长度，包含 $k$ 个描述特征的因子。</li>
+</ul>
+<p>FM模型中二次项的参数数量减少为 $kn $个，远少于多项式模型的参数数量。另外，参数因子化使得 $x_{h}x_{i}$ 的参数和 $x_{i}x_{j}$ 的参数不再是相互独立的，因此我们可以在样本稀疏的情况下相对合理地估计FM的二次项参数。具体来说，$x_{h}x_{i}$ 和 $x_{i}x_{j}$的系数分别为 $<v_{h},v_{i}>$ 和 $<v_{i},v_{j}>$ ，它们之间有共同项 $v_{i}$ 。也就是说，所有包含“ $x_{i}$ 的非零组合特征”（存在某个 $j \ne i$ ，使得 $x_{i}x_{j}\neq 0$ ）的样本都可以用来学习隐向量$v_{i}$，这很大程度上避免了数据稀疏性造成的影响。而在多项式模型中,$w_{hi}$ 和 $w_{ij}$ 是相互独立的。</v_{i},v_{j}></v_{h},v_{i}></p>
+<p>显而易见，FM的公式是一个通用的拟合方程，可以采用不同的损失函数用于解决regression、classification等问题，比如可以采用MSE（Mean Square Error）loss function来求解回归问题，也可以采用Hinge/Cross-Entropy loss来求解分类问题。当然，在进行二元分类时，FM的输出需要使用sigmoid函数进行变换，该原理与LR是一样的。直观上看，FM的复杂度是 $O(kn^2)$ 。但是FM的二次项可以化简，其复杂度可以优化到 $O(kn)$ 。由此可见，FM可以在线性时间对新样本作出预测。</p>
+<p><strong>证明</strong>：</p>
+<p>由<script type="math/tex">ab+ac+bc = \frac{1}{2}\left[(a+b+c)^2-(a^2+b^2+c^2) \right]</script></p>
+<script type="math/tex; mode=display">\begin{align} \sum_{i=1}^{n-1}{\sum_{j=i+1}^{n}{<v_i,v_j>x_ix_j}}
+&= \frac{1}{2}\sum_{i=1}^{n}{\sum_{j=1}^{n}{<v_i,v_j>x_ix_j}} - \frac{1}{2} {\sum_{i=1}^{n}{<v_i,v_i>x_ix_i}} \\
+&= \frac{1}{2} \left( \sum_{i=1}^{n}{\sum_{j=1}^{n}{\sum_{f=1}^{k}{v_{i,f}v_{j,f}x_ix_j}}} - \sum_{i=1}^{n}{\sum_{f=1}^{k}{v_{i,f}v_{i,f}x_ix_i}} \right) \\
+&= \frac{1}{2}\sum_{f=1}^{k}{\left[ \left( \sum_{i=1}^{n}{v_{i,f}x_i} \right) \cdot \left( \sum_{j=1}^{n}{v_{j,f}x_j} \right) - \sum_{i=1}^{n}{v_{i,f}^2 x_i^2} \right]} \\
+&= \frac{1}{2}\sum_{f=1}^{k}{\left[ \left( \sum_{i=1}^{n}{v_{i,f}x_i} \right)^2 - \sum_{i=1}^{n}{v_{i,f}^2 x_i^2} \right]} \end{align}</script><p><strong>解释</strong>：</p>
+<ul>
+<li>$v_{i,f}$ 是一个具体的值；</li>
+<li>第1个等号：对称矩阵 $W$ 对角线上半部分；</li>
+<li>第2个等号：把向量内积 $v_{i}$,$v_{j}$ 展开成累加和的形式；</li>
+<li>第3个等号：提出公共部分；</li>
+<li>第4个等号： $i$ 和 $j$ 相当于是一样的，表示成平方过程。</li>
+</ul>
+<h2 id="SGD训练参数"><a href="#SGD训练参数" class="headerlink" title="SGD训练参数"></a>SGD训练参数</h2><p>使用SGD进行训练，可以推导出SGD的参数更新方式：</p>
+<script type="math/tex; mode=display">\begin{equation}
+\frac{\partial \hat{y}(x)}{\partial \theta} = \left\{\begin{array}
+{lr} 1, & if \ \theta\ is\ \omega_{0} \\
+x_{i}, & if\ \theta\ is\ \omega_i \\
+x_{i} \sum_{j=1}^{n}{v_{j,f} \ x_{j} - v_{i,f} \ x_{i}^2} & if\ \theta\ is\ v_{i,f} \end{array} \right.
+\end{equation}</script><p>上式中，$\sum_{j=1}^{n} v_{j,f} \ x_{j}$ 的计算与变量$i$相互独立，因此可以预先计算得到。每个梯度的计算时间复杂度都为$O(1)$，模型的参数总数量为 $nk + n + 1$，在数据稀疏条件下，参数更新所需要的所有时间为$ O(k n)$。</p>
+<h2 id="FM算法的问题"><a href="#FM算法的问题" class="headerlink" title="FM算法的问题"></a>FM算法的问题</h2><ol>
+<li>特征之间两两组合容易导致维度灾难；</li>
+<li>组合后的特征未必有效，可能存在特征冗余现象；</li>
+<li>组合后特征样本非常稀疏，如果原始样本中不存在对应的组合，则无法学习参数，那么该组合就显得无效。</li>
+</ol>
+<h1 id="FM模型的应用"><a href="#FM模型的应用" class="headerlink" title="FM模型的应用"></a>FM模型的应用</h1><p>最直接的想法就是直接把FM得到的结果放进sigmoid中输出一个概率值，由此做CTR预估，事实上我们也可以做召回。</p>
+<p>由于FM模型是利用两个特征的Embedding做内积得到二阶特征交叉的权重，那么我们可以将训练好的FM特征取出离线存好，之后用来做KNN向量检索。</p>
+<p>工业应用的具体操作步骤：</p>
+<ul>
+<li>离线训练好FM模型（学习目标可以是CTR）</li>
+<li>将训练好的FM模型Embedding取出</li>
+<li>将每个uid对应的Embedding做avg pooling（平均）形成该用户最终的Embedding，item也做同样的操作</li>
+<li>将所有的Embedding向量放入Faiss等</li>
+<li>线上uid发出请求，取出对应的user embedding，进行检索召回</li>
+</ul>
+<h1 id="代码实践"><a href="#代码实践" class="headerlink" title="代码实践"></a>代码实践</h1><p>直接看Github官方仓库：<a href="https://github.com/coreylynch/pyFM，里面有介绍如何安装以及使用，下面搬运一遍：" target="_blank" rel="noopener">https://github.com/coreylynch/pyFM，里面有介绍如何安装以及使用，下面搬运一遍：</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><strong>方法一：直接pip install</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install git+https:&#x2F;&#x2F;github.com&#x2F;coreylynch&#x2F;pyFM</span><br></pre></td></tr></table></figure>
+<p><strong>方法二：手动安装</strong></p>
+<p>输入上面这行代码应能下载这个包并安装，如果安装失败可能是网络原因，这时可以考虑手动下载这个包然后手动<code>python setup.py install</code>安装，这时候通常会报错，去掉setup.py文件里面的<code>libraries=[“m”]</code>一行再重新安装即可</p>
+<p>具体操作是：</p>
+<ul>
+<li>在<a href="https://github.com/coreylynch/pyFM中手动下载包" target="_blank" rel="noopener">https://github.com/coreylynch/pyFM中手动下载包</a></li>
+<li>将包解压，更改里面的setup.py文件，去掉setup.py文件里面的<code>libraries=[“m”]</code>一行</li>
+<li>cd到当前文件夹下<code>python setup.py install</code></li>
+</ul>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>这部分主要作为简单上手让读者了解如何使用这个包~</p>
+<p><strong>第一步：导包</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pyfm <span class="keyword">import</span> pylibfm</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction <span class="keyword">import</span> DictVectorizer</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br></pre></td></tr></table></figure>
+<p><strong>第二步：创建训练集并转换成one-hot编码的特征形式</strong> </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">train = [</span><br><span class="line">    &#123;<span class="string">"user"</span>: <span class="string">"1"</span>, <span class="string">"item"</span>: <span class="string">"5"</span>, <span class="string">"age"</span>: <span class="number">19</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"user"</span>: <span class="string">"2"</span>, <span class="string">"item"</span>: <span class="string">"43"</span>, <span class="string">"age"</span>: <span class="number">33</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"user"</span>: <span class="string">"3"</span>, <span class="string">"item"</span>: <span class="string">"20"</span>, <span class="string">"age"</span>: <span class="number">55</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"user"</span>: <span class="string">"4"</span>, <span class="string">"item"</span>: <span class="string">"10"</span>, <span class="string">"age"</span>: <span class="number">20</span>&#125;,</span><br><span class="line">]</span><br><span class="line">v = DictVectorizer()</span><br><span class="line">X = v.fit_transform(train)</span><br><span class="line">print(X.toarray())</span><br></pre></td></tr></table></figure>
+<p>看看结果，对比一下维度是否符合预期：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[[19.  0.  0.  0.  1.  1.  0.  0.  0.]</span><br><span class="line"> [33.  0.  0.  1.  0.  0.  1.  0.  0.]</span><br><span class="line"> [55.  0.  1.  0.  0.  0.  0.  1.  0.]</span><br><span class="line"> [20.  1.  0.  0.  0.  0.  0.  0.  1.]]</span><br></pre></td></tr></table></figure>
+<p><strong>第三步：创建标签</strong></p>
+<p>这里简单创建了一个全1的标签：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y = np.repeat(<span class="number">1.0</span>,X.shape[<span class="number">0</span>])</span><br><span class="line">y</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array([1., 1., 1., 1.])</span><br></pre></td></tr></table></figure>
+<p><strong>第四步：训练并预测</strong></p>
+<p>就和调用<code>sklearn</code>的包是一样的用法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fm = pylibfm.FM()</span><br><span class="line">fm.fit(X,y)</span><br><span class="line">fm.predict(v.transform(&#123;<span class="string">"user"</span>: <span class="string">"1"</span>, <span class="string">"item"</span>: <span class="string">"10"</span>, <span class="string">"age"</span>: <span class="number">24</span>&#125;))</span><br></pre></td></tr></table></figure>
+<h2 id="电影评分数据集实战"><a href="#电影评分数据集实战" class="headerlink" title="电影评分数据集实战"></a>电影评分数据集实战</h2><p>数据集在这里下载，数据集本地具体保存路径读者自行阅读代码找找： <a href="http://www.grouplens.org/system/files/ml-100k.zip" target="_blank" rel="noopener">http://www.grouplens.org/system/files/ml-100k.zip</a></p>
+<p><strong>导包，并定义一个导入指定格式数据集的函数</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction <span class="keyword">import</span> DictVectorizer</span><br><span class="line"><span class="keyword">from</span> pyfm <span class="keyword">import</span> pylibfm</span><br><span class="line"></span><br><span class="line"><span class="comment"># Read in data</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loadData</span><span class="params">(filename,path=<span class="string">"ml-100k/"</span>)</span>:</span></span><br><span class="line">    data = []</span><br><span class="line">    y = []</span><br><span class="line">    users=set()</span><br><span class="line">    items=set()</span><br><span class="line">    <span class="keyword">with</span> open(path+filename) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">            (user,movieid,rating,ts)=line.split(<span class="string">'\t'</span>)</span><br><span class="line">            data.append(&#123; <span class="string">"user_id"</span>: str(user), <span class="string">"movie_id"</span>: str(movieid)&#125;)</span><br><span class="line">            y.append(float(rating))</span><br><span class="line">            users.add(user)</span><br><span class="line">            items.add(movieid)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (data, np.array(y), users, items)</span><br></pre></td></tr></table></figure>
+<p><strong>导入训练集和测试集，并转换格式</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(train_data, y_train, train_users, train_items) = loadData(<span class="string">"ua.base"</span>)</span><br><span class="line">(test_data, y_test, test_users, test_items) = loadData(<span class="string">"ua.test"</span>)</span><br><span class="line">v = DictVectorizer()</span><br><span class="line">X_train = v.fit_transform(train_data)</span><br><span class="line">X_test = v.transform(test_data)</span><br></pre></td></tr></table></figure>
+<p><strong>训练模型并测试</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Build and train a Factorization Machine</span></span><br><span class="line">fm = pylibfm.FM(num_factors=<span class="number">10</span>, num_iter=<span class="number">100</span>, verbose=<span class="literal">True</span>, task=<span class="string">"regression"</span>, initial_learning_rate=<span class="number">0.001</span>, learning_rate_schedule=<span class="string">"optimal"</span>)</span><br><span class="line">fm.fit(X_train,y_train)</span><br></pre></td></tr></table></figure>
+<p><strong>预测结果打印误差</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">preds = fm.predict(X_test)</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">print(<span class="string">"FM MSE: %.4f"</span> % mean_squared_error(y_test,preds))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FM MSE: 0.8873</span><br></pre></td></tr></table></figure>
+<h2 id="分类任务实战"><a href="#分类任务实战" class="headerlink" title="分类任务实战"></a>分类任务实战</h2><p><strong>搞数据</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction <span class="keyword">import</span> DictVectorizer</span><br><span class="line"><span class="keyword">from</span> sklearn.cross_validation <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> pyfm <span class="keyword">import</span> pylibfm</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_classification</span><br><span class="line"></span><br><span class="line">X, y = make_classification(n_samples=<span class="number">1000</span>,n_features=<span class="number">100</span>, n_clusters_per_class=<span class="number">1</span>)</span><br><span class="line">data = [ &#123;v: k <span class="keyword">for</span> k, v <span class="keyword">in</span> dict(zip(i, range(len(i)))).items()&#125;  <span class="keyword">for</span> i <span class="keyword">in</span> X]</span><br><span class="line"></span><br><span class="line">X_train, X_test, y_train, y_test = train_test_split(data, y, test_size=<span class="number">0.1</span>, random_state=<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line">v = DictVectorizer()</span><br><span class="line">X_train = v.fit_transform(X_train)</span><br><span class="line">X_test = v.transform(X_test)</span><br></pre></td></tr></table></figure>
+<p><strong>建模型</strong></p>
+<p>我们可以看到主要改变的参数是<code>num_factors</code>和<code>tasks</code>，读者可以想想为什么</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fm = pylibfm.FM(num_factors=<span class="number">50</span>, num_iter=<span class="number">10</span>, verbose=<span class="literal">True</span>, task=<span class="string">"classification"</span>, initial_learning_rate=<span class="number">0.0001</span>, learning_rate_schedule=<span class="string">"optimal"</span>)</span><br><span class="line">fm.fit(X_train,y_train)</span><br></pre></td></tr></table></figure>
+<p>由于是分类任务，误差函数肯定不一样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> log_loss</span><br><span class="line">print(<span class="string">"Validation log loss: %.4f"</span> % log_loss(y_test,fm.predict(X_test)))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Validation log loss: 1.3678</span><br></pre></td></tr></table></figure>
+<p>参考链接：</p>
+<ul>
+<li>论文原文：<a href="https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf" target="_blank" rel="noopener">https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf</a></li>
+<li>贪心学院FM模型公开课</li>
+<li>Github仓库：<a href="https://github.com/coreylynch/pyFM" target="_blank" rel="noopener">https://github.com/coreylynch/pyFM</a></li>
+<li>一篇翻译的很好的博客：<a href="https://www.csuldw.com/2019/02/08/2019-02-08-fm-algorithm-theory/，但主要只介绍了原论文的前一半，后一半主要是各种实验暂时不看" target="_blank" rel="noopener">https://www.csuldw.com/2019/02/08/2019-02-08-fm-algorithm-theory/，但主要只介绍了原论文的前一半，后一半主要是各种实验暂时不看</a></li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/f2b8e904.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/87e8c709.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">我的第一百篇博客</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
