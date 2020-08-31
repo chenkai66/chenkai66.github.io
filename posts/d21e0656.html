@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    归档: 2020/8 |  言念君子
+    抽象代数（一） |  言念君子
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -46,76 +46,243 @@
       
     <main class="content on">
       <section class="outer">
-  <article class="articles">
+  <article
+  id="post-抽象代数（一）"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
     
-    
-    <h1 class="page-type-title">2020/8</h1>
-    
-    
-  
-  
-  
-  
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2020" class="archive-year">2020</a>
-    </div>
-    <div class="archives">
-      
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/posts/2df51814.html" class="archive-article-date">
-  <time datetime="2020-08-03T11:51:01.784Z" itemprop="datePublished">08/03</time>
-</a>
+    <header class="article-header">
        
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/posts/2df51814.html"
-    >C++指针详解</a> 
-</h2>
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  抽象代数（一）
+</h1>
  
 
     </header>
-    
-    
+     
+    <div class="article-meta">
+      <a href="/posts/d21e0656.html" class="article-date">
+  <time datetime="2020-08-31T09:23:46.119Z" itemprop="datePublished">2020-08-31</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mathematics/">Mathematics</a>
   </div>
-</article>
-      
   
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/posts/1424e830.html" class="archive-article-date">
-  <time datetime="2020-08-03T11:51:01.783Z" itemprop="datePublished">08/03</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/posts/1424e830.html"
-    >Bert</a> 
-</h2>
- 
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">584</span>
+        </span>
+    </span>
 
-    </header>
-    
-    
-  </div>
-</article>
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">2 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
       
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="映射"><a href="#映射" class="headerlink" title="映射"></a>映射</h1><p><strong>定义一</strong>：</p>
+<blockquote>
+<p>设$f:A\rightarrow B$为映射，如果存在$g:B\rightarrow A$使$gf=id_A$，则称$f$左可逆，$g$称为$f$的左逆，如果存在映射$g:B\rightarrow A$使$fg=id_B$，则称$f$右可逆，$g$称为$f$的右逆，若既左可逆（$g_1$）又右可逆($g_2$)，则称$f$可逆。</p>
+</blockquote>
+<p><strong>命题一</strong>：</p>
+<blockquote>
+<p>若$f$可逆则$g_1=g_2$，反之也成立</p>
+</blockquote>
+<p>证明：若$f$可逆，即$g_1f=id_A,fg_2=id_B$，则</p>
+<script type="math/tex; mode=display">g_1 = g_1id_B = g_1fg_2 = id_A g_2 = g_2</script><p>因此$f$可逆等价于存在映射$g:B\rightarrow A$使得$gf=id_A, fg=id_B$</p>
+<p>此时$g$唯一，记为$f^{-1}$</p>
+<p>反之，若$g_1=g_2$，则显然$f$可逆</p>
+<p><strong>命题二</strong>：</p>
+<blockquote>
+<ul>
+<li>$f$为单射等价于$f$左可逆</li>
+<li>$f$为满射等价于$f$右可逆</li>
+<li>$f$为双射等价于$f$可逆</li>
+</ul>
+</blockquote>
+<p>证明：</p>
+<p>① 若$f$左可逆，则存在映射$g:B\rightarrow A$使得$gf=id_A$</p>
+<p>设$a、b\in A$使得$f(a) = f(b)$，则</p>
+<script type="math/tex; mode=display">gf(a) = gf(b)</script><p>因此有</p>
+<script type="math/tex; mode=display">id_A(a) = id_A(b)</script><p>也即$a = b$，因此$f$为单射</p>
+<p>反之，若$f:A\rightarrow B$为单射，定义$g:B\rightarrow A$如下：</p>
+<p>$\forall b\in B$，若有$a\in A$使得$f(a)=b$</p>
+<p>由于$f$是单射，因此$a$唯一，定义$g(b)=a$，如果不存在$a\in A$使得$f(a)=b$</p>
+<p>如果不存在$a\in A$使得$f(a)=b$，则令$g(b) = a_0$，其中$a_0$为$A$中指定的元素，则$g$是$B$到$A$的映射且$gf=id_A$，因此$f$左可逆</p>
+<p>② 若$f$为满射，则$\forall b\in B, f^{-1}(b) = \{a\in A:f(a)=b\}$非空</p>
+<p>令$a\in f^{-1}(b)$，定义$g(b)=a$</p>
+<p>则$g$是$B$到$A$的映射且$fg=id_B$，即$f$右可逆</p>
+<p>反之若有$g$使得$fg = id_B$，则</p>
+<script type="math/tex; mode=display">\forall b\in B, f(g(b)) = id_Bg(b) = b</script><p>且$g(b) \in A$，因此$f$满射</p>
+<p>③ 由①②综合可得</p>
+<p><strong>命题三</strong>：</p>
+<blockquote>
+<p>设$f: A\rightarrow B, g:B\rightarrow C$为映射，则</p>
+<ul>
+<li>若$f$与$g$都是单射，则$gf$也是</li>
+<li>若$f$与$g$都是满射，则$gf$也是</li>
+<li>若$f$与$g$都是双射，则$gf$也是</li>
+</ul>
+</blockquote>
+<p>证明：（只证前两条）</p>
+<p>若$f$与$g$都是单射，则由命题二有</p>
+<script type="math/tex; mode=display">f^`f = id_A, g^`g=id_B</script><p>故</p>
+<script type="math/tex; mode=display">f^`g^`gf = f^`id_B f = f^`f = id_A</script><p>因此$gf$是单射</p>
+<p>若$f$与$g$都是满射，则任意$c\in C$，由于$g$是到上（满射）的，存在$b\in B$使得$g(b)=c$，同理存在$a\in A$使得$f(a)=b$，由此：</p>
+<script type="math/tex; mode=display">(gf)(a) = g(f(a)) = g(b) = c</script> 
+      <!-- reward -->
       
     </div>
-  </div>
-  
-  
-
-  
-  <nav class="page-nav">
     
-    <a class="extend prev" rel="prev" href="/archives/2020/08/page/10/">上一页</a><a class="page-number" href="/archives/2020/08/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2020/08/page/9/">9</a><a class="page-number" href="/archives/2020/08/page/10/">10</a><span class="page-number current">11</span>
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/d21e0656.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/f2b8e904.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">每日论文（1）——Factorization Machines</div>
+      </a>
+    
   </nav>
-  
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
 </section>
       <footer class="footer">
   <div class="outer">
@@ -255,6 +422,23 @@
 <script src="/js/lazyload.min.js"></script>
 
 <!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
