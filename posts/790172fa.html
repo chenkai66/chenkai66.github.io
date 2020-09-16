@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    天池金融风控入门赛 |  言念君子
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-天池金融风控入门赛"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  天池金融风控入门赛
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/posts/790172fa.html" class="article-date">
+  <time datetime="2020-09-16T02:19:19.360Z" itemprop="datePublished">2020-09-16</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Match/">Match</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">12 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="Task1-赛题理解"><a href="#Task1-赛题理解" class="headerlink" title="Task1 赛题理解"></a>Task1 赛题理解</h2><p>Tip:本次新人赛是Datawhale与天池联合发起的0基础入门系列赛事第四场 —— 零基础入门金融风控之贷款违约预测挑战赛。 赛题以金融风控中的个人信贷为背景，要求选手根据贷款申请人的数据信息预测其是否有违约的可能，以此判断是否通过此项贷款，这是一个典型的分类问题。通过这道赛题来引导大家了解金融风控中的一些业务背景，解决实际问题，帮助竞赛新人进行自我练习、自我提高。</p>
+<p>项目地址：<a href="https://github.com/datawhalechina/team-learning-data-mining/tree/master/FinancialRiskControl" target="_blank" rel="noopener">https://github.com/datawhalechina/team-learning-data-mining/tree/master/FinancialRiskControl</a></p>
+<p>比赛地址：<a href="https://tianchi.aliyun.com/competition/entrance/531830/introduction" target="_blank" rel="noopener">https://tianchi.aliyun.com/competition/entrance/531830/introduction</a></p>
+<h3 id="1-1-学习目标"><a href="#1-1-学习目标" class="headerlink" title="1.1 学习目标"></a>1.1 学习目标</h3><p>理解赛题数据和目标，清楚评分体系。</p>
+<p>完成相应报名，下载数据和结果提交打卡（可提交示例结果），熟悉比赛流程</p>
+<h3 id="1-2-了解赛题"><a href="#1-2-了解赛题" class="headerlink" title="1.2 了解赛题"></a>1.2 了解赛题</h3><ul>
+<li>赛题概况</li>
+<li>数据概况</li>
+<li>预测指标</li>
+<li>分析赛题</li>
+</ul>
+<h3 id="1-2-1-赛题概况"><a href="#1-2-1-赛题概况" class="headerlink" title="1.2.1 赛题概况"></a>1.2.1 赛题概况</h3><h5 id="比赛要求参赛选手根据给定的数据集，建立模型，预测金融风险。"><a href="#比赛要求参赛选手根据给定的数据集，建立模型，预测金融风险。" class="headerlink" title="比赛要求参赛选手根据给定的数据集，建立模型，预测金融风险。"></a>比赛要求参赛选手根据给定的数据集，建立模型，预测金融风险。</h5><p>赛题以预测金融风险为任务，数据集报名后可见并可下载，该数据来自某信贷平台的贷款记录，总数据量超过120w，包含47列变量信息，其中15列为匿名变量。为了保证比赛的公平性，将会从中抽取80万条作为训练集，20万条作为测试集A，20万条作为测试集B，同时会对employmentTitle、purpose、postCode和title等信息进行脱敏。</p>
+<p>通过这道赛题来引导大家走进金融风控数据竞赛的世界，主要针对于于竞赛新人进行自我练习、自我提高。</p>
+<h3 id="1-2-2-数据概况"><a href="#1-2-2-数据概况" class="headerlink" title="1.2.2 数据概况"></a>1.2.2 数据概况</h3><p>一般而言，对于数据在比赛界面都有对应的数据概况介绍（匿名特征除外），说明列的性质特征。了解列的性质会有助于我们对于数据的理解和后续分析。 Tip:匿名特征，就是未告知数据列所属的性质的特征列。</p>
+<p>train.csv</p>
+<ul>
+<li>id 为贷款清单分配的唯一信用证标识</li>
+<li>loanAmnt 贷款金额</li>
+<li>term 贷款期限（year）</li>
+<li>interestRate 贷款利率</li>
+<li>installment 分期付款金额</li>
+<li>grade 贷款等级</li>
+<li>subGrade 贷款等级之子级</li>
+<li>employmentTitle 就业职称</li>
+<li>employmentLength 就业年限（年）</li>
+<li>homeOwnership 借款人在登记时提供的房屋所有权状况</li>
+<li>annualIncome 年收入</li>
+<li>verificationStatus 验证状态</li>
+<li>issueDate 贷款发放的月份</li>
+<li>purpose 借款人在贷款申请时的贷款用途类别</li>
+<li>postCode 借款人在贷款申请中提供的邮政编码的前3位数字</li>
+<li>regionCode 地区编码</li>
+<li>dti 债务收入比</li>
+<li>delinquency_2years 借款人过去2年信用档案中逾期30天以上的违约事件数</li>
+<li>ficoRangeLow 借款人在贷款发放时的fico所属的下限范围</li>
+<li>ficoRangeHigh 借款人在贷款发放时的fico所属的上限范围</li>
+<li>openAcc 借款人信用档案中未结信用额度的数量</li>
+<li>pubRec 贬损公共记录的数量</li>
+<li>pubRecBankruptcies 公开记录清除的数量</li>
+<li>revolBal 信贷周转余额合计</li>
+<li>revolUtil 循环额度利用率，或借款人使用的相对于所有可用循环信贷的信贷金额</li>
+<li>totalAcc 借款人信用档案中当前的信用额度总数</li>
+<li>initialListStatus 贷款的初始列表状态</li>
+<li>applicationType 表明贷款是个人申请还是与两个共同借款人的联合申请</li>
+<li>earliesCreditLine 借款人最早报告的信用额度开立的月份</li>
+<li>title 借款人提供的贷款名称</li>
+<li>policyCode 公开可用的策略_代码=1新产品不公开可用的策略_代码=2</li>
+<li>n系列匿名特征 匿名特征n0-n14，为一些贷款人行为计数特征的处理</li>
+</ul>
+<h3 id="1-2-3-预测指标"><a href="#1-2-3-预测指标" class="headerlink" title="1.2.3 预测指标"></a>1.2.3 预测指标</h3><p>竞赛采用AUC作为评价指标。AUC（Area Under Curve）被定义为 ROC曲线 下与坐标轴围成的面积。</p>
+<h5 id="分类算法常见的评估指标如下："><a href="#分类算法常见的评估指标如下：" class="headerlink" title="分类算法常见的评估指标如下："></a>分类算法常见的评估指标如下：</h5><p>1、混淆矩阵（Confuse Matrix）</p>
+<ul>
+<li>（1）若一个实例是正类，并且被预测为正类，即为真正类TP(True Positive )</li>
+<li>（2）若一个实例是正类，但是被预测为负类，即为假负类FN(False Negative )</li>
+<li>（3）若一个实例是负类，但是被预测为正类，即为假正类FP(False Positive )</li>
+<li>（4）若一个实例是负类，并且被预测为负类，即为真负类TN(True Negative )</li>
+</ul>
+<p>2、准确率（Accuracy） 准确率是常用的一个评价指标，但是不适合样本不均衡的情况。 <script type="math/tex">Accuracy = \frac{TP + TN}{TP + TN + FP + FN}</script></p>
+<p>3、精确率（Precision） 又称查准率，正确预测为正样本（TP）占预测为正样本(TP+FP)的百分比。 <script type="math/tex">Precision = \frac{TP}{TP + FP}</script></p>
+<p>4、召回率（Recall） 又称为查全率，正确预测为正样本（TP）占正样本(TP+FN)的百分比。 <script type="math/tex">Recall = \frac{TP}{TP + FN}</script></p>
+<p>5、F1 Score 精确率和召回率是相互影响的，精确率升高则召回率下降，召回率升高则精确率下降，如果需要兼顾二者，就需要精确率、召回率的结合F1 Score。 <script type="math/tex">F1-Score = \frac{2}{\frac{1}{Precision} + \frac{1}{Recall}}</script></p>
+<p>6、P-R曲线（Precision-Recall Curve） P-R曲线是描述精确率和召回率变化的曲线</p>
+<p><a href="https://camo.githubusercontent.com/25688baabbff569136e19f04c812ed80af778351/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303931333031303232363132352e706e67" target="_blank" rel="noopener"><img src="/Pic/Untitled/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303931333031303232363132352e706e67" alt="p-r"></a></p>
+<p>7、ROC（Receiver Operating Characteristic）</p>
+<ul>
+<li>ROC空间将假正例率（FPR）定义为 X 轴，真正例率（TPR）定义为 Y 轴。</li>
+</ul>
+<p>TPR：在所有实际为正例的样本中，被正确地判断为正例之比率。 <script type="math/tex">TPR = \frac{TP}{TP + FN}</script> FPR：在所有实际为负例的样本中，被错误地判断为正例之比率。 <script type="math/tex">FPR = \frac{FP}{FP + TN}</script></p>
+<p><a href="https://camo.githubusercontent.com/2dfea351fa5eac42caab9e716aa76a20553e4103/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303931333031303232363132342e706e67" target="_blank" rel="noopener"><img src="/Pic/Untitled/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303931333031303232363132342e706e67" alt="roc.png"></a></p>
+<p>8、AUC(Area Under Curve) AUC（Area Under Curve）被定义为 ROC曲线 下与坐标轴围成的面积，显然这个面积的数值不会大于1。又由于ROC曲线一般都处于y=x这条直线的上方，所以AUC的取值范围在0.5和1之间。AUC越接近1.0，检测方法真实性越高;等于0.5时，则真实性最低，无应用价值。</p>
+<h5 id="对于金融风控预测类常见的评估指标如下"><a href="#对于金融风控预测类常见的评估指标如下" class="headerlink" title="对于金融风控预测类常见的评估指标如下:"></a>对于金融风控预测类常见的评估指标如下:</h5><p>1、KS(Kolmogorov-Smirnov) KS统计量由两位苏联数学家A.N. Kolmogorov和N.V. Smirnov提出。在风控中，KS常用于评估模型区分度。区分度越大，说明模型的风险排序能力（ranking ability）越强。 K-S曲线与ROC曲线类似，不同在于</p>
+<ul>
+<li>ROC曲线将真正例率和假正例率作为横纵轴</li>
+<li>K-S曲线将真正例率和假正例率都作为纵轴，横轴则由选定的阈值来充当。 公式如下： <script type="math/tex">KS=max(TPR-FPR)</script> KS不同代表的不同情况，一般情况KS值越大，模型的区分能力越强，但是也不是越大模型效果就越好，如果KS过大，模型可能存在异常，所以当KS值过高可能需要检查模型是否过拟合。以下为KS值对应的模型情况，但此对应不是唯一的，只代表大致趋势。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>KS（%）</th>
+<th>好坏区分能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20以下</td>
+<td>不建议采用</td>
+</tr>
+<tr>
+<td>20-40</td>
+<td>较好</td>
+</tr>
+<tr>
+<td>41-50</td>
+<td>良好</td>
+</tr>
+<tr>
+<td>51-60</td>
+<td>很强</td>
+</tr>
+<tr>
+<td>61-75</td>
+<td>非常强</td>
+</tr>
+<tr>
+<td>75以上</td>
+<td>过于高，疑似存在问题</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>2、ROC</p>
+<p>3、AUC</p>
+<h3 id="1-2-4-赛题流程"><a href="#1-2-4-赛题流程" class="headerlink" title="1.2.4. 赛题流程"></a>1.2.4. 赛题流程</h3><p><a href="https://camo.githubusercontent.com/baf3abb3b945608363c4e7a0be0a8a158629463b/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303931333031303232363131302e706e67" target="_blank" rel="noopener"><img src="/Pic/Untitled/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303931333031303232363131302e706e67" alt="1_1.png"></a></p>
+<h3 id="1-3-代码示例"><a href="#1-3-代码示例" class="headerlink" title="1.3 代码示例"></a>1.3 代码示例</h3><p>本部分为对于数据读取和指标评价的示例。</p>
+<h3 id="1-3-1-数据读取pandas"><a href="#1-3-1-数据读取pandas" class="headerlink" title="1.3.1 数据读取pandas"></a>1.3.1 数据读取pandas</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import pandas as pd</span><br><span class="line">train &#x3D; pd.read_csv(&#39;train.csv&#39;)</span><br><span class="line">testA &#x3D; pd.read_csv(&#39;testA.csv&#39;)</span><br><span class="line">print(&#39;Train data shape:&#39;,train.shape)</span><br><span class="line">print(&#39;TestA data shape:&#39;,testA.shape)</span><br><span class="line">Train data shape: (800000, 47)</span><br><span class="line">TestA data shape: (200000, 48)</span><br><span class="line">train.head()</span><br></pre></td></tr></table></figure>
+<style scoped> .dataframe tbody tr th:only-of-type { vertical-align: middle; }
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.dataframe tbody tr th &#123;</span><br><span class="line">    vertical-align: top;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.dataframe thead th &#123;</span><br><span class="line">    text-align: right;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</style>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>id</th>
+<th>loanAmnt</th>
+<th>term</th>
+<th>interestRate</th>
+<th>installment</th>
+<th>grade</th>
+<th>subGrade</th>
+<th>employmentTitle</th>
+<th>employmentLength</th>
+<th>homeOwnership</th>
+<th>…</th>
+<th>n5</th>
+<th>n6</th>
+<th>n7</th>
+<th>n8</th>
+<th>n9</th>
+<th>n10</th>
+<th>n11</th>
+<th>n12</th>
+<th>n13</th>
+<th>n14</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>35000.0</td>
+<td>5</td>
+<td>19.52</td>
+<td>917.97</td>
+<td>E</td>
+<td>E2</td>
+<td>320.0</td>
+<td>2 years</td>
+<td>2</td>
+<td>…</td>
+<td>9.0</td>
+<td>8.0</td>
+<td>4.0</td>
+<td>12.0</td>
+<td>2.0</td>
+<td>7.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>2.0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>18000.0</td>
+<td>5</td>
+<td>18.49</td>
+<td>461.90</td>
+<td>D</td>
+<td>D2</td>
+<td>219843.0</td>
+<td>5 years</td>
+<td>0</td>
+<td>…</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>13.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>12000.0</td>
+<td>5</td>
+<td>16.99</td>
+<td>298.17</td>
+<td>D</td>
+<td>D3</td>
+<td>31698.0</td>
+<td>8 years</td>
+<td>0</td>
+<td>…</td>
+<td>0.0</td>
+<td>21.0</td>
+<td>4.0</td>
+<td>5.0</td>
+<td>3.0</td>
+<td>11.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>11000.0</td>
+<td>3</td>
+<td>7.26</td>
+<td>340.96</td>
+<td>A</td>
+<td>A4</td>
+<td>46854.0</td>
+<td>10+ years</td>
+<td>1</td>
+<td>…</td>
+<td>16.0</td>
+<td>4.0</td>
+<td>7.0</td>
+<td>21.0</td>
+<td>6.0</td>
+<td>9.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+<td>3000.0</td>
+<td>3</td>
+<td>12.99</td>
+<td>101.07</td>
+<td>C</td>
+<td>C2</td>
+<td>54.0</td>
+<td>NaN</td>
+<td>1</td>
+<td>…</td>
+<td>4.0</td>
+<td>9.0</td>
+<td>10.0</td>
+<td>15.0</td>
+<td>7.0</td>
+<td>12.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>4.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>5 rows × 47 columns</p>
+<h3 id="1-3-2-分类指标评价计算示例"><a href="#1-3-2-分类指标评价计算示例" class="headerlink" title="1.3.2 分类指标评价计算示例"></a>1.3.2 分类指标评价计算示例</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">## 混淆矩阵</span><br><span class="line">import numpy as np</span><br><span class="line">from sklearn.metrics import confusion_matrix</span><br><span class="line">y_pred &#x3D; [0, 1, 0, 1]</span><br><span class="line">y_true &#x3D; [0, 1, 1, 0]</span><br><span class="line">print(&#39;混淆矩阵:\n&#39;,confusion_matrix(y_true, y_pred))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">混淆矩阵:</span><br><span class="line"> [[1 1]</span><br><span class="line"> [1 1]]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">## accuracy</span><br><span class="line">from sklearn.metrics import accuracy_score</span><br><span class="line">y_pred &#x3D; [0, 1, 0, 1]</span><br><span class="line">y_true &#x3D; [0, 1, 1, 0]</span><br><span class="line">print(&#39;ACC:&#39;,accuracy_score(y_true, y_pred))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ACC: 0.5</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">## Precision,Recall,F1-score</span><br><span class="line">from sklearn import metrics</span><br><span class="line">y_pred &#x3D; [0, 1, 0, 1]</span><br><span class="line">y_true &#x3D; [0, 1, 1, 0]</span><br><span class="line">print(&#39;Precision&#39;,metrics.precision_score(y_true, y_pred))</span><br><span class="line">print(&#39;Recall&#39;,metrics.recall_score(y_true, y_pred))</span><br><span class="line">print(&#39;F1-score:&#39;,metrics.f1_score(y_true, y_pred))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Precision 0.5</span><br><span class="line">Recall 0.5</span><br><span class="line">F1-score: 0.5</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">## P-R曲线</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">from sklearn.metrics import precision_recall_curve</span><br><span class="line">y_pred &#x3D; [0, 1, 1, 0, 1, 1, 0, 1, 1, 1]</span><br><span class="line">y_true &#x3D; [0, 1, 1, 0, 1, 0, 1, 1, 0, 1]</span><br><span class="line">precision, recall, thresholds &#x3D; precision_recall_curve(y_true, y_pred)</span><br><span class="line">plt.plot(precision, recall)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&lt;matplotlib.lines.Line2D at 0x2170d0d6108&gt;]</span><br></pre></td></tr></table></figure>
+<p><a href="https://camo.githubusercontent.com/62cfda126d963927ceafa23a4b218e155a3d2479/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f323032303039313330313032323639362e706e67" target="_blank" rel="noopener"><img src="/Pic/Untitled/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f323032303039313330313032323639362e706e67" alt="png"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">## ROC曲线</span><br><span class="line">from sklearn.metrics import roc_curve</span><br><span class="line">y_pred &#x3D; [0, 1, 1, 0, 1, 1, 0, 1, 1, 1]</span><br><span class="line">y_true &#x3D; [0, 1, 1, 0, 1, 0, 1, 1, 0, 1]</span><br><span class="line">FPR,TPR,thresholds&#x3D;roc_curve(y_true, y_pred)</span><br><span class="line">plt.title(&#39;ROC&#39;)</span><br><span class="line">plt.plot(FPR, TPR,&#39;b&#39;)</span><br><span class="line">plt.plot([0,1],[0,1],&#39;r--&#39;)</span><br><span class="line">plt.ylabel(&#39;TPR&#39;)</span><br><span class="line">plt.xlabel(&#39;FPR&#39;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Text(0.5, 0, &#39;FPR&#39;)</span><br></pre></td></tr></table></figure>
+<p><a href="https://camo.githubusercontent.com/9b838d2ba8dc4c3ea8dd66859499c78a12d7b4e2/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f323032303039313330313032323639352e706e67" target="_blank" rel="noopener"><img src="/Pic/Untitled/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f323032303039313330313032323639352e706e67" alt="roc.png"></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## AUC</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line">y_true = np.array([<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>])</span><br><span class="line">y_scores = np.array([<span class="number">0.1</span>, <span class="number">0.4</span>, <span class="number">0.35</span>, <span class="number">0.8</span>])</span><br><span class="line">print(<span class="string">'AUC socre:'</span>,roc_auc_score(y_true, y_scores))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AUC socre: 0.75</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## KS值 在实际操作时往往使用ROC曲线配合求出KS值</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_curve</span><br><span class="line">y_pred = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">y_true = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">FPR,TPR,thresholds=roc_curve(y_true, y_pred)</span><br><span class="line">KS=abs(FPR-TPR).max()</span><br><span class="line">print(<span class="string">'KS值：'</span>,KS)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">KS值： 0.5238095238095237</span><br></pre></td></tr></table></figure>
+<h3 id="1-4-经验总结"><a href="#1-4-经验总结" class="headerlink" title="1.4 经验总结"></a>1.4 经验总结</h3><p>赛题理解是开始比赛的第一步，赛题的理解有助于对竞赛全局的把握。通过赛题理解有助于对赛题的业务逻辑把握，对于后期的特征工程构建和模型选择都尤为重要。</p>
+<ul>
+<li>在开始比赛之前要对赛题进行充分的了解。</li>
+<li>比赛什么时候开始，什么时候结束，什么时候换B榜数据。</li>
+<li>和该比赛有没有类似的比赛可以参考借鉴。</li>
+<li>线上提交结果的次数往往是有限的，提前了解每日可以提交的次数。</li>
+<li>比赛使用的是什么评价指标，可以选择相同的评价指标作为线下验证的方式。</li>
+</ul>
+<h3 id="1-5-拓展知识——评分卡"><a href="#1-5-拓展知识——评分卡" class="headerlink" title="1.5 拓展知识——评分卡"></a>1.5 拓展知识——评分卡</h3><p>评分卡是一张拥有分数刻度会让相应阈值的表。信用评分卡是用于用户信用的一张刻度表。以下代码是一个非标准评分卡的代码流程，用于刻画用户的信用评分。评分卡是金融风控中常用的一种对于用户信用进行刻画的手段哦！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#评分卡 不是标准评分卡</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">Score</span><span class="params">(prob,P0=<span class="number">600</span>,PDO=<span class="number">20</span>,badrate=None,goodrate=None)</span>:</span></span><br><span class="line">    P0 = P0</span><br><span class="line">    PDO = PDO</span><br><span class="line">    theta0 = badrate/goodrate</span><br><span class="line">    B = PDO/np.log(<span class="number">2</span>)</span><br><span class="line">    A = P0 + B*np.log(<span class="number">2</span>*theta0)</span><br><span class="line">    score = A-B*np.log(prob/(<span class="number">1</span>-prob))</span><br><span class="line">    <span class="keyword">return</span> score</span><br></pre></td></tr></table></figure> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chenkai66.github.io/posts/790172fa.html" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/posts/2c576f47.html" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">迁移学习（一）</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TQy5bHTePagP10u5BBsesx61-gzGzoHsz",
+    app_key: "O6UyJYxBFgMKQMjktBh4KGad",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2020
+        <i class="ri-heart-fill heart_icon"></i> chenk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 灰仔 强力驱动
+        
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="言念君子"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+
+<script src="/js/clickBoom2.js"></script>
+
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
